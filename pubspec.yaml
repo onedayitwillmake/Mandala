@@ -1,0 +1,7 @@
+name: Mandala
+description: A sample web application
+dependencies:
+  browser: any
+  logging: any
+  vector_math:
+    git: https://github.com/johnmccutchan/vector_math.git

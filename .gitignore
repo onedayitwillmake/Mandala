@@ -1,0 +1,11 @@
+.project
+.buildlog
+*.js_
+*.js.deps
+*.js.map
+.project
+*.iml
+*.ipr
+*.iws
+.idea
+.DS_Store
