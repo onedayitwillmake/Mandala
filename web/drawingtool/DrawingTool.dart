@@ -24,14 +24,14 @@ class DrawingTool {
 
     // Listen for input
     // Down
-    _canvas.onMouseDown.listen((e){ _inputDown( e.page ); });
+    _canvas.onMouseDown.listen((e){ _inputDown( e.client ); });
     _canvas.onTouchStart.listen((e){ _inputDown( e.touches[0].page ); });
     // Move
-    _canvas.onMouseMove.listen((e){ _inputMove( e.page ); });
+    _canvas.onMouseMove.listen((e){ _inputMove( e.client ); });
     _canvas.onTouchMove.listen((e){ _inputMove( e.touches[0].page ); });
     // Up
+    _canvas.onMouseUp.listen((e){ _inputUp( e.client); });
     _canvas.onTouchEnd.listen((e){ _inputUp( e.touches[0].page ); });
-    _canvas.onMouseUp.listen((e){ _inputUp( e.page); });
 
 //    updateCanvas();
 //    BaseAction action = new BaseAction();
@@ -42,19 +42,18 @@ class DrawingTool {
   }
 
   void _inputDown( Point pos ) {
-    actionQueue.last.inputDown( _ctx, pos );
+    actionQueue.last.inputDown( _ctx, new Point(pos.x - _width*0.5, pos.y - _height*0.5) );
   }
 
   void _inputMove( Point pos ) {
-//    print("Move {x},{y}");
+    actionQueue.last.inputMove( _ctx, new Point(pos.x - _width*0.5, pos.y - _height*0.5) );
   }
 
   void _inputUp( Point pos ) {
-//    print("Up {x},{y}");
+    actionQueue.last.inputUp( _ctx, new Point(pos.x - _width*0.5, pos.y - _height*0.5) );
   }
 
   void _update( num time ) {
-    _ctx.clearRect(0, 0, _width, _height);
     drawBackground();
 
     // Draw everything twice if mirroring is turned on
@@ -72,10 +71,12 @@ class DrawingTool {
         });
       }
     }
+
+    window.requestAnimationFrame(_update);
   }
 
   void drawBackground() {
-    _ctx.clearRect(0, 0, _width, _height);
+    _ctx.canvas.width = _ctx.canvas.width;
     _ctx.fillStyle = _bgGradient;
     _ctx.fillRect(0,0,_width,_height);
   }
