@@ -3,6 +3,8 @@ part of DrawingToolLib;
 class DrawingToolInterface {
   DrawingTool _drawingModule;
   HtmlElement _lastSelectedTool;
+  
+  RangeInputElement _$slideCountSlider = null;
 
   DrawingToolInterface( this._drawingModule ) {
     // Pressing interface button will
@@ -15,6 +17,12 @@ class DrawingToolInterface {
         _drawingModule.performEditAction( el.attributes['data-edit-action'] );
       });
     });
+    
+    _$slideCountSlider = querySelector("#interface-sidecount-slider");
+    _$slideCountSlider.onChange.listen((e){
+      print(_$slideCountSlider.value);
+    });
+    
   }
 
   onWantsToChangeAction( HtmlElement el ) {

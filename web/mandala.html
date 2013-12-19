@@ -14,7 +14,7 @@
             <canvas id="canvas" width="700" height="500" class="center"></canvas>
         </div>
         <div class="interface left floated one wide column">
-            <div class="ui ribbon red small label">Drawing mode</div>
+            <div class="ui ribbon green small label">Drawing mode</div>
             <div class="ui vertical small icon menu">
                 <a class="teal item" data-drawingmode="RegularStroke">
                     <i class="pencil icon"></i>
@@ -31,9 +31,17 @@
                 <a class="teal item" data-drawingmode="PolygonalFill">
                     <i class="star icon"></i>
                     Polygonal Fill
-                </a>
+                </a>           
             </div>
-            <div class="ui ribbon red label">Edit</div>
+            <div class="ui ribbon blue small label">Settings</div>
+            <div class="settings ui vertical small icon menu">
+             <a class="teal item" data-drawingmode="no">
+                    <input id="interface-sidecount-slider" class="" type="range" min="0" max="500" />
+                    Sides
+                </a>  
+            </div>
+   
+            <div class="ui ribbon orange small label">Edit</div>
             <div class="ui vertical small icon menu">
                 <a class="teal item" data-edit-action="undo">
                     <i class="undo icon"></i>
