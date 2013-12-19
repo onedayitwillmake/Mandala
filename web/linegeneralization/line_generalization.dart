@@ -13,21 +13,22 @@ library LineGeneralization;
 import 'dart:math' as Math;
 
 List smoothMcMaster(points) {
-  var nL = [];
   var len = points.length;
+  var nL = new List(len);
+
   if (len < 5) {
     return points;
   }
   var j, avX, avY;
   var i = len;
-  while (i--) {
+  while (i-- > 0) {
     if (i == len - 1 || i == len - 2 || i == 1 || i == 0) {
       nL[i] = new Math.Point(points[i].x, points[i].y);
     } else {
       j = 5;
       avX = 0;
       avY = 0;
-      while (j--) {
+      while (j-- > 0 ) {
         avX += points[i + 2 - j].x;
         avY += points[i + 2 - j].y;
       }

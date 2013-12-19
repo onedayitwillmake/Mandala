@@ -3,7 +3,6 @@ part of DrawingToolLib;
 class RegularStrokeAction extends BaseAction {
   static const String ACTION_NAME = "RegularStroke";
 
-  static Point  LINE_BREAK = new Point(null, null);
   List<Point> _activePoints = null;
 
   /// Constructor
@@ -16,7 +15,7 @@ class RegularStrokeAction extends BaseAction {
     List<Point> pointsToDraw = null;
     if( _activePoints != null ) {
       pointsToDraw = new List<Point>.from(points);
-      pointsToDraw.add(LINE_BREAK);
+      pointsToDraw.add(BaseAction.LINE_BREAK);
       pointsToDraw.addAll( _activePoints );
     } else {
       pointsToDraw = points;
@@ -26,7 +25,7 @@ class RegularStrokeAction extends BaseAction {
 
     for(var i = 0; i < pointsToDraw.length; i++) {
       // Null slot implies a new path should be started
-      if( pointsToDraw[i] == LINE_BREAK ) {
+      if( pointsToDraw[i] == BaseAction.LINE_BREAK ) {
 
         // Close existing path
         if( i != 0 ) {
@@ -58,9 +57,10 @@ class RegularStrokeAction extends BaseAction {
   void inputUp(CanvasRenderingContext2D ctx, Point pos) {
     int oldLen = _activePoints.length;
     var simplifiedPoints = LineGeneralization.simplifyLang(5, 1, _activePoints);
+
     print("Removed ${oldLen - simplifiedPoints.length} points");
 
-    points.add(LINE_BREAK);
+    points.add(BaseAction.LINE_BREAK);
     points.addAll(simplifiedPoints);
 
     _activePoints = null;

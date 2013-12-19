@@ -9,4 +9,6 @@ part 'actions/BaseAction.dart';
 part 'actions/SettingsAction.dart';
 part 'actions/RegularStrokeAction.dart';
 part 'actions/SmoothStrokeAction.dart';
+part 'actions/PolygonalStrokeAction.dart';
+part 'actions/PolygonalFillAction.dart';
 part 'interface/DrawingToolInterface.dart';

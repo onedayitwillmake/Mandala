@@ -44,7 +44,7 @@ class DrawingTool {
     settings.execute( _ctx, 0, 0);
 
     actionQueue.add( settings );
-//    actionQueue.add( new RegularStrokeAction() );
+    actionQueue.add( new PolygonalStrokeAction() );
 
     setupListeners();
     start();
@@ -127,6 +127,8 @@ class DrawingTool {
         actionQueue.forEach((BaseAction action){
           action.execute( _ctx, _canvasRect.width, _canvasRect.height );
         });
+
+        actionQueue.last.activeDraw( _ctx, _canvasRect.width, _canvasRect.height );
       }
     }
 
@@ -142,6 +144,7 @@ class DrawingTool {
   }
 
   bool changeAction( String actionName ) {
+    print("CurrentActionName: ${actionQueue.last.name}");
     // We're already in that mode
     if( actionQueue.last.name == actionName ) {
       return false;
@@ -153,7 +156,13 @@ class DrawingTool {
         nextAction = new RegularStrokeAction();
       break;
       case SmoothStrokeAction.ACTION_NAME:
-        nextAction = new RegularStrokeAction();
+        nextAction = new SmoothStrokeAction();
+      break;
+      case PolygonalFillAction.ACTION_NAME:
+        nextAction = new PolygonalFillAction();
+      break;
+      case PolygonalStrokeAction.ACTION_NAME:
+        nextAction = new PolygonalStrokeAction();
       break;
     }
 
