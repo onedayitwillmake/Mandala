@@ -142,10 +142,17 @@ class DrawingTool {
   }
 
   bool changeAction( String actionName ) {
-    print("${actionQueue.last.name}");
+    // We're already in that mode
+    if( actionQueue.last.name == actionName ) {
+      return false;
+    }
+
     BaseAction nextAction = null;
     switch( actionName ) {
       case RegularStrokeAction.ACTION_NAME:
+        nextAction = new RegularStrokeAction();
+      break;
+      case SmoothStrokeAction.ACTION_NAME:
         nextAction = new RegularStrokeAction();
       break;
     }
