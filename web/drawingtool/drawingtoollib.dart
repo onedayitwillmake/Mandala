@@ -6,7 +6,7 @@ import '../linegeneralization/line_generalization.dart' as LineGeneralization;
 
 part 'DrawingTool.dart';
 part 'actions/BaseAction.dart';
-part 'actions/SettingsAction.dart';
+part 'actions/ActionSettings.dart';
 part 'actions/RegularStrokeAction.dart';
 part 'actions/SmoothStrokeAction.dart';
 part 'actions/PolygonalStrokeAction.dart';

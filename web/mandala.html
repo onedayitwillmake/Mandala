@@ -7,33 +7,38 @@
     <link type="text/css" rel="stylesheet" href="css/mandala.css">
     <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,700,800' rel='stylesheet' type='text/css'>
 </head>
-<body>
-<div id="main-container" class="ui column divided center aligned grid page container">
-    <div class="row">
-        <div class="twelve column">
+<body class="mandala-app">
+<div id="main-container" class="ui three column divided grid">
+    <div id="drawingtool-container" class="equal height row">
+        <div id="drawingtool" class="two wide column">
             <canvas id="canvas" width="700" height="500" class="center"></canvas>
         </div>
-        <div class="four column">
-            <div class="ui secondary segment">
-                <div class="ui ribbon red label">Drawing mode</div>
-                <div class="ui vertical icon menu">
-                    <a class="teal item" data-drawingmode="RegularStroke">
-                        <i class="pencil icon"></i>
-                        Regular Stroke
-                    </a>
-                    <a class="teal item" data-drawingmode="SmoothStroke">
-                        <i class="edit icon"></i>
-                        Smooth Line
-                    </a>
-                    <a class="teal item" data-drawingmode="PolygonalStroke">
-                        <i class="star empty icon"></i>
-                        Polygonal Line
-                    </a>
-                    <a class="teal item" data-drawingmode="PolygonalFill">
-                        <i class="star icon"></i>
-                        Polygonal Fill
-                    </a>
-                </div>
+        <div class="interface left floated one wide column">
+            <div class="ui ribbon red small label">Drawing mode</div>
+            <div class="ui vertical small icon menu">
+                <a class="teal item" data-drawingmode="RegularStroke">
+                    <i class="pencil icon"></i>
+                    Regular Line
+                </a>
+                <a class="teal item" data-drawingmode="SmoothStroke">
+                    <i class="edit icon"></i>
+                    Smooth Line
+                </a>
+                <a class="teal item" data-drawingmode="PolygonalStroke">
+                    <i class="star empty icon"></i>
+                    Polygonal Line
+                </a>
+                <a class="teal item" data-drawingmode="PolygonalFill">
+                    <i class="star icon"></i>
+                    Polygonal Fill
+                </a>
+            </div>
+            <div class="ui ribbon red label">Edit</div>
+            <div class="ui vertical small icon menu">
+                <a class="teal item" data-edit-action="undo">
+                    <i class="undo icon"></i>
+                    Undo
+                </a>
             </div>
         </div>
     </div>

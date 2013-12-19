@@ -10,7 +10,8 @@ class RegularStrokeAction extends BaseAction {
 
   /// Draw a series of simple strokes
   void execute(CanvasRenderingContext2D ctx, width, height) {
-
+    settings.execute(ctx);
+    
     // If the active points are not empty - set points to draw to the union of points & activePoints
     List<Point> pointsToDraw = null;
     if( _activePoints != null ) {
@@ -21,9 +22,11 @@ class RegularStrokeAction extends BaseAction {
       pointsToDraw = points;
     }
 
+    /// We need at least 2 points
     if( pointsToDraw.isEmpty || pointsToDraw.length < 2 ) return;
 
     for(var i = 0; i < pointsToDraw.length; i++) {
+      
       // Null slot implies a new path should be started
       if( pointsToDraw[i] == BaseAction.LINE_BREAK ) {
 
@@ -64,5 +67,11 @@ class RegularStrokeAction extends BaseAction {
     points.addAll(simplifiedPoints);
 
     _activePoints = null;
+  }
+  
+  void undo( CanvasRenderingContext2D ctx ) {
+    int lastBreak = points.lastIndexOf( BaseAction.LINE_BREAK );
+    if( lastBreak == -1 ) return;
+    points.removeRange(lastBreak, points.length );
   }
 }

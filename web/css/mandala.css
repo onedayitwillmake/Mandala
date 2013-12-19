@@ -12,6 +12,38 @@ body {
   text-rendering: optimizeLegibility;
   min-width: 320px;
 }
+canvas {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  outline: none;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  /* mobile webkit */
+}
 #main-container {
-  max-width: 1000px;
+  margin-top: 60px;
+}
+#drawingtool-container {
+  width: 1000px !important;
+  margin: 0 auto !important;
+}
+
+#drawingtool {
+  padding-right: 3%;
+}
+
+.interface .ui.red.ribbon.label {
+  width: 12em;
+  left: -19px;
+}
+.interface .ui.vertical.small.icon.menu {
+  width: 6rem;
+  margin-left: 1rem;
+}
+
+.ui.vertical.small.icon.menu {
+  width: 6rem;
 }

@@ -11,6 +11,7 @@ class PolygonalStrokeAction extends BaseAction {
   PolygonalStrokeAction() : super(ACTION_NAME);
 
   void execute(CanvasRenderingContext2D ctx, width, height) {
+    settings.execute(ctx);
     executeImp(ctx, ctx.stroke, width, height );
   }
 
@@ -75,15 +76,35 @@ class PolygonalStrokeAction extends BaseAction {
     _potentialPoint = pos;
   }
 
-  void inputUp(CanvasRenderingContext2D ctx, Point pos) {
+  void inputUp(CanvasRenderingContext2D ctx, Point pos, [bool forceClose = false] ) {
     _activePoints.add(pos);
 
     if( _activePoints.length < 3 ) return;
-    if( pos.distanceTo(_activePoints.first) < MIN_DISTANCE_BEFORE_CLOSING ) {
+    if( pos.distanceTo(_activePoints.first) < MIN_DISTANCE_BEFORE_CLOSING || forceClose ) {
       points.add(BaseAction.LINE_BREAK);
       points.addAll(_activePoints);
 
       _activePoints = null;
     }
   }
+  
+  /// If enter is pressed - close the path
+  void keyPressed(CanvasRenderingContext2D ctx, KeyboardEvent e ){
+    if( e.keyCode == KeyCode.ENTER ) {
+      // Don't bother making a path if there are less than 3 points
+      if( _activePoints.length < 3 ) {
+        _activePoints = null;
+        return; 
+      }
+      
+      inputUp( ctx, _activePoints.last, true );
+    }
+  }
+
+  void undo( CanvasRenderingContext2D ctx ) {
+    int lastBreak = points.lastIndexOf( BaseAction.LINE_BREAK );
+    if( lastBreak == -1 ) return;
+    points.removeRange(lastBreak, points.length );
+  }
+  
 }

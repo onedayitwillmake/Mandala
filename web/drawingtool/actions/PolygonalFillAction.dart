@@ -1,6 +1,7 @@
 part of DrawingToolLib;
 
 class PolygonalFillAction extends PolygonalStrokeAction {
+  /// @inheritDoc
   static const String ACTION_NAME = "PolygonalFill";
 
   /// Constructor

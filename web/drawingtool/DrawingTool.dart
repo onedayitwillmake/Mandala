@@ -20,7 +20,7 @@ class DrawingTool {
   Rectangle                 _canvasRect;
 
   /// Used to offset the touch position if the user has scrolled
-  Point                     _winScroll;
+  Point<num>                    _winScroll;
   /// Used internally to track RAF
   int                       _rafId = 0;
   /// If true the user's input is down while the mouse is moving
@@ -40,11 +40,7 @@ class DrawingTool {
     _bgGradient.addColorStop(0, '#383245');
     _bgGradient.addColorStop(1, '#1B1821');
 
-    var settings = new SettingsAction();
-    settings.execute( _ctx, 0, 0);
-
-    actionQueue.add( settings );
-    actionQueue.add( new PolygonalStrokeAction() );
+    actionQueue.add( new RegularStrokeAction() );
 
     setupListeners();
     start();
@@ -75,10 +71,12 @@ class DrawingTool {
     window.onBlur.listen((e){
       stop();
     });
-    // Lost focus
+    // Gained focus
     window.onFocus.listen((e){
       start();
     });
+    // Keyboard
+    window.onKeyDown.listen( (e) => actionQueue.last.keyPressed( _ctx, e) );
   }
 
   void start(){
@@ -171,6 +169,30 @@ class DrawingTool {
 
     actionQueue.add( nextAction );
     return true;
+  }
+  
+  void performEditAction( String actionName ) {
+    switch( actionName ) {
+      case "undo":
+        performUndo();
+      break;
+    }
+  }
+  
+  void performUndo() {
+    
+    // Nothing to undo!
+    if( actionQueue.length == 0 ) return;
+    
+    // Current action has no points and user wants to undo - remove that action
+    if( actionQueue.last.points.length == 0 ) {
+      actionQueue.removeLast();
+    }
+    
+    // Nothing to undo again!
+    if( actionQueue.length == 0 ) return;
+    
+    actionQueue.last.undo( _ctx );
   }
 
   void drawBackground() {

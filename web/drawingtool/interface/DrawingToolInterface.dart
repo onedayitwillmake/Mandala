@@ -9,6 +9,12 @@ class DrawingToolInterface {
     querySelectorAll('[data-drawingmode]').forEach((HtmlElement el) {
       el.onClick.listen((e) => onWantsToChangeAction(el) );
     });
+    
+    querySelectorAll('[data-edit-action]').forEach((HtmlElement el) {
+      el.onClick.listen((e) {
+        _drawingModule.performEditAction( el.attributes['data-edit-action'] );
+      });
+    });
   }
 
   onWantsToChangeAction( HtmlElement el ) {
