@@ -23,6 +23,8 @@ class DrawingTool {
   Point                     _winScroll;
   /// Used internally to track RAF
   int                       _rafId = 0;
+  /// If true the user's input is down while the mouse is moving
+  bool                      _isDragging = false;
 
   /// List of Actions (for example draw regular stroke, change settings )
   ListQueue<BaseAction> actionQueue = new ListQueue<BaseAction>();
@@ -38,7 +40,11 @@ class DrawingTool {
     _bgGradient.addColorStop(0, '#383245');
     _bgGradient.addColorStop(1, '#1B1821');
 
-    actionQueue.add( new RegularStrokeAction() );
+    var settings = new SettingsAction();
+    settings.execute( _ctx, 0, 0);
+
+    actionQueue.add( settings );
+//    actionQueue.add( new RegularStrokeAction() );
 
     setupListeners();
     start();
@@ -86,18 +92,20 @@ class DrawingTool {
   }
 
   void _inputDown( Point pos ) {
+    _isDragging = true;
     actionQueue.last.inputDown( _ctx, alignedPoint( pos ) );
   }
 
   void _inputMove( Point pos ) {
-    actionQueue.last.inputMove( _ctx, alignedPoint( pos ) );
+    actionQueue.last.inputMove( _ctx, alignedPoint( pos ), _isDragging );
   }
 
   void _inputUp( Point pos ) {
+    _isDragging = false;
     actionQueue.last.inputUp( _ctx, alignedPoint( pos ) );
   }
 
-  void alignedPoint( Point pos ) {
+  Point alignedPoint( Point pos ) {
     int x = (pos.x - _canvasRect.left - _winScroll.x) - (_canvasRect.width*0.5);
     int y = (pos.y - _canvasRect.top - _winScroll.y) - (_canvasRect.height*0.5);
     return new Point(x,y);
@@ -122,7 +130,31 @@ class DrawingTool {
       }
     }
 
+    // Draw the arc enveloping the image
+    _ctx.beginPath();
+    _ctx.lineWidth = 1;
+    _ctx.strokeStyle = "rgba(255,255,255,0.75)";
+    _ctx.arc(0, 0, _canvasRect.width*0.46, 0, PI * 2, false);
+    _ctx.stroke();
+    _ctx.closePath();
+
     _rafId = window.requestAnimationFrame(_update);
+  }
+
+  bool changeAction( String actionName ) {
+    print("${actionQueue.last.name}");
+    BaseAction nextAction = null;
+    switch( actionName ) {
+      case RegularStrokeAction.ACTION_NAME:
+        nextAction = new RegularStrokeAction();
+      break;
+    }
+
+    // TODO: Call exit on current action?
+    if( nextAction == null ) return false;
+
+    actionQueue.add( nextAction );
+    return true;
   }
 
   void drawBackground() {
