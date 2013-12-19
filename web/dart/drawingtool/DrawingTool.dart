@@ -20,7 +20,7 @@ class DrawingTool {
   Rectangle                 _canvasRect;
 
   /// Used to offset the touch position if the user has scrolled
-  Point<num>                    _winScroll;
+  Point<num>                 _winScroll;
   /// Used internally to track RAF
   int                       _rafId = 0;
   /// If true the user's input is down while the mouse is moving
@@ -36,7 +36,7 @@ class DrawingTool {
     _ctx = _canvas.context2D;
 
     // SETUP BACKGROUND GRADIENT
-    _bgGradient = _ctx.createRadialGradient(_canvasRect.width*0.5, _canvasRect.height*0.5, 0, _canvasRect.width*0.5, _canvasRect.height*0.5, _canvasRect.width*0.5);
+    _bgGradient = _ctx.createRadialGradient(_canvasRect.width*0.5, _canvasRect.height*0.5, 0, _canvasRect.width*0.5, _canvasRect.height*0.65, _canvasRect.width*0.65);
     _bgGradient.addColorStop(0, '#383245');
     _bgGradient.addColorStop(1, '#1B1821');
 
@@ -111,16 +111,19 @@ class DrawingTool {
 
   void _update( num time ) {
     drawBackground();
+    _ctx.globalCompositeOperation = 'screen';
 
     // Draw everything twice if mirroring is turned on
     for( int j = 0; j < (isMirrored ? 2 : 1); j++) {
+      int xOffset = j == 0 ? 1 : -1;
+
       // Call every action once, per side
       for( int i = 0; i < sides; i++) {
         // Reset the transform
-        _ctx.setTransform(1, 0, 0, 1, _canvasRect.width*0.5, _canvasRect.height*0.5);
+        _ctx.setTransform(xOffset, 0, 0, 1, _canvasRect.width*0.5, _canvasRect.height*0.5);
         // Rotate clockwise, so that if i = (sides/2) - we're at 180 degrees
         // add PI*J - meaning 0 on first call, or 180 degrees on second call
-        _ctx.rotate(i/sides * PI * 2 + PI*j);
+        _ctx.rotate(i/sides * PI * 2);
 
         actionQueue.forEach((BaseAction action){
           action.execute( _ctx, _canvasRect.width, _canvasRect.height );
@@ -171,22 +174,28 @@ class DrawingTool {
     return true;
   }
   
-  void performEditAction( String actionName ) {
+  void performEditAction( String actionName, [dynamic value] ) {
     switch( actionName ) {
       case "undo":
         performUndo();
       break;
+      case "alpha":
+        actionQueue.last.settings.opacity = value;
+      break;
     }
   }
-  
+
+  void performOpacityUpdate( num val ) {
+    actionQueue.last.settings.setOpacity( val );
+  }
+
   void performUndo() {
-    
-    // Nothing to undo!
-    if( actionQueue.length == 0 ) return;
-    
+
     // Current action has no points and user wants to undo - remove that action
     if( actionQueue.last.points.length == 0 ) {
-      actionQueue.removeLast();
+      if( actionQueue.length == 1 ) return; // dont remove the last action
+
+        actionQueue.removeLast();
     }
     
     // Nothing to undo again!
@@ -198,6 +207,21 @@ class DrawingTool {
   void drawBackground() {
     _ctx.canvas.width = _ctx.canvas.width;
     _ctx.fillStyle = _bgGradient;
-    _ctx.fillRect(0,0,_canvasRect.width,_canvasRect.height);
+    fillRoundedRect(0,0,_canvasRect.width,_canvasRect.height, 10);
+  }
+
+  void fillRoundedRect( x, y, w, h, r ) {
+    _ctx.beginPath();
+    _ctx.moveTo(x+r, y);
+    _ctx.lineTo(x+w-r, y);
+    _ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+    _ctx.lineTo(x+w, y+h-r);
+    _ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    _ctx.lineTo(x+r, y+h);
+    _ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+    _ctx.lineTo(x, y+r);
+    _ctx.quadraticCurveTo(x, y, x+r, y);
+    _ctx.fill();
+    _ctx.closePath();
   }
 }

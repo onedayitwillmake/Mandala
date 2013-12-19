@@ -9,9 +9,22 @@
 
 // SETTINGS SECTION
 .interface .settings.ui.vertical.small.icon.menu {
-  width: 13rem;
+  width: 14rem;
+}
+.interface .settings .item {
+  float: left;
+  padding-left: 5px;
+  width: 100%;
+}
+.interface .settings .slider-label {
+  display: block;
+  float: right;
+  width: 75px;
 }
 
+.interface-opacity-slider input[type="range"]::-webkit-slider-thumb {
+  background-color: rgba(46, 204, 113,1.0);
+}
 .interface .settings input[type=range] {
     -webkit-appearance: none;
     background-color: rgb(200, 200, 200);

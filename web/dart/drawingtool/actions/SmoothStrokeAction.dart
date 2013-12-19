@@ -9,7 +9,7 @@ class SmoothStrokeAction extends RegularStrokeAction {
 
   void inputUp(CanvasRenderingContext2D ctx, Point pos) {
     int oldLen = _activePoints.length;
-    var simplifiedSmoothedPoints = LineGeneralization.smoothMcMaster( LineGeneralization.simplifyLang(5, 1, _activePoints) );
+    var simplifiedSmoothedPoints = LineGeneralization.smoothMcMaster( LineGeneralization.smoothMcMaster( LineGeneralization.simplifyLang(4, 0.5, _activePoints) ) );
 
     print("Removed previously had ${oldLen}, now have ${simplifiedSmoothedPoints.length}, Removed ${oldLen - simplifiedSmoothedPoints.length} points");
 

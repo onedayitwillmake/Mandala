@@ -59,9 +59,9 @@ class RegularStrokeAction extends BaseAction {
 
   void inputUp(CanvasRenderingContext2D ctx, Point pos) {
     int oldLen = _activePoints.length;
-    var simplifiedPoints = LineGeneralization.simplifyLang(5, 1, _activePoints);
+    var simplifiedPoints = LineGeneralization.simplifyLang(4, 0.5, _activePoints);
 
-    print("Removed ${oldLen - simplifiedPoints.length} points");
+    print("Had: ${oldLen}, Have: ${simplifiedPoints.length}, Removed ${oldLen - simplifiedPoints.length} points");
 
     points.add(BaseAction.LINE_BREAK);
     points.addAll(simplifiedPoints);

@@ -10,6 +10,7 @@ class PolygonalFillAction extends PolygonalStrokeAction {
   }
 
   void execute(CanvasRenderingContext2D ctx, width, height) {
+    settings.execute(ctx);
     executeImp(ctx, ctx.fill, width, height );
   }
 }
