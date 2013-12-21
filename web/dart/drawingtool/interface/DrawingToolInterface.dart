@@ -21,7 +21,16 @@ class DrawingToolInterface {
     });
 
 
-    // Listen for settings actions such as opacity and sidecount
+    // Mirroring toggle
+    CheckboxInputElement mirrorCheckbox = ( querySelector("[name=toggle-mirroring]") as CheckboxInputElement );
+    mirrorCheckbox.checked = true;
+    mirrorCheckbox.parent.onClick.listen((e){
+      mirrorCheckbox.checked = !mirrorCheckbox.checked;
+      _drawingModule.isMirrored = mirrorCheckbox.checked;
+      mirrorCheckbox.nextElementSibling.text = "Mirror Mode " + (mirrorCheckbox.checked ? "On" : "Off");
+    });
+
+    // Side count slider
     _$slideCountSlider = ( querySelector("#interface-sidecount-slider") as RangeInputElement );
     _$slideCountSlider.onChange.listen((e){
       querySelector("#interface-sidecount-slider-text").text = "Sides: " + _$slideCountSlider.value;

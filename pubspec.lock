@@ -17,6 +17,10 @@ packages:
     description: logging
     source: hosted
     version: "0.9.1"
+  stagexl:
+    description: stagexl
+    source: hosted
+    version: "0.8.8"
   vector_math:
     description:
       ref: null

@@ -2,10 +2,10 @@ part of DrawingToolLib;
 
 class DrawingTool {
   /// Number of sides in we draw (x2 if mirroring is on)
-  int                       sides = 5;
+  int                       sides = 1;
 
   /// If true, anything drawn on the left side of the canvas will be redraw on the right side
-  bool                      isMirrored = true;
+  bool                      isMirrored = false;
 
   /// Canvas element we're drawing to
   CanvasElement             _canvas;
@@ -29,6 +29,7 @@ class DrawingTool {
   /// List of Actions (for example draw regular stroke, change settings )
   ListQueue<BaseAction> actionQueue = new ListQueue<BaseAction>();
 
+  
   DrawingTool(this._canvas) {
     _canvasRect = _canvas.getBoundingClientRect();
     _winScroll = new Point(window.scrollX, window.scrollY);
@@ -40,7 +41,7 @@ class DrawingTool {
     _bgGradient.addColorStop(0, '#383245');
     _bgGradient.addColorStop(1, '#1B1821');
 
-    actionQueue.add( new RegularStrokeAction() );
+    actionQueue.add( new SmoothStrokeAction() );
 
     setupListeners();
     start();
@@ -77,7 +78,25 @@ class DrawingTool {
     });
     // Keyboard
     window.onKeyDown.listen( (e) => actionQueue.last.keyPressed( _ctx, e) );
+    
+//    setupStageXL();
   }
+//  StageXL.Bitmap backgroundBitmap;
+//  StageXL.BitmapData bitmapData;
+//  void setupStageXL() {
+//    var stage = new StageXL.Stage('stage', querySelector('#stage'));
+//    var renderLoop = new StageXL.RenderLoop();
+//    renderLoop.addStage(stage);
+//    var juggler = renderLoop.juggler;
+//    
+//    //  BitmapData(int width, int height, [bool transparent = true, int fillColor = 0xFFFFFFFF, pixelRatio = 1.0]) {
+//    bitmapData = new StageXL.BitmapData(_canvasRect.width.toInt(),_canvasRect.height.toInt(), false, 0);   
+//    backgroundBitmap = new StageXL.Bitmap(bitmapData);
+//    backgroundBitmap.filters = [ new StageXL.BlurFilter(2,2) ];
+//    backgroundBitmap.applyCache(0,0, backgroundBitmap.width.toInt(), backgroundBitmap.height.toInt());
+//    stage.addChild(backgroundBitmap);
+//    //new BlurFilter(20, 20)
+//  }
 
   void start(){
     stop();
@@ -110,7 +129,7 @@ class DrawingTool {
   }
 
   void _update( num time ) {
-    drawBackground();
+   drawBackground();
     _ctx.globalCompositeOperation = 'screen';
 
     // Draw everything twice if mirroring is turned on
@@ -141,6 +160,8 @@ class DrawingTool {
     _ctx.stroke();
     _ctx.closePath();
 
+//    bitmapData.putImageData(_ctx.getImageData(0, 0, _canvasRect.width, _canvasRect.height), 0, 0);
+//    backgroundBitmap.refreshCache();
     _rafId = window.requestAnimationFrame(_update);
   }
 
@@ -183,10 +204,6 @@ class DrawingTool {
         actionQueue.last.settings.opacity = value;
       break;
     }
-  }
-
-  void performOpacityUpdate( num val ) {
-    actionQueue.last.settings.setOpacity( val );
   }
 
   void performUndo() {

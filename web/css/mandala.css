@@ -5,7 +5,7 @@ body {
 }
 body {
   font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-  background: #FFFFFF;
+  background: #ecf0f1;
   margin: 0px;
   padding: 0px;
   color: #555555;
@@ -47,6 +47,7 @@ canvas {
   margin-left: 1rem;
 }
 .interface .settings.ui.vertical.small.icon.menu {
+  font-size: 1em;
   width: 14rem;
 }
 .interface .settings .item {
@@ -58,6 +59,11 @@ canvas {
   display: block;
   float: right;
   width: 75px;
+}
+.settings .ui.toggle.checkbox {
+  top: 1em;
+  left: 1em;
+  height: 40px;
 }
 .interface-opacity-slider input[type="range"]::-webkit-slider-thumb {
   background-color: #2ecc71;
@@ -75,7 +81,7 @@ canvas {
 
 input[type=range] {
   -webkit-appearance: none;
-  background-color: #c8c8c8;
+  background-color: #95a5a6;
   height: 5px;
   width: 70px;
 }
