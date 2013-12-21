@@ -23,7 +23,6 @@ class SmoothStrokeAction extends RegularStrokeAction {
     /// We need at least 2 points
     if( pointsToDraw.isEmpty || pointsToDraw.length < 2 ) return;
 
-    Point start;
     for(var i = 0; i < pointsToDraw.length - 2; i++) {
       
       // Null slot implies a new path should be started
@@ -37,26 +36,19 @@ class SmoothStrokeAction extends RegularStrokeAction {
 
         ctx.beginPath();
         ctx.moveTo( pointsToDraw[i+1].x, pointsToDraw[i+1].y );
-        start = pointsToDraw[i+1];
         continue;
       }
       
       Point cp = pointsToDraw[i+1];
-      Point end = pointsToDraw[i+2];
-      
       // If it's a linebreak, then that means the current point was the last point on this curve
-      if( cp == null || cp == BaseAction.LINE_BREAK || end == null || end == BaseAction.LINE_BREAK ) {
+      if( cp == null || cp == BaseAction.LINE_BREAK ) {
         continue;
       }
       
-//      cp  = new Point( (start.x+endPoint.x)*0.5, (start.y+endPoint.y)*0.5);
-      end = new Point( (pointsToDraw[i].x+cp.x) * 0.5, (pointsToDraw[i].y+cp.y)*0.5);
-      cp = pointsToDraw[i]; 
-      
-//      Point control =  new Point( (pointsToDraw[i].x+endPoint.x)*0.5, (pointsToDraw[i].y+endPoint.y)*0.5);
-      ctx.quadraticCurveTo(cp.x, cp.y, end.x, end.y);
-//      ctx.arc(cp.x, cp.y, 5, 0, PI * 2, false);
-      start = end;
+      // Use the current point as a control point, and set the curve to stop halfway to the next point
+      // It's kind of weird that this works as well as it does, but i figured it out when creating http://ribbonpaint.com - so im using it again
+      ctx.quadraticCurveTo(pointsToDraw[i].x, pointsToDraw[i].y,
+          (pointsToDraw[i].x+cp.x) * 0.5, (pointsToDraw[i].y+cp.y)*0.5);
      }
     ctx.stroke();
     ctx.closePath();
