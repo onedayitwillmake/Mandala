@@ -10,6 +10,8 @@ class DrawingTool {
   /// If true - draggable points are drawn for the current tool
   bool                      shouldDrawEditablePoints = true;
 
+  num                       scale = 1.0;
+
   /// Canvas element we're drawing to
   CanvasElement             _canvas;
 
@@ -128,7 +130,7 @@ class DrawingTool {
   Geom.Point alignedPoint( Point pos ) {
     num x = (pos.x - _canvasRect.left - _winScroll.x) - (_canvasRect.width*0.5);
     num y = (pos.y - _canvasRect.top - _winScroll.y) - (_canvasRect.height*0.5);
-    return new Geom.Point(x,y);
+    return new Geom.Point(x/scale,y/scale);
   }
 
   void _update( num time ) {
@@ -142,7 +144,7 @@ class DrawingTool {
       // Call every action once, per side
       for( int i = 0; i < sides; i++) {
         // Reset the transform
-        _ctx.setTransform(xOffset, 0, 0, 1, _canvasRect.width*0.5, _canvasRect.height*0.5);
+        _ctx.setTransform(xOffset*scale, 0, 0, scale, _canvasRect.width*0.5, _canvasRect.height*0.5);
         // Rotate clockwise, so that if i = (sides/2) - we're at 180 degrees
         // add PI*J - meaning 0 on first call, or 180 degrees on second call
         _ctx.rotate(i/sides * PI * 2);

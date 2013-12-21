@@ -38,6 +38,13 @@ class DrawingToolInterface {
       drawPointsCheckbox.nextElementSibling.text = "Draw Points ";// + (drawPointsCheckbox.checked ? "On" : "Off");
     });
 
+    // Scale count slider
+    RangeInputElement scaleSlider = ( querySelector("#interface-scale-slider") as RangeInputElement );
+    scaleSlider.onChange.listen((e){
+      _drawingModule.scale = double.parse(scaleSlider.value) / 100.0;
+      querySelector("#interface-scale-slider-text").text = "Zoom: " + _drawingModule.scale.toStringAsPrecision(2);
+    });
+
     // Side count slider
     _$slideCountSlider = ( querySelector("#interface-sidecount-slider") as RangeInputElement );
     _$slideCountSlider.onChange.listen((e){
@@ -54,12 +61,9 @@ class DrawingToolInterface {
   }
 
   onWantsToChangeAction( HtmlElement el ) {
-    print("${el.attributes['data-drawingmode']}");
-
     var result = _drawingModule.changeAction( el.attributes['data-drawingmode'] );
     if( result ) {
       querySelectorAll('[data-drawingmode]').forEach((HtmlElement otherEl) => otherEl.classes.remove('active') );
-
       el.classes.add('active');
       _lastSelectedTool = el;
     }
