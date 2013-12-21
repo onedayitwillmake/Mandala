@@ -27,7 +27,15 @@ class DrawingToolInterface {
     mirrorCheckbox.parent.onClick.listen((e){
       mirrorCheckbox.checked = !mirrorCheckbox.checked;
       _drawingModule.isMirrored = mirrorCheckbox.checked;
-      mirrorCheckbox.nextElementSibling.text = "Mirror Mode " + (mirrorCheckbox.checked ? "On" : "Off");
+      mirrorCheckbox.nextElementSibling.text = "Mirror Mode ";// + (mirrorCheckbox.checked ? "On" : "Off");
+    });
+
+    CheckboxInputElement drawPointsCheckbox = ( querySelector("[name=toggle-draw-points]") as CheckboxInputElement );
+    drawPointsCheckbox.checked = true;
+    drawPointsCheckbox.parent.onClick.listen((e){
+      drawPointsCheckbox.checked = !drawPointsCheckbox.checked;
+      _drawingModule.shouldDrawEditablePoints = drawPointsCheckbox.checked;
+      drawPointsCheckbox.nextElementSibling.text = "Draw Points ";// + (drawPointsCheckbox.checked ? "On" : "Off");
     });
 
     // Side count slider

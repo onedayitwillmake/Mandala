@@ -2,10 +2,13 @@ part of DrawingToolLib;
 
 class DrawingTool {
   /// Number of sides in we draw (x2 if mirroring is on)
-  int                       sides = 1;
+  int                       sides = 6;
 
   /// If true, anything drawn on the left side of the canvas will be redraw on the right side
-  bool                      isMirrored = false;
+  bool                      isMirrored = true;
+
+  /// If true - draggable points are drawn for the current tool
+  bool                      shouldDrawEditablePoints = true;
 
   /// Canvas element we're drawing to
   CanvasElement             _canvas;
@@ -20,7 +23,7 @@ class DrawingTool {
   Rectangle                 _canvasRect;
 
   /// Used to offset the touch position if the user has scrolled
-  Point<num>                 _winScroll;
+  Geom.Point                _winScroll;
   /// Used internally to track RAF
   int                       _rafId = 0;
   /// If true the user's input is down while the mouse is moving
@@ -32,7 +35,7 @@ class DrawingTool {
   
   DrawingTool(this._canvas) {
     _canvasRect = _canvas.getBoundingClientRect();
-    _winScroll = new Point(window.scrollX, window.scrollY);
+    _winScroll = new Geom.Point(window.scrollX, window.scrollY);
 
     _ctx = _canvas.context2D;
 
@@ -66,7 +69,7 @@ class DrawingTool {
     });
     // Window scroll
     window.onScroll.listen((e) {
-      _winScroll = new Point(window.scrollX, window.scrollY);
+      _winScroll = new Geom.Point(window.scrollX, window.scrollY);
     });
     // Lost focus
     window.onBlur.listen((e){
@@ -110,7 +113,7 @@ class DrawingTool {
 
   void _inputDown( Point pos ) {
     _isDragging = true;
-    actionQueue.last.inputDown( _ctx, alignedPoint( pos ) );
+    actionQueue.last.inputDown( _ctx, alignedPoint( pos ), shouldDrawEditablePoints );
   }
 
   void _inputMove( Point pos ) {
@@ -122,10 +125,10 @@ class DrawingTool {
     actionQueue.last.inputUp( _ctx, alignedPoint( pos ) );
   }
 
-  Point alignedPoint( Point pos ) {
-    int x = (pos.x - _canvasRect.left - _winScroll.x) - (_canvasRect.width*0.5);
-    int y = (pos.y - _canvasRect.top - _winScroll.y) - (_canvasRect.height*0.5);
-    return new Point(x,y);
+  Geom.Point alignedPoint( Point pos ) {
+    num x = (pos.x - _canvasRect.left - _winScroll.x) - (_canvasRect.width*0.5);
+    num y = (pos.y - _canvasRect.top - _winScroll.y) - (_canvasRect.height*0.5);
+    return new Geom.Point(x,y);
   }
 
   void _update( num time ) {
@@ -147,8 +150,10 @@ class DrawingTool {
         actionQueue.forEach((BaseAction action){
           action.execute( _ctx, _canvasRect.width, _canvasRect.height );
         });
-
-        actionQueue.last.activeDraw( _ctx, _canvasRect.width, _canvasRect.height );
+        
+        if( xOffset == 1 && i == 0 ) {
+          actionQueue.last.activeDraw( _ctx, _canvasRect.width, _canvasRect.height, shouldDrawEditablePoints );
+        }
       }
     }
 
@@ -159,9 +164,7 @@ class DrawingTool {
     _ctx.arc(0, 0, _canvasRect.width*0.46, 0, PI * 2, false);
     _ctx.stroke();
     _ctx.closePath();
-
-//    bitmapData.putImageData(_ctx.getImageData(0, 0, _canvasRect.width, _canvasRect.height), 0, 0);
-//    backgroundBitmap.refreshCache();
+    
     _rafId = window.requestAnimationFrame(_update);
   }
 
@@ -185,6 +188,12 @@ class DrawingTool {
       break;
       case PolygonalStrokeAction.ACTION_NAME:
         nextAction = new PolygonalStrokeAction();
+      break;
+      case SmoothFillAction.ACTION_NAME:
+        nextAction = new SmoothFillAction();
+      break;
+      case RegularFillAction.ACTION_NAME:
+        nextAction = new RegularFillAction();
       break;
     }
 
@@ -212,7 +221,7 @@ class DrawingTool {
     if( actionQueue.last.points.length == 0 ) {
       if( actionQueue.length == 1 ) return; // dont remove the last action
 
-        actionQueue.removeLast();
+      actionQueue.removeLast();
     }
     
     // Nothing to undo again!

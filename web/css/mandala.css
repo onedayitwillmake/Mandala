@@ -69,8 +69,6 @@ canvas {
   background-color: #2ecc71;
 }
 .interface .settings input[type=range] {
-  -webkit-appearance: none;
-  background-color: #c8c8c8;
   height: 5px;
   width: 105px;
 }
@@ -81,13 +79,15 @@ canvas {
 
 input[type=range] {
   -webkit-appearance: none;
-  background-color: #95a5a6;
+  background-color: #beede4;
+  border-radius: 2px;
   height: 5px;
   width: 70px;
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   background-color: #1abc9c;
+  border-radius: 2px;
   width: 12px;
   height: 12px;
 }
