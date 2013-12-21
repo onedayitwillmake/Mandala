@@ -61,8 +61,9 @@ class SmoothStrokeAction extends RegularStrokeAction {
     ctx.closePath();
   }
 
-  void activeDraw(CanvasRenderingContext2D ctx, width, height, bool shouldDrawEditablePoints) {
-    if( !shouldDrawEditablePoints ) return;
+  void activeDraw(CanvasRenderingContext2D ctx, width, height, bool canEditPoints) {
+
+    if( !canEditPoints ) return;
 
     for(var i = 0; i < points.length; i++) {
       if( points[i] == BaseAction.LINE_BREAK ) continue;
@@ -71,6 +72,8 @@ class SmoothStrokeAction extends RegularStrokeAction {
       ctx.stroke();
       ctx.closePath();
     }
+
+
   }
 
   void inputDown(CanvasRenderingContext2D ctx, Geom.Point pos, bool canEditPoints) {
@@ -87,6 +90,7 @@ class SmoothStrokeAction extends RegularStrokeAction {
   }
 
   void inputMove(CanvasRenderingContext2D ctx, Geom.Point pos, bool isDrag) {
+
     // Drag the control point instead
     if( _draggedPoint != null ) {
       _draggedPoint.copyFrom( pos );
@@ -104,7 +108,7 @@ class SmoothStrokeAction extends RegularStrokeAction {
     }
 
     int oldLen = _activePoints.length;
-    var simplifiedSmoothedPoints =  LineGeneralization.simplifyLang(10, 3, _activePoints) ;//LineGeneralization.smoothMcMaster( LineGeneralization.smoothMcMaster( LineGeneralization.simplifyLang(4, 1, _activePoints) ) );
+    var simplifiedSmoothedPoints =  LineGeneralization.simplifyLang(10, 2, _activePoints) ;//LineGeneralization.smoothMcMaster( LineGeneralization.smoothMcMaster( LineGeneralization.simplifyLang(4, 1, _activePoints) ) );
 
     print("Removed previously had ${oldLen}, now have ${simplifiedSmoothedPoints.length}, Removed ${oldLen - simplifiedSmoothedPoints.length} points");
     

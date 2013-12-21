@@ -2,6 +2,8 @@ library DrawingToolLib;
 import 'dart:html';
 import 'dart:math' show PI, Rectangle;
 import 'dart:collection';
+import 'package:dart_events/dart_events.dart';
+
 import 'package:stagexl/stagexl.dart' as Geom show Matrix, Point;
 import '../linegeneralization/line_generalization.dart' as LineGeneralization;
 

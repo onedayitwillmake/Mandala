@@ -2,6 +2,9 @@ name: Mandala
 description: A sample web application
 dependencies:
   browser: any
+  dart_events:
+    git: https://github.com/onedayitwillmake/dart_events
+    version: 0.1.0
   logging: any
   stagexl: 0.8.8
   vector_math:

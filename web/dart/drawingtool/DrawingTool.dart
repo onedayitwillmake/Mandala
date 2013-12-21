@@ -1,16 +1,30 @@
 part of DrawingToolLib;
 
 class DrawingTool {
+  /// Emitted when the current action has changed
+  static const String ON_ACTION_CHANGED = "DrawingTool.ON_ACTION_CHANGED";
+  /// Emitted when mirror mode has been toggled
+  static const String ON_MIRROR_MODE_CHANGED = "DrawingTool.ON_MIRROR_MODE_CHANGED";
+  /// Emitted when shouldDrawEditablePoints has been toggled
+  static const String ON_DRAW_POINTS_CHANGED = "DrawingTool.ON_DRAW_POINTS_CHANGED";
+  /// Emitted when the number of sides is updated
+  static const String ON_SIDES_CHANGED = "DrawingTool.ON_SIDES_CHANGED";
+/// Emitted when the number of sides is updated
+  static const String ON_SCALE_CHANGED = "DrawingTool.ON_SCALE_CHANGED";
+
+  EventEmitter              eventEmitter = new EventEmitter();
+
   /// Number of sides in we draw (x2 if mirroring is on)
-  int                       sides = 6;
+  int                       _sides = 7;
 
   /// If true, anything drawn on the left side of the canvas will be redraw on the right side
-  bool                      isMirrored = true;
+  bool                      _isMirrored = true;
 
   /// If true - draggable points are drawn for the current tool
-  bool                      shouldDrawEditablePoints = true;
+  bool                      _shouldDrawEditablePoints = true;
 
-  num                       scale = 1.0;
+  /// Scale the canvas area by this value, 1.0 is unscaled
+  num                       _scale = 1.0;
 
   /// Canvas element we're drawing to
   CanvasElement             _canvas;
@@ -31,10 +45,11 @@ class DrawingTool {
   /// If true the user's input is down while the mouse is moving
   bool                      _isDragging = false;
 
+
   /// List of Actions (for example draw regular stroke, change settings )
   ListQueue<BaseAction> actionQueue = new ListQueue<BaseAction>();
 
-  
+
   DrawingTool(this._canvas) {
     _canvasRect = _canvas.getBoundingClientRect();
     _winScroll = new Geom.Point(window.scrollX, window.scrollY);
@@ -46,14 +61,14 @@ class DrawingTool {
     _bgGradient.addColorStop(0, '#383245');
     _bgGradient.addColorStop(1, '#1B1821');
 
-    actionQueue.add( new SmoothStrokeAction() );
+    _setupListeners();
 
-    setupListeners();
+    changeAction( SmoothStrokeAction.ACTION_NAME );
     start();
   }
 
   /// Sets up DOM and window listeners for input, resize, scroll and RAF
-  void setupListeners() {
+  void _setupListeners() {
     // Listen for canvas input
       // Down
     _canvas.onMouseDown.listen((e){ _inputDown( e.page ); });
@@ -83,28 +98,17 @@ class DrawingTool {
     });
     // Keyboard
     window.onKeyDown.listen( (e) => actionQueue.last.keyPressed( _ctx, e) );
-    
-//    setupStageXL();
   }
-//  StageXL.Bitmap backgroundBitmap;
-//  StageXL.BitmapData bitmapData;
-//  void setupStageXL() {
-//    var stage = new StageXL.Stage('stage', querySelector('#stage'));
-//    var renderLoop = new StageXL.RenderLoop();
-//    renderLoop.addStage(stage);
-//    var juggler = renderLoop.juggler;
-//    
-//    //  BitmapData(int width, int height, [bool transparent = true, int fillColor = 0xFFFFFFFF, pixelRatio = 1.0]) {
-//    bitmapData = new StageXL.BitmapData(_canvasRect.width.toInt(),_canvasRect.height.toInt(), false, 0);   
-//    backgroundBitmap = new StageXL.Bitmap(bitmapData);
-//    backgroundBitmap.filters = [ new StageXL.BlurFilter(2,2) ];
-//    backgroundBitmap.applyCache(0,0, backgroundBitmap.width.toInt(), backgroundBitmap.height.toInt());
-//    stage.addChild(backgroundBitmap);
-//    //new BlurFilter(20, 20)
-//  }
 
   void start(){
     stop();
+
+    _dispatchActionChangedEvent();
+    _dispatchMirrorModeChangedEvent();
+    _dispatchOnDrawPointsChanged();
+    _dispatchOnSidesChangedEvent();
+    _dispatchScaleChangedEvent();
+
     _rafId = window.requestAnimationFrame(_update);
   }
 
@@ -115,46 +119,46 @@ class DrawingTool {
 
   void _inputDown( Point pos ) {
     _isDragging = true;
-    actionQueue.last.inputDown( _ctx, alignedPoint( pos ), shouldDrawEditablePoints );
+    actionQueue.last.inputDown( _ctx, _alignedPoint( pos ), _shouldDrawEditablePoints );
   }
 
   void _inputMove( Point pos ) {
-    actionQueue.last.inputMove( _ctx, alignedPoint( pos ), _isDragging );
+    actionQueue.last.inputMove( _ctx, _alignedPoint( pos ), _isDragging );
   }
 
   void _inputUp( Point pos ) {
     _isDragging = false;
-    actionQueue.last.inputUp( _ctx, alignedPoint( pos ) );
+    actionQueue.last.inputUp( _ctx, _alignedPoint( pos ) );
   }
 
-  Geom.Point alignedPoint( Point pos ) {
-    num x = (pos.x - _canvasRect.left - _winScroll.x) - (_canvasRect.width*0.5);
-    num y = (pos.y - _canvasRect.top - _winScroll.y) - (_canvasRect.height*0.5);
-    return new Geom.Point(x/scale,y/scale);
+  Geom.Point _alignedPoint( Point pos ) {
+    num x = (pos.x - _canvasRect.left) - (_canvasRect.width*0.5);
+    num y = ( (pos.y - _canvasRect.top) - (_canvasRect.height*0.5) );
+    return new Geom.Point(x/_scale,y/_scale);
   }
 
   void _update( num time ) {
-   drawBackground();
+    _drawBackground();
     _ctx.globalCompositeOperation = 'screen';
 
     // Draw everything twice if mirroring is turned on
-    for( int j = 0; j < (isMirrored ? 2 : 1); j++) {
+    for( int j = 0; j < (_isMirrored ? 2 : 1); j++) {
       int xOffset = j == 0 ? 1 : -1;
 
       // Call every action once, per side
-      for( int i = 0; i < sides; i++) {
+      for( int i = 0; i < _sides; i++) {
         // Reset the transform
-        _ctx.setTransform(xOffset*scale, 0, 0, scale, _canvasRect.width*0.5, _canvasRect.height*0.5);
+        _ctx.setTransform(xOffset*_scale, 0, 0, _scale, _canvasRect.width*0.5, _canvasRect.height*0.5);
         // Rotate clockwise, so that if i = (sides/2) - we're at 180 degrees
         // add PI*J - meaning 0 on first call, or 180 degrees on second call
-        _ctx.rotate(i/sides * PI * 2);
+        _ctx.rotate(i/_sides * PI * 2);
 
         actionQueue.forEach((BaseAction action){
           action.execute( _ctx, _canvasRect.width, _canvasRect.height );
         });
-        
+
         if( xOffset == 1 && i == 0 ) {
-          actionQueue.last.activeDraw( _ctx, _canvasRect.width, _canvasRect.height, shouldDrawEditablePoints );
+          actionQueue.last.activeDraw( _ctx, _canvasRect.width, _canvasRect.height, _shouldDrawEditablePoints );
         }
       }
     }
@@ -166,14 +170,14 @@ class DrawingTool {
     _ctx.arc(0, 0, _canvasRect.width*0.46, 0, PI * 2, false);
     _ctx.stroke();
     _ctx.closePath();
-    
+
     _rafId = window.requestAnimationFrame(_update);
   }
 
+  /// Changes the current action by appending a new instance to the actionQueue
   bool changeAction( String actionName ) {
-    print("CurrentActionName: ${actionQueue.last.name}");
     // We're already in that mode
-    if( actionQueue.last.name == actionName ) {
+    if( actionQueue.isNotEmpty && actionQueue.last.name == actionName ) {
       return false;
     }
 
@@ -203,42 +207,61 @@ class DrawingTool {
     if( nextAction == null ) return false;
 
     actionQueue.add( nextAction );
+
+    _dispatchActionChangedEvent();
     return true;
   }
-  
+
   void performEditAction( String actionName, [dynamic value] ) {
     switch( actionName ) {
       case "undo":
-        performUndo();
+        _performUndo();
       break;
       case "alpha":
         actionQueue.last.settings.opacity = value;
       break;
+      case "sides":
+        _sides = value;
+        _dispatchOnSidesChangedEvent();
+      break;
+      case "scale":
+        _scale = value;
+        _dispatchScaleChangedEvent();
+      break;
+      case "setEditablePoints":
+        _shouldDrawEditablePoints = value;
+        _dispatchOnDrawPointsChanged();
+      break;
+      case "setMirrorMode":
+        _isMirrored = value;
+        _dispatchMirrorModeChangedEvent();
+        break;
     }
   }
 
-  void performUndo() {
+  void _performUndo() {
 
     // Current action has no points and user wants to undo - remove that action
     if( actionQueue.last.points.length == 0 ) {
       if( actionQueue.length == 1 ) return; // dont remove the last action
 
       actionQueue.removeLast();
+      _dispatchActionChangedEvent();
     }
-    
+
     // Nothing to undo again!
     if( actionQueue.length == 0 ) return;
-    
+
     actionQueue.last.undo( _ctx );
   }
 
-  void drawBackground() {
+  void _drawBackground() {
     _ctx.canvas.width = _ctx.canvas.width;
     _ctx.fillStyle = _bgGradient;
-    fillRoundedRect(0,0,_canvasRect.width,_canvasRect.height, 10);
+    _fillRoundedRect(0,0,_canvasRect.width,_canvasRect.height, 10);
   }
 
-  void fillRoundedRect( x, y, w, h, r ) {
+  void _fillRoundedRect( x, y, w, h, r ) {
     _ctx.beginPath();
     _ctx.moveTo(x+r, y);
     _ctx.lineTo(x+w-r, y);
@@ -252,4 +275,11 @@ class DrawingTool {
     _ctx.fill();
     _ctx.closePath();
   }
+
+  //// -------- EVENT DISPATCHING
+  void _dispatchActionChangedEvent() => eventEmitter.emit( DrawingTool.ON_ACTION_CHANGED, actionQueue.last.name );
+  void _dispatchMirrorModeChangedEvent( ) => eventEmitter.emit( DrawingTool.ON_MIRROR_MODE_CHANGED, _isMirrored );
+  void _dispatchOnDrawPointsChanged() => eventEmitter.emit( DrawingTool.ON_DRAW_POINTS_CHANGED, _shouldDrawEditablePoints );
+  void _dispatchOnSidesChangedEvent() => eventEmitter.emit( DrawingTool.ON_SIDES_CHANGED, _sides );
+  void _dispatchScaleChangedEvent() => eventEmitter.emit( DrawingTool.ON_SCALE_CHANGED, _scale );
 }

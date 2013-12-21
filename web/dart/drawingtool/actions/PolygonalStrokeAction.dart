@@ -56,14 +56,14 @@ class PolygonalStrokeAction extends BaseAction {
     ctx.closePath();
   }
 
-  void activeDraw(CanvasRenderingContext2D ctx, width, height, bool shouldDrawEditablePoints) {
+  void activeDraw(CanvasRenderingContext2D ctx, width, height, bool canEditPoints) {
     if( _activePoints != null ) {
       ctx..beginPath()
       ..setFillColorHsl(0, 80, 50)
       ..arc(_activePoints.first.x, _activePoints.first.y, 3, 0, PI*2, false)
       ..fill()
       ..closePath();
-    } else if( shouldDrawEditablePoints) { // Drag points for dragging
+    } else if( canEditPoints) { // Drag points for dragging
       for(var i = 0; i < points.length; i++) {
         if( points[i] == BaseAction.LINE_BREAK ) continue;
         ctx.beginPath();
