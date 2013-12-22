@@ -17,15 +17,7 @@ class RegularStrokeAction extends BaseAction {
   void executeImp(CanvasRenderingContext2D ctx, Function drawCall, width, height) {
 
     // If the active points are not empty - set points to draw to the union of points & activePoints
-    List<Geom.Point> pointsToDraw = null;
-    if (_activePoints != null) {
-      pointsToDraw = new List<Geom.Point>.from(points);
-      pointsToDraw.add(BaseAction.LINE_BREAK);
-      pointsToDraw.addAll(_activePoints);
-    } else {
-      pointsToDraw = points;
-    }
-
+    List<Geom.Point> pointsToDraw = _getPointsToDraw();
       /// We need at least 2 points
     if (pointsToDraw.isEmpty || pointsToDraw.length < 2) return;
 
@@ -51,6 +43,48 @@ class RegularStrokeAction extends BaseAction {
     ctx.closePath();
   }
 
+  /**
+  * Special rendering function to work with SVGRenderer
+  */
+  void executeForSvg(Abstract2DRenderingContext ctx, width, height) {
+    settings.executeForSvg(ctx);
+    ctx.noFill();
+    executeForSvgImp(ctx, ctx.stroke, width, height);
+  }
+  
+  /**
+   * Renders to SVG via stroke or fill
+   */
+  void executeForSvgImp(Abstract2DRenderingContext ctx, Function drawCall, width, height) {
+    // If the active points are not empty - set points to draw to the union of points & activePoints
+    List<Geom.Point> pointsToDraw = _getPointsToDraw();
+
+    // We need at least 2 points
+    if (pointsToDraw.isEmpty || pointsToDraw.length < 2) return;
+
+    for (var i = 0; i < pointsToDraw.length; i++) {
+
+      // Null slot implies a new path should be started
+      if (pointsToDraw[i] == BaseAction.LINE_BREAK) {
+
+        // Close existing path
+        if (i != 0) {
+          drawCall();
+          ctx.closePath();
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(pointsToDraw[i + 1].x, pointsToDraw[i + 1].y);
+        continue;
+      }
+
+      ctx.lineTo(pointsToDraw[i].x, pointsToDraw[i].y);
+    }
+
+    drawCall();
+    ctx.closePath();
+  }
+
   void inputDown(CanvasRenderingContext2D ctx, Geom.Point pos, bool canEditPoints) {
     _activePoints = new List<Geom.Point>();
     _activePoints.add(pos);
@@ -71,6 +105,17 @@ class RegularStrokeAction extends BaseAction {
     points.addAll(simplifiedPoints);
 
     _activePoints = null;
+  }
+
+  List<Geom.Point> _getPointsToDraw() {
+    if (_activePoints != null) {
+      List<Geom.Point> pointsToDraw = new List<Geom.Point>.from(points);
+      pointsToDraw.add(BaseAction.LINE_BREAK);
+      pointsToDraw.addAll(_activePoints);
+      return pointsToDraw;
+    } else {
+      return points;
+    }
   }
 
   void undo(CanvasRenderingContext2D ctx) {

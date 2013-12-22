@@ -19,19 +19,7 @@ class PolygonalStrokeAction extends BaseAction {
   void executeImp( CanvasRenderingContext2D ctx, Function drawStyle, width, height ) {
 
     // If the active points are not empty - set points to draw to the union of points & activePoints
-    List<Geom.Point> pointsToDraw = null;
-    if( _activePoints != null ) {
-      pointsToDraw = new List<Geom.Point>.from(points);
-      pointsToDraw.add(BaseAction.LINE_BREAK);
-      pointsToDraw.addAll( _activePoints );
-
-      // If they're in the middle of drawing, add the current input position so they can see it as a preview
-      if( _potentialNextPoint != null ) {
-        pointsToDraw.add( _potentialNextPoint );
-      }
-    } else {
-      pointsToDraw = points;
-    }
+    List<Geom.Point> pointsToDraw = _getPointsToDraw();
 
     if (pointsToDraw.isEmpty || pointsToDraw.length < 3) return;
 
@@ -130,6 +118,24 @@ class PolygonalStrokeAction extends BaseAction {
       }
       
       inputUp( ctx, _activePoints.last, true );
+    }
+  }
+
+  List<Geom.Point> _getPointsToDraw() {
+    if( _activePoints != null ) {
+      List<Geom.Point> pointsToDraw = new List<Geom.Point>.from(points);
+      pointsToDraw.add(BaseAction.LINE_BREAK);
+      pointsToDraw.addAll( _activePoints );
+
+      // If they're in the middle of drawing, add the current input position so they can see it as a preview
+      if( _potentialNextPoint != null ) {
+        pointsToDraw.add( _potentialNextPoint );
+      }
+
+      return pointsToDraw;
+
+    } else {
+      return points;
     }
   }
 

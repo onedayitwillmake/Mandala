@@ -1,43 +1,48 @@
 // INTERFACE CONTAINER
-//
-.interface .ui.ribbon.small.label {
-  left: -15px;
-  margin-left: 0em;
+
+/// ACTION MODE ICON CONTAINER
+.right.action.column {
+  margin-left: -1em;
 }
-.interface .ui.vertical.small.icon.menu {
-  width: 6rem;
-  margin-left: 1rem;
+// ACTION MODE ICONS MENU
+.action .item.active {
+  -webkit-box-shadow: 0em 0.2em 0em inset !important;
+  box-shadow: 0em 0.2em 0em inset !important;
 }
 
+.action.ui.vertical.small.icon.menu {
+  width: 6.6rem;
+}
+.left.action.ui.vertical.small.icon.menu {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+.right.action.ui.vertical.small.icon.menu {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+
+/////////////////////////////////////////////////
 // SETTINGS SECTION
-.interface .settings.ui.vertical.small.icon.menu {
+////////////////////////////////////////////////
+// widen the menu
+.settings.ui.vertical.small.icon.menu {
   font-size: 1em;
-  width: 14rem;
-}
-.interface .settings .item {
-  float: left;
-  padding-left: 5px;
-  width: 100%;
-}
-.interface .settings .slider-label {
-  display: block;
-  float: right;
-  width: 75px;
-}
-// CHECKBOX
-.settings .ui.toggle.checkbox {
-  top: 1em;
-  left: 1em;
-  height: 40px;
+  width: 13.5em;
 }
 
-// SLIDER
-//
+// Checkbox are left aligned
+.checkbox-container.item {
+  text-align: left !important;
+}
+
+// Slider color
 .interface-opacity-slider input[type="range"]::-webkit-slider-thumb {
   background-color: rgba(46, 204, 113,1.0);
 }
-.interface .settings input[type=range] {
+.nu-interface .settings input[type=range] {
+    float:left;
     height: 5px;
-    width: 105px;
+    width: 8.5em;
 }
 

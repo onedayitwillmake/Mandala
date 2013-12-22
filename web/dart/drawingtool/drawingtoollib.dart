@@ -1,5 +1,6 @@
 library DrawingToolLib;
 import 'dart:html';
+import 'dart:svg' as Svg;
 import 'dart:math' show PI, Rectangle;
 import 'dart:collection';
 import 'package:dart_events/dart_events.dart';
@@ -17,3 +18,7 @@ part 'actions/SmoothFillAction.dart';
 part 'actions/PolygonalStrokeAction.dart';
 part 'actions/PolygonalFillAction.dart';
 part 'interface/DrawingToolInterface.dart';
+
+//
+part 'Abstract2DRenderingContext.dart';
+part 'svgrender/SvgRenderer.dart';

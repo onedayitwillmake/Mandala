@@ -7,82 +7,118 @@
     <link type="text/css" rel="stylesheet" href="css/mandala.css">
 </head>
 <body class="mandala-app">
-<div id="main-container" class="ui three column divided grid">
-    <div id="drawingtool-container" class="equal height row">
-        <div id="drawingtool" class="two wide column">
+<div id="main-container" class="ui grid">
+    <div id="drawingtool-container" class="row">
+        <div id="drawingtool" class="twelve wide column">
             <canvas id="canvas" width="700" height="650" class="center"></canvas>
         </div>
-        <div class="interface left floated one wide column">
-            <div class="ui ribbon green small label">Drawing mode</div>
-            <div class="ui vertical small icon menu">
-                <a class="teal item" data-drawingmode="RegularStroke">
-                    <i class="pencil icon"></i>
-                    Regular Line
-                </a>
-                <a class="teal item" data-drawingmode="RegularFill">
-                    <i class="edit icon"></i>
-                    Regular Fill
-                </a>
-                <a class="teal item" data-drawingmode="SmoothStroke">
-                    <i class="pencil icon"></i>
-                    Smooth Line
-                </a>
-                <a class="teal item" data-drawingmode="SmoothFill">
-                    <i class="edit icon"></i>
-                    Smooth Fill
-                </a>
-                <a class="teal item" data-drawingmode="PolygonalStroke">
-                    <i class="star empty icon"></i>
-                    Polygonal Line
-                </a>
-                <a class="teal item" data-drawingmode="PolygonalFill">
-                    <i class="star icon"></i>
-                    Polygonal Fill
-                </a>
-            </div>
-            <!-- SETTINGS -->
-            <div class="ui ribbon blue small label">Settings</div>
-            <div class="settings ui vertical small icon menu">
-                <!-- MIRROR MODE TOGGLE -->
-                <div class="ui toggle checkbox">
-                    <input type="checkbox" name="toggle-mirroring">
-                    <label>Mirror Mode</label>
+        <div class="four wide column">
+            <div class="nu-interface ui two column grid">
+                <div class="row">
+                    <div class="ui green small label">Drawing mode</div>
                 </div>
-                <!-- DrawPoints MODE TOGGLE -->
-                <div class="ui toggle checkbox">
-                    <input type="checkbox" name="toggle-draw-points">
-                    <label>Draw Points</label>
+                <div class="row">
+                    <div class="column">
+                        <div class="left action ui vertical small icon menu">
+                            <a class="teal item" data-drawingmode="RegularStroke">
+                                <i class="pencil icon"></i>
+                                RegularLine
+                            </a>
+                            <a class="teal item" data-drawingmode="SmoothStroke">
+                                <i class="pencil icon"></i>
+                                SmoothLine
+                            </a>
+
+                            <a class="teal item" data-drawingmode="PolygonalStroke">
+                                <i class="star empty icon"></i>
+                                PolyLine
+                            </a>
+                        </div>
+                    </div>
+                    <div class="right action column">
+                        <div class="right action ui vertical small icon menu">
+                            <a class="teal item" data-drawingmode="RegularFill">
+                                <i class="edit icon"></i>
+                                RegularFill
+                            </a>
+                            <a class="teal item" data-drawingmode="SmoothFill">
+                                <i class="edit icon"></i>
+                                SmoothFill
+                            </a>
+                            <a class="teal item" data-drawingmode="PolygonalFill">
+                                <i class="star icon"></i>
+                                PolyFill
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <!-- SCALE SLIDER -->
-                <a class="teal item">
-                    <input id="interface-scale-slider" class="" type="range" min="100" max="300" step="1" value="100"/>
-                    <span class="slider-label" id="interface-scale-slider-text">Zoom: 1.0</span>
-                </a>
-                <!-- SIDE SLIDER -->
-                <a class="teal item">
-                    <input id="interface-sidecount-slider" class="" type="range" min="1" max="14" step="1" value="1"/>
-                    <span class="slider-label" id="interface-sidecount-slider-text">Sides: 6</span>
-                </a>
-                <!--OPACITY SLIDER-->
-                <a class="item">
-                    <input id="interface-opacity-slider" class="interface-opacity-slider" type="range" min="15" max="75" step="1" value="6"/>
-                    <span class="slider-label" id="interface-opacity-slider-text">Alpha: 0.25</span>
-                </a>
-            </div>
-            <div class="ui ribbon orange small label">Edit</div>
-            <div class="ui vertical small icon menu">
-                <a class="item" data-edit-action="undo">
-                    <i class="undo icon"></i>
-                    Undo
-                </a>
-                <a class="item" data-edit-action="undo">
-                    <i class="trash icon"></i>
-                    Clear
-                </a>
+                <div class="row">
+                    <div class="ui blue small label">Settings</div>
+                </div>
+                <div class="row">
+                    <div class="sixteen wide column">
+                        <div class="settings ui vertical small icon menu">
+                            <!-- MIRROR MODE TOGGLE -->
+                            <div class="checkbox-container item">
+                                <div class="ui toggle checkbox">
+                                    <input type="checkbox" name="toggle-mirroring">
+                                    <label>Mirror Mode</label>
+                                </div>
+                            </div>
+                            <!-- DrawPoints MODE TOGGLE -->
+                            <div class="checkbox-container item">
+                                <div class="ui toggle checkbox">
+                                    <input type="checkbox" name="toggle-draw-points">
+                                    <label>Draw Points</label>
+                                </div>
+                            </div>
+                            <!-- SCALE SLIDER -->
+                            <a class="teal item">
+                                <input id="interface-scale-slider" class="" type="range" min="100" max="300" step="1"
+                                       value="100"/>
+                                <span class="slider-label" id="interface-scale-slider-text">Zoom: 1.0</span>
+                            </a>
+                            <!-- SIDE SLIDER -->
+                            <a class="teal item">
+                                <input id="interface-sidecount-slider" class="" type="range" min="1" max="14" step="1"
+                                       value="1"/>
+                                <span class="slider-label" id="interface-sidecount-slider-text">Sides: 6</span>
+                            </a>
+                            <!--OPACITY SLIDER-->
+                            <a class="item">
+                                <input id="interface-opacity-slider" class="interface-opacity-slider" type="range"
+                                       min="15" max="75" step="1" value="6"/>
+                                <span class="slider-label" id="interface-opacity-slider-text">Alpha: 0.25</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="ui orange small label">Edit</div>
+                </div>
+                <div class="row">
+                    <div class="ui vertical small icon menu">
+                        <a class="item" data-edit-action="undo">
+                            <i class="undo icon"></i>
+                            Undo
+                        </a>
+                        <a class="item" data-edit-action="undo">
+                            <i class="trash icon"></i>
+                            Clear
+                        </a>
+                    </div>
+                </div>
+                <div class="row">
+                   <div class="ui vertical small icon menu">
+                        <a class="item" data-edit-action="save-svg">
+                            <i class="save icon"></i>
+                            Save SVG
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script type="application/dart" src="dart/mandala.dart"></script>
+    <script type="application/dart" src="dart/mandala.dart"></script>
 </body>
 </html>

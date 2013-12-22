@@ -14,17 +14,8 @@ class SmoothStrokeAction extends RegularStrokeAction {
     executeImp( ctx, ctx.stroke, width, height );
   }
 
-
   void executeImp(CanvasRenderingContext2D ctx, Function drawCall, width, height) {
-    // If the active points are not empty - set points to draw to the union of points & activePoints
-    List<Geom.Point> pointsToDraw = null;
-    if( _activePoints != null ) {
-      pointsToDraw = new List<Geom.Point>.from(points);
-      pointsToDraw.add(BaseAction.LINE_BREAK);
-      pointsToDraw.addAll( _activePoints );
-    } else {
-      pointsToDraw = points;
-    }
+    List<Geom.Point> pointsToDraw = _getPointsToDraw();
 
     /// We need at least 2 points
     if( pointsToDraw.isEmpty || pointsToDraw.length < 2 ) return;
@@ -61,8 +52,51 @@ class SmoothStrokeAction extends RegularStrokeAction {
     ctx.closePath();
   }
 
-  void activeDraw(CanvasRenderingContext2D ctx, width, height, bool canEditPoints) {
+  void executeForSvg(Abstract2DRenderingContext ctx, width, height) {
+    settings.executeForSvg(ctx);
+    ctx.noFill();
+    executeForSvgImp( ctx, ctx.stroke, width, height );
+  }
 
+  void executeForSvgImp(Abstract2DRenderingContext ctx, Function drawCall, width, height) {
+    List<Geom.Point> pointsToDraw = _getPointsToDraw();
+
+    /// We need at least 2 points
+    if( pointsToDraw.isEmpty || pointsToDraw.length < 2 ) return;
+
+    for(var i = 0; i < pointsToDraw.length - 1; i++) {
+
+    // Null slot implies a new path should be started
+      if( pointsToDraw[i] == BaseAction.LINE_BREAK ) {
+
+        // Close existing path
+        if( i != 0 ) {
+          drawCall();
+          ctx.closePath();
+        }
+
+        ctx.beginPath();
+        ctx.moveTo( pointsToDraw[i+1].x, pointsToDraw[i+1].y );
+        continue;
+      }
+
+      Geom.Point cp = pointsToDraw[i+1];
+
+      // If it's a linebreak, then that means the current point was the last point on this curve
+      if( cp == BaseAction.LINE_BREAK ) {
+        continue;
+      }
+
+      // Use the current point as a control point, and set the curve to stop halfway to the next point
+      // It's kind of weird that this works as well as it does, but i figured it out when creating http://ribbonpaint.com - so im using it again
+      ctx.quadraticCurveTo(pointsToDraw[i].x, pointsToDraw[i].y,
+      (pointsToDraw[i].x+cp.x) * 0.5, (pointsToDraw[i].y+cp.y)*0.5);
+    }
+    drawCall();
+    ctx.closePath();
+  }
+
+  void activeDraw(CanvasRenderingContext2D ctx, width, height, bool canEditPoints) {
     if( !canEditPoints ) return;
 
     for(var i = 0; i < points.length; i++) {
@@ -72,8 +106,6 @@ class SmoothStrokeAction extends RegularStrokeAction {
       ctx.stroke();
       ctx.closePath();
     }
-
-
   }
 
   void inputDown(CanvasRenderingContext2D ctx, Geom.Point pos, bool canEditPoints) {

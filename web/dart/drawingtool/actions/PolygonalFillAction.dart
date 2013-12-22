@@ -13,4 +13,9 @@ class PolygonalFillAction extends PolygonalStrokeAction {
     settings.execute(ctx);
     executeImp(ctx, ctx.fill, width, height );
   }
+
+  void executeForSvg(Abstract2DRenderingContext ctx, width, height) {
+    settings.executeForSvg(ctx);
+//    executeImp(ctx, ctx.fill, width, height );
+  }
 }

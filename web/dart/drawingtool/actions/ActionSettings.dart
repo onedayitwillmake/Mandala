@@ -13,4 +13,19 @@ class ActionSettings {
     ctx.setStrokeColorRgb(255, 255, 255,opacity);
     ctx.setFillColorRgb(255,255,255, opacity);
   }
+  
+  void executeForSvg(Abstract2DRenderingContext ctx) {
+    ctx.lineWidth = lineWidth;
+    if( strokeStyle == null ) {
+      ctx.noStroke();
+    } else {
+      ctx.setStrokeColorRgb(255,255,255,opacity);
+    }
+    
+    if( fillStyle == null ) {
+      ctx.noFill();
+    } else {
+      ctx.setFillColorRgb(255,255,255,opacity);
+    }
+  }
 }

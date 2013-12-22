@@ -27,6 +27,7 @@ class BaseAction {
   void inputUp(CanvasRenderingContext2D ctx, Geom.Point pos){}
   void keyPressed(CanvasRenderingContext2D ctx, KeyboardEvent e ){}
   void execute(CanvasRenderingContext2D ctx, width, height){}
+  void executeForSvg(Abstract2DRenderingContext ctx, width, height){}
   void activeDraw(CanvasRenderingContext2D ctx, width, height, bool canEditPoints){}
   void undo(CanvasRenderingContext2D ctx ){}
 }

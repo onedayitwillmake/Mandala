@@ -9,8 +9,10 @@ class DrawingTool {
   static const String ON_DRAW_POINTS_CHANGED = "DrawingTool.ON_DRAW_POINTS_CHANGED";
   /// Emitted when the number of sides is updated
   static const String ON_SIDES_CHANGED = "DrawingTool.ON_SIDES_CHANGED";
-/// Emitted when the number of sides is updated
+  /// Emitted when the number of sides is updated
   static const String ON_SCALE_CHANGED = "DrawingTool.ON_SCALE_CHANGED";
+  /// Emitted when the opacity value has been updated
+  static const String ON_OPACITY_CHANGED = "DrawingTool.ON_OPACITY_CHANGED";
 
   EventEmitter              eventEmitter = new EventEmitter();
 
@@ -63,7 +65,7 @@ class DrawingTool {
 
     _setupListeners();
 
-    changeAction( SmoothStrokeAction.ACTION_NAME );
+    changeAction( RegularStrokeAction.ACTION_NAME );
     start();
   }
 
@@ -102,13 +104,7 @@ class DrawingTool {
 
   void start(){
     stop();
-
-    _dispatchActionChangedEvent();
-    _dispatchMirrorModeChangedEvent();
-    _dispatchOnDrawPointsChanged();
-    _dispatchOnSidesChangedEvent();
-    _dispatchScaleChangedEvent();
-
+    _dispatchAllStateEvents();
     _rafId = window.requestAnimationFrame(_update);
   }
 
@@ -166,14 +162,14 @@ class DrawingTool {
     // Draw the arc enveloping the image
     _ctx.beginPath();
     _ctx.lineWidth = 1;
-    _ctx.strokeStyle = "rgba(255,255,255,0.75)";
+    _ctx.setStrokeColorRgb(255, 255, 255, 0.75);
     _ctx.arc(0, 0, _canvasRect.width*0.46, 0, PI * 2, false);
     _ctx.stroke();
     _ctx.closePath();
 
     _rafId = window.requestAnimationFrame(_update);
   }
-
+  
   /// Changes the current action by appending a new instance to the actionQueue
   bool changeAction( String actionName ) {
     // We're already in that mode
@@ -206,6 +202,12 @@ class DrawingTool {
     // TODO: Call exit on current action?
     if( nextAction == null ) return false;
 
+    num opacity = 0.25;
+    if( actionQueue.isNotEmpty ) {
+      opacity = actionQueue.last.settings.opacity;
+    }
+
+    nextAction.settings.opacity = opacity;
     actionQueue.add( nextAction );
 
     _dispatchActionChangedEvent();
@@ -213,12 +215,15 @@ class DrawingTool {
   }
 
   void performEditAction( String actionName, [dynamic value] ) {
+    print(actionName);
+    
     switch( actionName ) {
       case "undo":
         _performUndo();
       break;
       case "alpha":
         actionQueue.last.settings.opacity = value;
+        _dispatchOpacityChangedEvent();
       break;
       case "sides":
         _sides = value;
@@ -236,11 +241,15 @@ class DrawingTool {
         _isMirrored = value;
         _dispatchMirrorModeChangedEvent();
         break;
+      case "save-svg":
+        _saveSvg();
     }
   }
 
+  /**
+  * Performs an undo operation, will pop the last state if there are not points in that state
+  */
   void _performUndo() {
-
     // Current action has no points and user wants to undo - remove that action
     if( actionQueue.last.points.length == 0 ) {
       if( actionQueue.length == 1 ) return; // dont remove the last action
@@ -258,7 +267,7 @@ class DrawingTool {
   void _drawBackground() {
     _ctx.canvas.width = _ctx.canvas.width;
     _ctx.fillStyle = _bgGradient;
-    _fillRoundedRect(0,0,_canvasRect.width,_canvasRect.height, 10);
+    _fillRoundedRect(0,0,_canvasRect.width,_canvasRect.height, 8);
   }
 
   void _fillRoundedRect( x, y, w, h, r ) {
@@ -275,11 +284,58 @@ class DrawingTool {
     _ctx.fill();
     _ctx.closePath();
   }
+  //// -------- SVG Save
+  void _saveSvg( ) {
+    
+    SvgRenderer svgCtx = new SvgRenderer(_canvasRect.width.toInt(), _canvasRect.height.toInt() );
+    svgCtx.groupStart();
+    svgCtx.setFillColorRgb(25, 25, 25, 1.0);
+    svgCtx.rect(0, 0, _canvasRect.width, _canvasRect.height );
+    svgCtx.groupEnd();
+    
+    
+    // Draw everything twice if mirroring is turned on
+    for( int j = 0; j < (_isMirrored ? 2 : 1); j++) {
+      int xOffset = j == 0 ? 1 : -1;
+
+      // Call every action once, per side
+      for( int i = 0; i < _sides; i++) {
+        svgCtx.groupStart();
+        
+        // Reset the transform
+        svgCtx.setTransform(xOffset*_scale, 0, 0, _scale, _canvasRect.width*0.5, _canvasRect.height*0.5);
+        // Rotate clockwise, so that if i = (sides/2) - we're at 180 degrees
+        // add PI*J - meaning 0 on first call, or 180 degrees on second call
+        svgCtx.rotate(i/_sides * PI * 2);
+
+        actionQueue.forEach((BaseAction action){
+          action.executeForSvg( svgCtx, _canvasRect.width, _canvasRect.height );
+        });
+        
+        svgCtx.groupEnd();
+      }
+    }
+
+    document.body.nodes.add( svgCtx.svg );
+
+  }
 
   //// -------- EVENT DISPATCHING
-  void _dispatchActionChangedEvent() => eventEmitter.emit( DrawingTool.ON_ACTION_CHANGED, actionQueue.last.name );
+  void _dispatchAllStateEvents() {
+    _dispatchActionChangedEvent();
+    _dispatchMirrorModeChangedEvent();
+    _dispatchOnDrawPointsChanged();
+    _dispatchOnSidesChangedEvent();
+    _dispatchScaleChangedEvent();
+    _dispatchOpacityChangedEvent();
+  }
+  void _dispatchActionChangedEvent() {
+    eventEmitter.emit( DrawingTool.ON_ACTION_CHANGED, actionQueue.last.name );
+    _dispatchOpacityChangedEvent();
+  }
   void _dispatchMirrorModeChangedEvent( ) => eventEmitter.emit( DrawingTool.ON_MIRROR_MODE_CHANGED, _isMirrored );
   void _dispatchOnDrawPointsChanged() => eventEmitter.emit( DrawingTool.ON_DRAW_POINTS_CHANGED, _shouldDrawEditablePoints );
   void _dispatchOnSidesChangedEvent() => eventEmitter.emit( DrawingTool.ON_SIDES_CHANGED, _sides );
   void _dispatchScaleChangedEvent() => eventEmitter.emit( DrawingTool.ON_SCALE_CHANGED, _scale );
+  void _dispatchOpacityChangedEvent() => eventEmitter.emit( DrawingTool.ON_OPACITY_CHANGED, actionQueue.last.settings.opacity );
 }

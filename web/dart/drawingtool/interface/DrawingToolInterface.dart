@@ -59,6 +59,7 @@ class DrawingToolInterface {
     _drawingModule.eventEmitter.on(DrawingTool.ON_MIRROR_MODE_CHANGED, onMirrorModeChanged );
     _drawingModule.eventEmitter.on(DrawingTool.ON_SIDES_CHANGED, onSideCountChanged );
     _drawingModule.eventEmitter.on(DrawingTool.ON_SCALE_CHANGED, onScaleChanged );
+    _drawingModule.eventEmitter.on(DrawingTool.ON_OPACITY_CHANGED, onOpacityChanged );
   }
   
   /////////////////////////////////////////////////
