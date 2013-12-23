@@ -11,6 +11,8 @@ class RegularStrokeAction extends BaseAction {
     /// Draw a series of simple strokes
   void execute(dynamic ctx, width, height) {
     settings.execute(ctx);
+    
+    ctx.lineWidth = settings.lineWidth;
     executeImp(ctx, ctx.stroke, width, height);
   }
 

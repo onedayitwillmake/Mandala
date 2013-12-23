@@ -36,6 +36,8 @@ class DrawingTool {
   /// 2D rendering context
   CanvasRenderingContext2D  _ctx;
 
+  CanvasElement             _offscreenBuffer;
+
   /// Reference to background gradient which is redrawn each frame
   CanvasGradient            _bgGradient;
   Svg.RadialGradientElement _bgGradientSvg;
@@ -60,6 +62,9 @@ class DrawingTool {
     _winScroll = new Geom.Point(window.scrollX, window.scrollY);
 
     _ctx = _canvas.context2D;
+
+    _offscreenBuffer = new CanvasElement(width:_canvas.width, height:_canvas.height);
+
 
     // SETUP BACKGROUND GRADIENT
     _bgGradient = _ctx.createRadialGradient(_canvasRect.width*0.5, _canvasRect.height*0.5, 0, _canvasRect.width*0.5, _canvasRect.height*0.65, _canvasRect.width*0.65);
@@ -149,9 +154,40 @@ class DrawingTool {
   }
 
   void _update( num time ) {
-    _ctx.canvas.width = _ctx.canvas.width;
     
-    _drawBackground();
+    _ctx.globalCompositeOperation = 'source-over';
+    _ctx.setTransform(1, 0, 0, 1, 0, 0);
+    _ctx.drawImage(_offscreenBuffer, 0, 0);
+    _ctx.globalCompositeOperation = 'screen';
+    _ctx.shadowBlur = 10;
+    _ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+
+    // Draw everything twice if mirroring is turned on
+    for( int j = 0; j < (_isMirrored ? 2 : 1); j++) {
+      int xOffset = j == 0 ? 1 : -1;
+      // Call every action once, per side
+      for( int i = 0; i < _sides; i++) {
+        // Reset the transform
+        _ctx.setTransform(xOffset*_scale, 0, 0, _scale, _canvasRect.width*0.5, _canvasRect.height*0.5);
+        // Rotate clockwise, so that if i = (sides/2) - we're at 180 degrees
+        // add PI*J - meaning 0 on first call, or 180 degrees on second call
+        _ctx.rotate(i/_sides * PI * 2);
+        
+        actionQueue.last.execute( _ctx, _canvasRect.width, _canvasRect.height );
+        if( xOffset == 1 && i == 0 ) {
+          actionQueue.last.activeDraw( _ctx, _canvasRect.width, _canvasRect.height, _shouldDrawEditablePoints );
+        }
+      }
+    }
+
+    _rafId = window.requestAnimationFrame(_update);
+  }
+  
+  void updateOffscreenBuffer(){
+    print("Updating offscreen buffer");
+    _offscreenBuffer.width = _offscreenBuffer.width;
+    CanvasRenderingContext2D hiddenCtx  = _offscreenBuffer.context2D;
+    _drawBackground( hiddenCtx );
     
     _ctx.globalCompositeOperation = 'screen';
 
@@ -162,30 +198,24 @@ class DrawingTool {
       // Call every action once, per side
       for( int i = 0; i < _sides; i++) {
         // Reset the transform
-        _ctx.setTransform(xOffset*_scale, 0, 0, _scale, _canvasRect.width*0.5, _canvasRect.height*0.5);
+        hiddenCtx.setTransform(xOffset*_scale, 0, 0, _scale, _canvasRect.width*0.5, _canvasRect.height*0.5);
         // Rotate clockwise, so that if i = (sides/2) - we're at 180 degrees
         // add PI*J - meaning 0 on first call, or 180 degrees on second call
-        _ctx.rotate(i/_sides * PI * 2);
+        hiddenCtx.rotate(i/_sides * PI * 2);
 
         actionQueue.forEach((BaseAction action){
-          action.execute( _ctx, _canvasRect.width, _canvasRect.height );
+          action.execute( hiddenCtx, _canvasRect.width, _canvasRect.height );
         });
-
-        if( xOffset == 1 && i == 0 ) {
-          actionQueue.last.activeDraw( _ctx, _canvasRect.width, _canvasRect.height, _shouldDrawEditablePoints );
-        }
       }
     }
 
     // Draw the arc enveloping the image
-    _ctx.beginPath();
-    _ctx.lineWidth = 1;
-    _ctx.setStrokeColorRgb(255, 255, 255, 0.75);
-    _ctx.arc(0, 0, _canvasRect.width*0.46, 0, PI * 2, false);
-    _ctx.stroke();
-    _ctx.closePath();
-
-    _rafId = window.requestAnimationFrame(_update);
+    hiddenCtx.beginPath();
+    hiddenCtx.lineWidth = 1;
+    hiddenCtx.setStrokeColorRgb(255, 255, 255, 0.75);
+    hiddenCtx.arc(0, 0, _canvasRect.width*0.46, 0, PI * 2, false);
+    hiddenCtx.stroke();
+    hiddenCtx.closePath();
   }
   
   /// Changes the current action by appending a new instance to the actionQueue
@@ -222,7 +252,8 @@ class DrawingTool {
     if( actionQueue.isNotEmpty ) {
       nextAction.settings.opacity = actionQueue.last.settings.opacity;
     }
-    
+
+    updateOffscreenBuffer();
     actionQueue.add( nextAction );
     
     _dispatchActionChangedEvent();
@@ -272,9 +303,14 @@ class DrawingTool {
   void _performUndo() {
     // Current action has no points and user wants to undo - remove that action
     if( actionQueue.last.points.length == 0 ) {
-      if( actionQueue.length == 1 ) return; // dont remove the last action
-
+      if( actionQueue.length == 1 ) {
+        updateOffscreenBuffer(); 
+        return; // dont remove the last action
+      }
+      
+      
       actionQueue.removeLast();
+      updateOffscreenBuffer();
       _dispatchActionChangedEvent();
     }
 
@@ -284,9 +320,9 @@ class DrawingTool {
     actionQueue.last.undo( _ctx );
   }
 
-  void _drawBackground() {
-    _ctx.fillStyle = _bgGradient;
-    _fillRoundedRect(_ctx, 0,0,_canvasRect.width,_canvasRect.height, 8);
+  void _drawBackground( dynamic ctx ) {
+    ctx.fillStyle = _bgGradient;
+    _fillRoundedRect(ctx, 0,0,_canvasRect.width,_canvasRect.height, 8);
   }
 
   void _fillRoundedRect( dynamic ctx, x, y, w, h, r ) {
