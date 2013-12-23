@@ -11,10 +11,16 @@ class SmoothStrokeAction extends RegularStrokeAction {
 
   void execute(dynamic ctx, width, height) {
     settings.execute(ctx);
-    executeImp( ctx, ctx.stroke, width, height );
+    executeImp( ctx, BaseAction.DRAWCALL_STROKE, width, height );
   }
 
-  void executeImp(dynamic ctx, Function drawCall, width, height) {
+  void executeForSvg(SvgRenderer ctx, width, height) {
+    settings.executeForSvg(ctx);
+    ctx.noFill();
+    executeImp( ctx, BaseAction.DRAWCALL_STROKE, width, height );
+  }
+
+  void executeImp(dynamic ctx, int drawCall, width, height) {
     List<Geom.Point> pointsToDraw = _getPointsToDraw();
 
     /// We need at least 2 points
@@ -27,7 +33,8 @@ class SmoothStrokeAction extends RegularStrokeAction {
 
         // Close existing path
         if( i != 0 ) {
-          drawCall();
+          // Tmp hack for dart2js function ref issue 15782
+          drawCall == BaseAction.DRAWCALL_FILL ? ctx.fill() : ctx.stroke();
           ctx.closePath();
         }
 
@@ -48,14 +55,10 @@ class SmoothStrokeAction extends RegularStrokeAction {
       ctx.quadraticCurveTo(pointsToDraw[i].x, pointsToDraw[i].y,
       (pointsToDraw[i].x+cp.x) * 0.5, (pointsToDraw[i].y+cp.y)*0.5);
     }
-    drawCall();
-    ctx.closePath();
-  }
 
-  void executeForSvg(SvgRenderer ctx, width, height) {
-    settings.executeForSvg(ctx);
-    ctx.noFill();
-    executeImp( ctx, ctx.stroke, width, height );
+    // Tmp hack for dart2js function ref issue 15782
+    drawCall == BaseAction.DRAWCALL_FILL ? ctx.fill() : ctx.stroke();
+    ctx.closePath();
   }
 
   void activeDraw(dynamic ctx, width, height, bool canEditPoints) {

@@ -3,20 +3,25 @@ part of DrawingToolLib;
 class RegularStrokeAction extends BaseAction {
   static const String ACTION_NAME = "RegularStroke";
 
+  /// Storage for points currently being drawn but not yet commited
   List<Geom.Point> _activePoints = null;
 
-    /// Constructor
   RegularStrokeAction() : super(ACTION_NAME);
 
-    /// Draw a series of simple strokes
+  /// Draw a series of simple strokes
   void execute(dynamic ctx, width, height) {
     settings.execute(ctx);
-    
-    ctx.lineWidth = settings.lineWidth;
-    executeImp(ctx, ctx.stroke, width, height);
+    executeImp(ctx, BaseAction.DRAWCALL_STROKE, width, height);
   }
 
-  void executeImp(dynamic ctx, Function drawCall, width, height) {
+  /// Special rendering function to work with SVGRenderer
+  void executeForSvg(SvgRenderer ctx, width, height) {
+    settings.executeForSvg(ctx);
+    ctx.noFill();
+    executeImp(ctx, BaseAction.DRAWCALL_STROKE, width, height);
+  }
+
+  void executeImp(dynamic ctx, int drawCall, width, height) {
 
     // If the active points are not empty - set points to draw to the union of points & activePoints
     List<Geom.Point> pointsToDraw = _getPointsToDraw();
@@ -30,7 +35,8 @@ class RegularStrokeAction extends BaseAction {
 
       // Close existing path
         if (i != 0) {
-          drawCall();
+          // Tmp hack for dart2js function ref issue 15782
+          drawCall == BaseAction.DRAWCALL_FILL ? ctx.fill() : ctx.stroke();
           ctx.closePath();
         }
 
@@ -41,18 +47,12 @@ class RegularStrokeAction extends BaseAction {
 
       ctx.lineTo(pointsToDraw[i].x, pointsToDraw[i].y);
     }
-    drawCall();
+    // Tmp hack for dart2js function ref issue 15782
+    drawCall == BaseAction.DRAWCALL_FILL ? ctx.fill() : ctx.stroke();
     ctx.closePath();
   }
 
-  /**
-  * Special rendering function to work with SVGRenderer
-  */
-  void executeForSvg(SvgRenderer ctx, width, height) {
-    settings.executeForSvg(ctx);
-    ctx.noFill();
-    executeImp(ctx, ctx.stroke, width, height);
-  }
+
 
   void inputDown(dynamic ctx, Geom.Point pos, bool canEditPoints) {
     _activePoints = new List<Geom.Point>();

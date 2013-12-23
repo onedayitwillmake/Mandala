@@ -11,12 +11,12 @@ class PolygonalFillAction extends PolygonalStrokeAction {
 
   void execute(dynamic ctx, width, height) {
     settings.execute(ctx);
-    executeImp(ctx, ctx.fill, width, height );
+    executeImp(ctx, BaseAction.DRAWCALL_FILL, width, height );
   }
 
   void executeForSvg(SvgRenderer ctx, width, height) {
     settings.executeForSvg(ctx);
     ctx.noStroke();
-    executeImp(ctx, ctx.fill, width, height );
+    executeImp(ctx, BaseAction.DRAWCALL_FILL, width, height );
   }
 }

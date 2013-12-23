@@ -13,10 +13,16 @@ class PolygonalStrokeAction extends BaseAction {
 
   void execute(dynamic ctx, width, height) {
     settings.execute(ctx);
-    executeImp(ctx, ctx.stroke, width, height );
+    executeImp(ctx, BaseAction.DRAWCALL_STROKE, width, height );
   }
 
-  void executeImp( dynamic ctx, Function drawStyle, width, height ) {
+  void executeForSvg(SvgRenderer ctx, width, height) {
+    settings.executeForSvg(ctx);
+    ctx.noFill();
+    executeImp(ctx, BaseAction.DRAWCALL_STROKE, width, height );
+  }
+
+  void executeImp( dynamic ctx, int drawCall, width, height ) {
 
     // If the active points are not empty - set points to draw to the union of points & activePoints
     List<Geom.Point> pointsToDraw = _getPointsToDraw();
@@ -29,7 +35,8 @@ class PolygonalStrokeAction extends BaseAction {
 
         // Close existing path
         if (i != 0) {
-          drawStyle();
+          // Tmp hack for dart2js function ref issue 15782
+          drawCall == BaseAction.DRAWCALL_FILL ? ctx.fill() : ctx.stroke();
           ctx.closePath();
         }
 
@@ -40,14 +47,10 @@ class PolygonalStrokeAction extends BaseAction {
 
       ctx.lineTo(pointsToDraw[i].x, pointsToDraw[i].y);
     }
-    drawStyle();
+    
+    // Tmp hack for dart2js function ref issue 15782
+    drawCall == BaseAction.DRAWCALL_FILL ? ctx.fill() : ctx.stroke();
     ctx.closePath();
-  }
-
-  void executeForSvg(SvgRenderer ctx, width, height) {
-    settings.executeForSvg(ctx);
-    ctx.noFill();
-    executeImp(ctx, ctx.stroke, width, height );
   }
 
   void activeDraw(dynamic ctx, width, height, bool canEditPoints) {

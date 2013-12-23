@@ -65,27 +65,17 @@ var $$ = {};
 
 // Native classes
 // Method closures
-$$.BoundClosure$i1 = [W, {"": "BoundClosure;_self,_target,_receiver,__js_helper$_name",
-  call$1: function(p0) {
-    return this._target.call(this._self, this._receiver, p0);
-  },
-  call$0: function() {
-    return this.call$1(null);
-  },
-  $is_args1: true
-}];
-
-$$.BoundClosure$i0 = [W, {"": "BoundClosure;_self,_target,_receiver,__js_helper$_name",
-  call$0: function() {
-    return this._target.call(this._self, this._receiver);
-  }
-}];
-
 $$.BoundClosure$1 = [R, {"": "BoundClosure;_self,_target,_receiver,__js_helper$_name",
   call$1: function(p0) {
     return this._target.call(this._self, p0);
   },
   $is_args1: true
+}];
+
+$$.BoundClosure$i0 = [H, {"": "BoundClosure;_self,_target,_receiver,__js_helper$_name",
+  call$0: function() {
+    return this._target.call(this._self, this._receiver);
+  }
 }];
 
 $$.BoundClosure$0 = [P, {"": "BoundClosure;_self,_target,_receiver,__js_helper$_name",
@@ -94,7 +84,7 @@ $$.BoundClosure$0 = [P, {"": "BoundClosure;_self,_target,_receiver,__js_helper$_
   }
 }];
 
-$$.BoundClosure$i10 = [P, {"": "BoundClosure;_self,_target,_receiver,__js_helper$_name",
+$$.BoundClosure$i1 = [P, {"": "BoundClosure;_self,_target,_receiver,__js_helper$_name",
   call$1: function(p0) {
     return this._target.call(this._self, this._receiver, p0);
   },
@@ -931,12 +921,12 @@ BaseAction: {"": "Object;points>,name>,settings<",
 PolygonalFillAction: {"": "PolygonalStrokeAction;_activePoints,_potentialNextPoint,_draggedPoint,points,name,settings",
   execute$3: function(ctx, width, height) {
     this.settings.execute$1(ctx);
-    this.executeImp$4(ctx, J.get$fill$x(ctx), width, height);
+    this.executeImp$4(ctx, 1, width, height);
   },
   executeForSvg$3: function(ctx, width, height) {
     this.settings.executeForSvg$1(ctx);
     ctx._strokeStyle = "none";
-    this.executeImp$4(ctx, ctx.get$fill(ctx), width, height);
+    this.executeImp$4(ctx, 1, width, height);
   },
   static: {
 "": "PolygonalFillAction_ACTION_NAME",
@@ -947,44 +937,50 @@ PolygonalFillAction: {"": "PolygonalStrokeAction;_activePoints,_potentialNextPoi
 PolygonalStrokeAction: {"": "BaseAction;_activePoints,_potentialNextPoint,_draggedPoint,points,name,settings",
   execute$3: function(ctx, width, height) {
     this.settings.execute$1(ctx);
-    this.executeImp$4(ctx, J.get$stroke$x(ctx), width, height);
-  },
-  executeImp$4: function(ctx, drawStyle, width, height) {
-    var pointsToDraw, t1, i, t2, t3;
-    pointsToDraw = this._getPointsToDraw$0();
-    t1 = pointsToDraw.length;
-    if (t1 === 0 || t1 < 3)
-      return;
-    for (t1 = J.getInterceptor$x(ctx), i = 0; i < pointsToDraw.length; ++i) {
-      if (J.$eq(pointsToDraw[i], $.get$BaseAction_LINE_BREAK())) {
-        if (i !== 0) {
-          drawStyle.call$0();
-          t1.closePath$0(ctx);
-        }
-        t1.beginPath$0(ctx);
-        t2 = i + 1;
-        if (t2 >= pointsToDraw.length)
-          throw H.ioore(pointsToDraw, t2);
-        t3 = J.get$x$x(pointsToDraw[t2]);
-        if (t2 >= pointsToDraw.length)
-          throw H.ioore(pointsToDraw, t2);
-        t1.moveTo$2(ctx, t3, J.get$y$x(pointsToDraw[t2]));
-        continue;
-      }
-      if (i >= pointsToDraw.length)
-        throw H.ioore(pointsToDraw, i);
-      t2 = J.get$x$x(pointsToDraw[i]);
-      if (i >= pointsToDraw.length)
-        throw H.ioore(pointsToDraw, i);
-      t1.lineTo$2(ctx, t2, J.get$y$x(pointsToDraw[i]));
-    }
-    drawStyle.call$0();
-    t1.closePath$0(ctx);
+    this.executeImp$4(ctx, 0, width, height);
   },
   executeForSvg$3: function(ctx, width, height) {
     this.settings.executeForSvg$1(ctx);
     ctx._fillStyle = "none";
-    this.executeImp$4(ctx, ctx.get$stroke(ctx), width, height);
+    this.executeImp$4(ctx, 0, width, height);
+  },
+  executeImp$4: function(ctx, drawCall, width, height) {
+    var pointsToDraw, t1, t2, i, t3, t4;
+    pointsToDraw = this._getPointsToDraw$0();
+    t1 = pointsToDraw.length;
+    if (t1 === 0 || t1 < 3)
+      return;
+    for (t1 = J.getInterceptor$x(ctx), t2 = drawCall === 1, i = 0; i < pointsToDraw.length; ++i) {
+      if (J.$eq(pointsToDraw[i], $.get$BaseAction_LINE_BREAK())) {
+        if (i !== 0) {
+          if (t2)
+            t1.fill$0(ctx);
+          else
+            t1.stroke$0(ctx);
+          t1.closePath$0(ctx);
+        }
+        t1.beginPath$0(ctx);
+        t3 = i + 1;
+        if (t3 >= pointsToDraw.length)
+          throw H.ioore(pointsToDraw, t3);
+        t4 = J.get$x$x(pointsToDraw[t3]);
+        if (t3 >= pointsToDraw.length)
+          throw H.ioore(pointsToDraw, t3);
+        t1.moveTo$2(ctx, t4, J.get$y$x(pointsToDraw[t3]));
+        continue;
+      }
+      if (i >= pointsToDraw.length)
+        throw H.ioore(pointsToDraw, i);
+      t3 = J.get$x$x(pointsToDraw[i]);
+      if (i >= pointsToDraw.length)
+        throw H.ioore(pointsToDraw, i);
+      t1.lineTo$2(ctx, t3, J.get$y$x(pointsToDraw[i]));
+    }
+    if (t2)
+      t1.fill$0(ctx);
+    else
+      t1.stroke$0(ctx);
+    t1.closePath$0(ctx);
   },
   activeDraw$4: function(ctx, width, height, canEditPoints) {
     var t1, i, t2;
@@ -1004,7 +1000,7 @@ PolygonalStrokeAction: {"": "BaseAction;_activePoints,_potentialNextPoint,_dragg
         t2 = J.get$x$x(t1[i]);
         if (i >= t1.length)
           throw H.ioore(t1, i);
-        ctx.arc(t2, J.get$y$x(t1[i]), 4, 0, 6.283185307179586, false);
+        ctx.arc(t2, J.get$y$x(t1[i]), 5, 0, 6.283185307179586, false);
         ctx.stroke();
         ctx.closePath();
       }
@@ -1017,7 +1013,7 @@ PolygonalStrokeAction: {"": "BaseAction;_activePoints,_potentialNextPoint,_dragg
           continue;
         if (i >= t1.length)
           throw H.ioore(t1, i);
-        if (t1[i].distanceTo$1(pos) <= 4) {
+        if (t1[i].distanceTo$1(pos) <= 5) {
           if (i >= t1.length)
             throw H.ioore(t1, i);
           this._draggedPoint = t1[i];
@@ -1101,12 +1097,12 @@ PolygonalStrokeAction: {"": "BaseAction;_activePoints,_potentialNextPoint,_dragg
 RegularFillAction: {"": "RegularStrokeAction;_activePoints,points,name,settings",
   execute$3: function(ctx, width, height) {
     this.settings.execute$1(ctx);
-    this.executeImp$4(ctx, J.get$fill$x(ctx), width, height);
+    this.executeImp$4(ctx, 1, width, height);
   },
   executeForSvg$3: function(ctx, width, height) {
     this.settings.executeForSvg$1(ctx);
     ctx._strokeStyle = "none";
-    this.executeImp$4(ctx, ctx.get$fill(ctx), width, height);
+    this.executeImp$4(ctx, 1, width, height);
   },
   RegularFillAction$0: function() {
     this.name = "RegularFill";
@@ -1126,47 +1122,51 @@ RegularFillAction$: function() {
 
 RegularStrokeAction: {"": "BaseAction;_activePoints,points,name,settings",
   execute$3: function(ctx, width, height) {
-    var t1 = this.settings;
-    t1.execute$1(ctx);
-    ctx.lineWidth = t1.lineWidth;
-    this.executeImp$4(ctx, J.get$stroke$x(ctx), width, height);
-  },
-  executeImp$4: function(ctx, drawCall, width, height) {
-    var pointsToDraw, t1, i, t2, t3;
-    pointsToDraw = this._getPointsToDraw$0();
-    t1 = pointsToDraw.length;
-    if (t1 === 0 || t1 < 2)
-      return;
-    for (t1 = J.getInterceptor$x(ctx), i = 0; i < pointsToDraw.length; ++i) {
-      if (J.$eq(pointsToDraw[i], $.get$BaseAction_LINE_BREAK())) {
-        if (i !== 0) {
-          drawCall.call$0();
-          t1.closePath$0(ctx);
-        }
-        t1.beginPath$0(ctx);
-        t2 = i + 1;
-        if (t2 >= pointsToDraw.length)
-          throw H.ioore(pointsToDraw, t2);
-        t3 = J.get$x$x(pointsToDraw[t2]);
-        if (t2 >= pointsToDraw.length)
-          throw H.ioore(pointsToDraw, t2);
-        t1.moveTo$2(ctx, t3, J.get$y$x(pointsToDraw[t2]));
-        continue;
-      }
-      if (i >= pointsToDraw.length)
-        throw H.ioore(pointsToDraw, i);
-      t2 = J.get$x$x(pointsToDraw[i]);
-      if (i >= pointsToDraw.length)
-        throw H.ioore(pointsToDraw, i);
-      t1.lineTo$2(ctx, t2, J.get$y$x(pointsToDraw[i]));
-    }
-    drawCall.call$0();
-    t1.closePath$0(ctx);
+    this.settings.execute$1(ctx);
+    this.executeImp$4(ctx, 0, width, height);
   },
   executeForSvg$3: function(ctx, width, height) {
     this.settings.executeForSvg$1(ctx);
     ctx._fillStyle = "none";
-    this.executeImp$4(ctx, ctx.get$stroke(ctx), width, height);
+    this.executeImp$4(ctx, 0, width, height);
+  },
+  executeImp$4: function(ctx, drawCall, width, height) {
+    var pointsToDraw, t1, t2, i, t3, t4;
+    pointsToDraw = this._getPointsToDraw$0();
+    t1 = pointsToDraw.length;
+    if (t1 === 0 || t1 < 2)
+      return;
+    for (t1 = J.getInterceptor$x(ctx), t2 = drawCall === 1, i = 0; i < pointsToDraw.length; ++i) {
+      if (J.$eq(pointsToDraw[i], $.get$BaseAction_LINE_BREAK())) {
+        if (i !== 0) {
+          if (t2)
+            t1.fill$0(ctx);
+          else
+            t1.stroke$0(ctx);
+          t1.closePath$0(ctx);
+        }
+        t1.beginPath$0(ctx);
+        t3 = i + 1;
+        if (t3 >= pointsToDraw.length)
+          throw H.ioore(pointsToDraw, t3);
+        t4 = J.get$x$x(pointsToDraw[t3]);
+        if (t3 >= pointsToDraw.length)
+          throw H.ioore(pointsToDraw, t3);
+        t1.moveTo$2(ctx, t4, J.get$y$x(pointsToDraw[t3]));
+        continue;
+      }
+      if (i >= pointsToDraw.length)
+        throw H.ioore(pointsToDraw, i);
+      t3 = J.get$x$x(pointsToDraw[i]);
+      if (i >= pointsToDraw.length)
+        throw H.ioore(pointsToDraw, i);
+      t1.lineTo$2(ctx, t3, J.get$y$x(pointsToDraw[i]));
+    }
+    if (t2)
+      t1.fill$0(ctx);
+    else
+      t1.stroke$0(ctx);
+    t1.closePath$0(ctx);
   },
   inputDown$3: function(ctx, pos, canEditPoints) {
     var t1 = P.List_List(null, Z.Point);
@@ -1218,12 +1218,12 @@ RegularStrokeAction: {"": "BaseAction;_activePoints,points,name,settings",
 SmoothFillAction: {"": "SmoothStrokeAction;_draggedPoint,_activePoints,points,name,settings",
   execute$3: function(ctx, width, height) {
     this.settings.execute$1(ctx);
-    this.executeImp$4(ctx, J.get$fill$x(ctx), width, height);
+    this.executeImp$4(ctx, 1, width, height);
   },
   executeForSvg$3: function(ctx, width, height) {
     this.settings.executeForSvg$1(ctx);
     ctx._strokeStyle = "none";
-    this.executeImp$4(ctx, ctx.get$fill(ctx), width, height);
+    this.executeImp$4(ctx, 1, width, height);
   },
   SmoothFillAction$0: function() {
     this.name = "SmoothFill";
@@ -1245,68 +1245,74 @@ SmoothFillAction$: function() {
 SmoothStrokeAction: {"": "RegularStrokeAction;_draggedPoint,_activePoints,points,name,settings",
   execute$3: function(ctx, width, height) {
     this.settings.execute$1(ctx);
-    this.executeImp$4(ctx, J.get$stroke$x(ctx), width, height);
-  },
-  executeImp$4: function(ctx, drawCall, width, height) {
-    var pointsToDraw, t1, i, t2, t3, cp, t4, t5, t6, t7;
-    pointsToDraw = this._getPointsToDraw$0();
-    t1 = pointsToDraw.length;
-    if (t1 === 0 || t1 < 2)
-      return;
-    for (t1 = J.getInterceptor$x(ctx), i = 0; i < pointsToDraw.length - 1; ++i) {
-      if (J.$eq(pointsToDraw[i], $.get$BaseAction_LINE_BREAK())) {
-        if (i !== 0) {
-          drawCall.call$0();
-          t1.closePath$0(ctx);
-        }
-        t1.beginPath$0(ctx);
-        t2 = i + 1;
-        if (t2 >= pointsToDraw.length)
-          throw H.ioore(pointsToDraw, t2);
-        t3 = J.get$x$x(pointsToDraw[t2]);
-        if (t2 >= pointsToDraw.length)
-          throw H.ioore(pointsToDraw, t2);
-        t1.moveTo$2(ctx, t3, J.get$y$x(pointsToDraw[t2]));
-        continue;
-      }
-      t2 = i + 1;
-      if (t2 >= pointsToDraw.length)
-        throw H.ioore(pointsToDraw, t2);
-      cp = pointsToDraw[t2];
-      t2 = J.getInterceptor(cp);
-      if (t2.$eq(cp, $.get$BaseAction_LINE_BREAK()))
-        continue;
-      if (i >= pointsToDraw.length)
-        throw H.ioore(pointsToDraw, i);
-      t3 = J.get$x$x(pointsToDraw[i]);
-      if (i >= pointsToDraw.length)
-        throw H.ioore(pointsToDraw, i);
-      t4 = J.get$y$x(pointsToDraw[i]);
-      if (i >= pointsToDraw.length)
-        throw H.ioore(pointsToDraw, i);
-      t5 = J.get$x$x(pointsToDraw[i]);
-      t6 = t2.get$x(cp);
-      if (typeof t5 !== "number")
-        throw t5.$add();
-      if (typeof t6 !== "number")
-        throw H.iae(t6);
-      if (i >= pointsToDraw.length)
-        throw H.ioore(pointsToDraw, i);
-      t7 = J.get$y$x(pointsToDraw[i]);
-      t2 = t2.get$y(cp);
-      if (typeof t7 !== "number")
-        throw t7.$add();
-      if (typeof t2 !== "number")
-        throw H.iae(t2);
-      t1.quadraticCurveTo$4(ctx, t3, t4, (t5 + t6) * 0.5, (t7 + t2) * 0.5);
-    }
-    drawCall.call$0();
-    t1.closePath$0(ctx);
+    this.executeImp$4(ctx, 0, width, height);
   },
   executeForSvg$3: function(ctx, width, height) {
     this.settings.executeForSvg$1(ctx);
     ctx._fillStyle = "none";
-    this.executeImp$4(ctx, ctx.get$stroke(ctx), width, height);
+    this.executeImp$4(ctx, 0, width, height);
+  },
+  executeImp$4: function(ctx, drawCall, width, height) {
+    var pointsToDraw, t1, t2, i, t3, t4, cp, t5, t6, t7, t8;
+    pointsToDraw = this._getPointsToDraw$0();
+    t1 = pointsToDraw.length;
+    if (t1 === 0 || t1 < 2)
+      return;
+    for (t1 = J.getInterceptor$x(ctx), t2 = drawCall === 1, i = 0; i < pointsToDraw.length - 1; ++i) {
+      if (J.$eq(pointsToDraw[i], $.get$BaseAction_LINE_BREAK())) {
+        if (i !== 0) {
+          if (t2)
+            t1.fill$0(ctx);
+          else
+            t1.stroke$0(ctx);
+          t1.closePath$0(ctx);
+        }
+        t1.beginPath$0(ctx);
+        t3 = i + 1;
+        if (t3 >= pointsToDraw.length)
+          throw H.ioore(pointsToDraw, t3);
+        t4 = J.get$x$x(pointsToDraw[t3]);
+        if (t3 >= pointsToDraw.length)
+          throw H.ioore(pointsToDraw, t3);
+        t1.moveTo$2(ctx, t4, J.get$y$x(pointsToDraw[t3]));
+        continue;
+      }
+      t3 = i + 1;
+      if (t3 >= pointsToDraw.length)
+        throw H.ioore(pointsToDraw, t3);
+      cp = pointsToDraw[t3];
+      t3 = J.getInterceptor(cp);
+      if (t3.$eq(cp, $.get$BaseAction_LINE_BREAK()))
+        continue;
+      if (i >= pointsToDraw.length)
+        throw H.ioore(pointsToDraw, i);
+      t4 = J.get$x$x(pointsToDraw[i]);
+      if (i >= pointsToDraw.length)
+        throw H.ioore(pointsToDraw, i);
+      t5 = J.get$y$x(pointsToDraw[i]);
+      if (i >= pointsToDraw.length)
+        throw H.ioore(pointsToDraw, i);
+      t6 = J.get$x$x(pointsToDraw[i]);
+      t7 = t3.get$x(cp);
+      if (typeof t6 !== "number")
+        throw t6.$add();
+      if (typeof t7 !== "number")
+        throw H.iae(t7);
+      if (i >= pointsToDraw.length)
+        throw H.ioore(pointsToDraw, i);
+      t8 = J.get$y$x(pointsToDraw[i]);
+      t3 = t3.get$y(cp);
+      if (typeof t8 !== "number")
+        throw t8.$add();
+      if (typeof t3 !== "number")
+        throw H.iae(t3);
+      t1.quadraticCurveTo$4(ctx, t4, t5, (t6 + t7) * 0.5, (t8 + t3) * 0.5);
+    }
+    if (t2)
+      t1.fill$0(ctx);
+    else
+      t1.stroke$0(ctx);
+    t1.closePath$0(ctx);
   },
   activeDraw$4: function(ctx, width, height, canEditPoints) {
     var t1, i, t2;
@@ -1321,7 +1327,7 @@ SmoothStrokeAction: {"": "RegularStrokeAction;_draggedPoint,_activePoints,points
       t2 = J.get$x$x(t1[i]);
       if (i >= t1.length)
         throw H.ioore(t1, i);
-      ctx.arc(t2, J.get$y$x(t1[i]), 4, 0, 6.283185307179586, false);
+      ctx.arc(t2, J.get$y$x(t1[i]), 5, 0, 6.283185307179586, false);
       ctx.stroke();
       ctx.closePath();
     }
@@ -1334,7 +1340,7 @@ SmoothStrokeAction: {"": "RegularStrokeAction;_draggedPoint,_activePoints,points
           continue;
         if (i >= t1.length)
           throw H.ioore(t1, i);
-        if (t1[i].distanceTo$1(pos) <= 4) {
+        if (t1[i].distanceTo$1(pos) <= 5) {
           if (i >= t1.length)
             throw H.ioore(t1, i);
           this._draggedPoint = t1[i];
@@ -1671,16 +1677,10 @@ SvgRenderer: {"": "Object;_svg,defs,_lineWidth,_strokeStyle,_fillStyle,_opacity,
     t1.toString;
     new W._ElementAttributeMap(t1)._element.setAttribute("stroke", this._strokeStyle);
   },
-  get$stroke: function(_receiver) {
-    return new W.BoundClosure$i0(this, R.SvgRenderer.prototype.stroke$0, _receiver, "stroke$0");
-  },
   fill$0: function(_) {
     var t1 = this._currentPath;
     t1.toString;
     new W._ElementAttributeMap(t1)._element.setAttribute("fill", this._fillStyle);
-  },
-  get$fill: function(_receiver) {
-    return new W.BoundClosure$i0(this, R.SvgRenderer.prototype.fill$0, _receiver, "fill$0");
   },
   setStrokeColorRgb$4: function(_, r, g, b, a) {
     this._strokeStyle = "#" + C.JSString_methods.substring$2(C.JSInt_methods.toRadixString$1(16777216 + (r << 16 >>> 0) + (g << 8 >>> 0) + b, 16), 1, 7);
@@ -2781,7 +2781,7 @@ ReceivePortImpl: {"": "Stream;_id<,__isolate_helper$_controller<",
     $globalState.currentContext.unregister$1(this._id);
   },
   get$close: function(_receiver) {
-    return new W.BoundClosure$i0(this, H.ReceivePortImpl.prototype.close$0, _receiver, "close$0");
+    return new H.BoundClosure$i0(this, H.ReceivePortImpl.prototype.close$0, _receiver, "close$0");
   },
   ReceivePortImpl$0: function() {
     this.__isolate_helper$_controller = P.StreamController_StreamController(this.get$close(this), null, null, null, true, null);
@@ -4644,7 +4644,7 @@ _BroadcastStreamController: {"": "Object;_async$_next?,_async$_previous?",
     this._sendData$1(data);
   },
   get$add: function(_receiver) {
-    return new P.BoundClosure$i10(this, P._BroadcastStreamController.prototype.add$1, _receiver, "add$1");
+    return new P.BoundClosure$i1(this, P._BroadcastStreamController.prototype.add$1, _receiver, "add$1");
   },
   addError$2: function(error, stackTrace) {
     if (this._state >= 4)
@@ -7977,9 +7977,6 @@ CanvasRenderingContext2D: {"": "CanvasRenderingContext;",
   fill$0: function($receiver) {
     return $receiver.fill();
   },
-  get$fill: function(_receiver) {
-    return new W.BoundClosure$i1(this, W.CanvasRenderingContext2D.prototype.fill$1, _receiver, "fill$1");
-  },
   lineTo$2: function(receiver, x, y) {
     return receiver.lineTo(x, y);
   },
@@ -7991,9 +7988,6 @@ CanvasRenderingContext2D: {"": "CanvasRenderingContext;",
   },
   stroke$0: function(receiver) {
     return receiver.stroke();
-  },
-  get$stroke: function(_receiver) {
-    return new W.BoundClosure$i0(this, W.CanvasRenderingContext2D.prototype.stroke$0, _receiver, "stroke$0");
   },
   "%": "CanvasRenderingContext2D"
 },
@@ -8737,7 +8731,7 @@ _StreamPool: {"": "Object;_controller,_subscriptions",
     t1.close$0(t1);
   },
   get$close: function(_receiver) {
-    return new W.BoundClosure$i0(this, W._StreamPool.prototype.close$0, _receiver, "close$0");
+    return new H.BoundClosure$i0(this, W._StreamPool.prototype.close$0, _receiver, "close$0");
   },
   _html$_StreamPool$broadcast$0: function($T) {
     this._controller = P.StreamController_StreamController$broadcast(this.get$close(this), null, true, $T);
@@ -9660,9 +9654,6 @@ J.get$context2D$x = function(receiver) {
 J.get$error$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$error(receiver);
 };
-J.get$fill$x = function(receiver) {
-  return J.getInterceptor$x(receiver).get$fill(receiver);
-};
 J.get$first$ax = function(receiver) {
   return J.getInterceptor$ax(receiver).get$first(receiver);
 };
@@ -9707,9 +9698,6 @@ J.get$parent$x = function(receiver) {
 };
 J.get$points$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$points(receiver);
-};
-J.get$stroke$x = function(receiver) {
-  return J.getInterceptor$x(receiver).get$stroke(receiver);
 };
 J.get$touches$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$touches(receiver);
