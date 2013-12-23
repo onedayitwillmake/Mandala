@@ -12,7 +12,7 @@
         <div id="drawingtool" class="twelve wide column">
 
             <div class="bottom-menu-container row">
-                <div class="ui menu">
+                <div class="ui small blue inverted menu">
                     <a id="nu-interface-save-svg" class="item">
                         <i class="save icon"></i>
                         Save SVG
@@ -33,7 +33,7 @@
                 <canvas id="canvas" width="700" height="500" class="center"></canvas>
             </div>
         </div>
-        <div class="four wide column">
+        <div id="right-panel" class="four wide column">
             <div class="nu-interface ui two column grid">
                 <div id="drawingmode-container"  class="row">
                     <div class="ui green small label">Drawing mode</div>
@@ -73,10 +73,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="menu row">
                     <div class="ui blue small label">Settings</div>
                 </div>
-                <div class="row">
+                <div class="menu row">
                     <div class="sixteen wide column">
                         <div class="settings ui vertical small icon menu">
                             <!-- MIRROR MODE TOGGLE -->
@@ -143,5 +143,6 @@
         </div>
     </div>
     <script type="application/dart" src="dart/mandala.dart"></script>
+    <script src="packages/browser/dart.js"></script>
 </body>
 </html>

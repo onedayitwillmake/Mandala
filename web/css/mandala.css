@@ -35,8 +35,8 @@ canvas {
 }
 
 
-#drawingmode-container {
-  margin-top: 1.5%;
+#right-panel {
+  margin-top: 50px;
 }
 .right.action.column {
   margin-left: -1em;
@@ -59,7 +59,6 @@ canvas {
 .nu-interface .menu.row {
   margin-top: 0px;
   padding-top: 6px;
-  margin-left: -2px;
 }
 .nu-interface .settings-label-container {
   margin-top: 0;
@@ -82,7 +81,7 @@ canvas {
 }
 .bottom-menu-container .ui.menu {
   width: 700px;
-  margin-bottom: 5px;
+  margin-bottom: 15px;
 }
 
 

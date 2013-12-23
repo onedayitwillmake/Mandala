@@ -79,24 +79,23 @@ class DrawingToolInterface {
     
     // Convert to blob
     var blob = new Blob([svg.outerHtml], "image/svg+xml");
-    
-    // Open preview window with download link
-    var previewWindow = window.open("", "");
-    var a = new AnchorElement(href: Url.createObjectUrlFromBlob( blob ) );
-    a.text = "Download";
-    a.style.display = "block";
-    a.download = "mandala.svg";
-    a.onClick.listen((e) { // clenaup
-      new Future.delayed(new Duration(seconds:2), () => Url.revokeObjectUrl(a.href));
-    });
-    
-    // Add the <a> tag, followed by the SVG
-    previewWindow.document.body.nodes.add(a); 
-    previewWindow.document.body.nodes.add(svg);
+//    
+//    // Open preview window with download link
+//    var previewWindow = window.open("", "");
+//    var a = new AnchorElement(href: Url.createObjectUrlFromBlob( blob ) );
+//    a.text = "Download";
+//    a.style.display = "block";
+//    a.download = "mandala.svg";
+//    a.onClick.listen((e) { // clenaup
+//      new Future.delayed(new Duration(seconds:2), () => Url.revokeObjectUrl(a.href));
+//    });
+//    
+//    // Add the <a> tag, followed by the SVG
+//    previewWindow.document.body.nodes.add(a); 
+//    previewWindow.document.body.nodes.add(svg);
     
     // Open window with just SVG data as XML
-//    new Future.delayed(new Duration(seconds:), () => window.open(Url.createObjectUrlFromBlob( blob ), "svg-text") );
-    //, "width=${(_drawingModule.width+50).toInt().toString()},height=${(_drawingModule.height+50).toInt().toString()},location=no,menubar=no");
+    window.open(Url.createObjectUrlFromBlob( blob ), "svg-text");
   }
   
   /////////////////////////////////////////////////
