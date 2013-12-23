@@ -9,12 +9,12 @@ class SmoothStrokeAction extends RegularStrokeAction {
     this.name = ACTION_NAME;
   }
 
-  void execute(CanvasRenderingContext2D ctx, width, height) {
+  void execute(dynamic ctx, width, height) {
     settings.execute(ctx);
     executeImp( ctx, ctx.stroke, width, height );
   }
 
-  void executeImp(CanvasRenderingContext2D ctx, Function drawCall, width, height) {
+  void executeImp(dynamic ctx, Function drawCall, width, height) {
     List<Geom.Point> pointsToDraw = _getPointsToDraw();
 
     /// We need at least 2 points
@@ -55,48 +55,10 @@ class SmoothStrokeAction extends RegularStrokeAction {
   void executeForSvg(Abstract2DRenderingContext ctx, width, height) {
     settings.executeForSvg(ctx);
     ctx.noFill();
-    executeForSvgImp( ctx, ctx.stroke, width, height );
+    executeImp( ctx, ctx.stroke, width, height );
   }
 
-  void executeForSvgImp(Abstract2DRenderingContext ctx, Function drawCall, width, height) {
-    List<Geom.Point> pointsToDraw = _getPointsToDraw();
-
-    /// We need at least 2 points
-    if( pointsToDraw.isEmpty || pointsToDraw.length < 2 ) return;
-
-    for(var i = 0; i < pointsToDraw.length - 1; i++) {
-
-    // Null slot implies a new path should be started
-      if( pointsToDraw[i] == BaseAction.LINE_BREAK ) {
-
-        // Close existing path
-        if( i != 0 ) {
-          drawCall();
-          ctx.closePath();
-        }
-
-        ctx.beginPath();
-        ctx.moveTo( pointsToDraw[i+1].x, pointsToDraw[i+1].y );
-        continue;
-      }
-
-      Geom.Point cp = pointsToDraw[i+1];
-
-      // If it's a linebreak, then that means the current point was the last point on this curve
-      if( cp == BaseAction.LINE_BREAK ) {
-        continue;
-      }
-
-      // Use the current point as a control point, and set the curve to stop halfway to the next point
-      // It's kind of weird that this works as well as it does, but i figured it out when creating http://ribbonpaint.com - so im using it again
-      ctx.quadraticCurveTo(pointsToDraw[i].x, pointsToDraw[i].y,
-      (pointsToDraw[i].x+cp.x) * 0.5, (pointsToDraw[i].y+cp.y)*0.5);
-    }
-    drawCall();
-    ctx.closePath();
-  }
-
-  void activeDraw(CanvasRenderingContext2D ctx, width, height, bool canEditPoints) {
+  void activeDraw(dynamic ctx, width, height, bool canEditPoints) {
     if( !canEditPoints ) return;
 
     for(var i = 0; i < points.length; i++) {
@@ -108,7 +70,7 @@ class SmoothStrokeAction extends RegularStrokeAction {
     }
   }
 
-  void inputDown(CanvasRenderingContext2D ctx, Geom.Point pos, bool canEditPoints) {
+  void inputDown(dynamic ctx, Geom.Point pos, bool canEditPoints) {
     if( canEditPoints ) {
       for(var i = 0; i < points.length; i++) {
         if( points[i] == BaseAction.LINE_BREAK ) continue;
@@ -121,7 +83,7 @@ class SmoothStrokeAction extends RegularStrokeAction {
     super.inputDown( ctx, pos, canEditPoints );
   }
 
-  void inputMove(CanvasRenderingContext2D ctx, Geom.Point pos, bool isDrag) {
+  void inputMove(dynamic ctx, Geom.Point pos, bool isDrag) {
 
     // Drag the control point instead
     if( _draggedPoint != null ) {
@@ -132,7 +94,7 @@ class SmoothStrokeAction extends RegularStrokeAction {
     super.inputMove( ctx, pos, isDrag );
   }
 
-  void inputUp(CanvasRenderingContext2D ctx, Geom.Point pos) {
+  void inputUp(dynamic ctx, Geom.Point pos) {
     // User was dragging - abort!
     if( _draggedPoint != null ) {
       _draggedPoint = null;

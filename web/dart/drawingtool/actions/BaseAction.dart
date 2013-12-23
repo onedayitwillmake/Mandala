@@ -22,12 +22,12 @@ class BaseAction {
   
   BaseAction( this.name );
   
-  void inputDown(CanvasRenderingContext2D ctx, Geom.Point pos, bool canEditPoints ){}
-  void inputMove(CanvasRenderingContext2D ctx, Geom.Point pos, bool isDragging ){}
-  void inputUp(CanvasRenderingContext2D ctx, Geom.Point pos){}
-  void keyPressed(CanvasRenderingContext2D ctx, KeyboardEvent e ){}
-  void execute(CanvasRenderingContext2D ctx, width, height){}
-  void executeForSvg(Abstract2DRenderingContext ctx, width, height){}
-  void activeDraw(CanvasRenderingContext2D ctx, width, height, bool canEditPoints){}
-  void undo(CanvasRenderingContext2D ctx ){}
+  void inputDown(dynamic ctx, Geom.Point pos, bool canEditPoints ){}
+  void inputMove(dynamic ctx, Geom.Point pos, bool isDragging ){}
+  void inputUp(dynamic ctx, Geom.Point pos){}
+  void keyPressed(dynamic ctx, KeyboardEvent e ){}
+  void execute(dynamic ctx, width, height){}
+  void executeForSvg(dynamic ctx, width, height){}
+  void activeDraw(dynamic ctx, width, height, bool canEditPoints){}
+  void undo(dynamic ctx ){}
 }

@@ -11,12 +11,12 @@ class PolygonalStrokeAction extends BaseAction {
   /// Constructor
   PolygonalStrokeAction() : super(ACTION_NAME);
 
-  void execute(CanvasRenderingContext2D ctx, width, height) {
+  void execute(dynamic ctx, width, height) {
     settings.execute(ctx);
     executeImp(ctx, ctx.stroke, width, height );
   }
 
-  void executeImp( CanvasRenderingContext2D ctx, Function drawStyle, width, height ) {
+  void executeImp( dynamic ctx, Function drawStyle, width, height ) {
 
     // If the active points are not empty - set points to draw to the union of points & activePoints
     List<Geom.Point> pointsToDraw = _getPointsToDraw();
@@ -44,7 +44,13 @@ class PolygonalStrokeAction extends BaseAction {
     ctx.closePath();
   }
 
-  void activeDraw(CanvasRenderingContext2D ctx, width, height, bool canEditPoints) {
+  void executeForSvg(Abstract2DRenderingContext ctx, width, height) {
+    settings.executeForSvg(ctx);
+    ctx.noFill();
+    executeImp(ctx, ctx.stroke, width, height );
+  }
+
+  void activeDraw(dynamic ctx, width, height, bool canEditPoints) {
     if( _activePoints != null ) {
       ctx..beginPath()
       ..setFillColorHsl(0, 80, 50)
@@ -62,7 +68,7 @@ class PolygonalStrokeAction extends BaseAction {
     }
   }
 
-  void inputDown(CanvasRenderingContext2D ctx, Geom.Point pos, bool canEditPoints) {
+  void inputDown(dynamic ctx, Geom.Point pos, bool canEditPoints) {
 
     if( canEditPoints ) {
       for(var i = 0; i < points.length; i++) {
@@ -80,7 +86,7 @@ class PolygonalStrokeAction extends BaseAction {
     }
   }
 
-  void inputMove(CanvasRenderingContext2D ctx, Geom.Point pos, bool isDrag) {
+  void inputMove(dynamic ctx, Geom.Point pos, bool isDrag) {
     // Drag the control point instead
     if( _draggedPoint != null ) {
       _draggedPoint.copyFrom( pos );
@@ -90,7 +96,7 @@ class PolygonalStrokeAction extends BaseAction {
     _potentialNextPoint = pos;
   }
 
-  void inputUp(CanvasRenderingContext2D ctx, Geom.Point pos, [bool forceClose = false] ) {
+  void inputUp(dynamic ctx, Geom.Point pos, [bool forceClose = false] ) {
     // User was dragging - abort!
     if( _draggedPoint != null ) {
       _draggedPoint = null;
@@ -109,7 +115,7 @@ class PolygonalStrokeAction extends BaseAction {
   }
   
   /// If enter is pressed - close the path
-  void keyPressed(CanvasRenderingContext2D ctx, KeyboardEvent e ){
+  void keyPressed(dynamic ctx, KeyboardEvent e ){
     if( e.keyCode == KeyCode.ENTER ) {
       // Don't bother making a path if there are less than 3 points
       if( _activePoints == null || _activePoints.length < 3 ) {
@@ -139,7 +145,7 @@ class PolygonalStrokeAction extends BaseAction {
     }
   }
 
-  void undo( CanvasRenderingContext2D ctx ) {
+  void undo( dynamic ctx ) {
     int lastBreak = points.lastIndexOf( BaseAction.LINE_BREAK );
     if( lastBreak == -1 ) return;
     points.removeRange(lastBreak, points.length );

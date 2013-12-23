@@ -9,12 +9,12 @@ class RegularStrokeAction extends BaseAction {
   RegularStrokeAction() : super(ACTION_NAME);
 
     /// Draw a series of simple strokes
-  void execute(CanvasRenderingContext2D ctx, width, height) {
+  void execute(dynamic ctx, width, height) {
     settings.execute(ctx);
     executeImp(ctx, ctx.stroke, width, height);
   }
 
-  void executeImp(CanvasRenderingContext2D ctx, Function drawCall, width, height) {
+  void executeImp(dynamic ctx, Function drawCall, width, height) {
 
     // If the active points are not empty - set points to draw to the union of points & activePoints
     List<Geom.Point> pointsToDraw = _getPointsToDraw();
@@ -49,53 +49,20 @@ class RegularStrokeAction extends BaseAction {
   void executeForSvg(Abstract2DRenderingContext ctx, width, height) {
     settings.executeForSvg(ctx);
     ctx.noFill();
-    executeForSvgImp(ctx, ctx.stroke, width, height);
-  }
-  
-  /**
-   * Renders to SVG via stroke or fill
-   */
-  void executeForSvgImp(Abstract2DRenderingContext ctx, Function drawCall, width, height) {
-    // If the active points are not empty - set points to draw to the union of points & activePoints
-    List<Geom.Point> pointsToDraw = _getPointsToDraw();
-
-    // We need at least 2 points
-    if (pointsToDraw.isEmpty || pointsToDraw.length < 2) return;
-
-    for (var i = 0; i < pointsToDraw.length; i++) {
-
-      // Null slot implies a new path should be started
-      if (pointsToDraw[i] == BaseAction.LINE_BREAK) {
-
-        // Close existing path
-        if (i != 0) {
-          drawCall();
-          ctx.closePath();
-        }
-
-        ctx.beginPath();
-        ctx.moveTo(pointsToDraw[i + 1].x, pointsToDraw[i + 1].y);
-        continue;
-      }
-
-      ctx.lineTo(pointsToDraw[i].x, pointsToDraw[i].y);
-    }
-
-    drawCall();
-    ctx.closePath();
+    executeImp(ctx, ctx.stroke, width, height);
   }
 
-  void inputDown(CanvasRenderingContext2D ctx, Geom.Point pos, bool canEditPoints) {
+  void inputDown(dynamic ctx, Geom.Point pos, bool canEditPoints) {
     _activePoints = new List<Geom.Point>();
     _activePoints.add(pos);
   }
 
-  void inputMove(CanvasRenderingContext2D ctx, Geom.Point pos, bool isDrag) {
+  void inputMove(dynamic ctx, Geom.Point pos, bool isDrag) {
     if (!isDrag) return;
     _activePoints.add(pos);
   }
 
-  void inputUp(CanvasRenderingContext2D ctx, Geom.Point pos) {
+  void inputUp(dynamic ctx, Geom.Point pos) {
     int oldLen = _activePoints.length;
     var simplifiedPoints = LineGeneralization.simplifyLang(4, 0.5, _activePoints);
 
@@ -118,7 +85,7 @@ class RegularStrokeAction extends BaseAction {
     }
   }
 
-  void undo(CanvasRenderingContext2D ctx) {
+  void undo(dynamic ctx) {
     int lastBreak = points.lastIndexOf(BaseAction.LINE_BREAK);
     if (lastBreak == -1) return;
     points.removeRange(lastBreak, points.length);

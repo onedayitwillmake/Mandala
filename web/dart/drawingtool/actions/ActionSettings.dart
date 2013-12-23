@@ -8,12 +8,12 @@ class ActionSettings {
 
   ActionSettings();
 
-  void execute(CanvasRenderingContext2D ctx) {
+  void execute(dynamic ctx) {
     ctx.lineWidth = lineWidth;
     ctx.setStrokeColorRgb(255, 255, 255,opacity);
     ctx.setFillColorRgb(255,255,255, opacity);
   }
-  
+
   void executeForSvg(Abstract2DRenderingContext ctx) {
     ctx.lineWidth = lineWidth;
     if( strokeStyle == null ) {
@@ -21,7 +21,7 @@ class ActionSettings {
     } else {
       ctx.setStrokeColorRgb(255,255,255,opacity);
     }
-    
+
     if( fillStyle == null ) {
       ctx.noFill();
     } else {

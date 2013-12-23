@@ -36,6 +36,7 @@ class DrawingTool {
 
   /// Reference to background gradient which is redrawn each frame
   CanvasGradient            _bgGradient;
+  Svg.RadialGradientElement _bgGradientSvg;
 
   /// Canvas bounding rect to offset input positions
   Rectangle                 _canvasRect;
@@ -63,6 +64,17 @@ class DrawingTool {
     _bgGradient.addColorStop(0, '#383245');
     _bgGradient.addColorStop(1, '#1B1821');
 
+    _bgGradientSvg = new Svg.SvgElement.tag("radialGradient");
+    _bgGradientSvg.attributes['id'] = "background-gradient";
+    var stop = new Svg.StopElement();
+    stop.attributes['offset'] = "0%";
+    stop.attributes['stop-color'] = "#383245";
+    _bgGradientSvg.nodes.add(stop);
+    stop = new Svg.StopElement();
+    stop.attributes['offset'] = "100%";
+    stop.attributes['stop-color'] = "#1B1821";
+    _bgGradientSvg.nodes.add(stop);
+    
     _setupListeners();
 
     changeAction( RegularStrokeAction.ACTION_NAME );
@@ -267,30 +279,32 @@ class DrawingTool {
   void _drawBackground() {
     _ctx.canvas.width = _ctx.canvas.width;
     _ctx.fillStyle = _bgGradient;
-    _fillRoundedRect(0,0,_canvasRect.width,_canvasRect.height, 8);
+    _fillRoundedRect(_ctx, 0,0,_canvasRect.width,_canvasRect.height, 8);
   }
 
-  void _fillRoundedRect( x, y, w, h, r ) {
-    _ctx.beginPath();
-    _ctx.moveTo(x+r, y);
-    _ctx.lineTo(x+w-r, y);
-    _ctx.quadraticCurveTo(x+w, y, x+w, y+r);
-    _ctx.lineTo(x+w, y+h-r);
-    _ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
-    _ctx.lineTo(x+r, y+h);
-    _ctx.quadraticCurveTo(x, y+h, x, y+h-r);
-    _ctx.lineTo(x, y+r);
-    _ctx.quadraticCurveTo(x, y, x+r, y);
-    _ctx.fill();
-    _ctx.closePath();
+  void _fillRoundedRect( dynamic ctx, x, y, w, h, r ) {
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y);
+    ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+    ctx.lineTo(x+w, y+h-r);
+    ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    ctx.lineTo(x+r, y+h);
+    ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+    ctx.lineTo(x, y+r);
+    ctx.quadraticCurveTo(x, y, x+r, y);
+    ctx.fill();
+    ctx.closePath();
   }
   //// -------- SVG Save
   void _saveSvg( ) {
     
-    SvgRenderer svgCtx = new SvgRenderer(_canvasRect.width.toInt(), _canvasRect.height.toInt() );
+    SvgRenderer svgCtx = new SvgRenderer(_canvasRect.width.toInt(), _canvasRect.height.toInt() );    
+    svgCtx.defs.nodes.add( _bgGradientSvg );
+
     svgCtx.groupStart();
-    svgCtx.setFillColorRgb(25, 25, 25, 1.0);
-    svgCtx.rect(0, 0, _canvasRect.width, _canvasRect.height );
+    svgCtx.fillStyle = "url(#${_bgGradientSvg.id})";
+      _fillRoundedRect( svgCtx, 0,0,_canvasRect.width,_canvasRect.height, 8);
     svgCtx.groupEnd();
     
     

@@ -9,13 +9,14 @@ class PolygonalFillAction extends PolygonalStrokeAction {
     this.name = ACTION_NAME;
   }
 
-  void execute(CanvasRenderingContext2D ctx, width, height) {
+  void execute(dynamic ctx, width, height) {
     settings.execute(ctx);
     executeImp(ctx, ctx.fill, width, height );
   }
 
   void executeForSvg(Abstract2DRenderingContext ctx, width, height) {
     settings.executeForSvg(ctx);
-//    executeImp(ctx, ctx.fill, width, height );
+    ctx.noStroke();
+    executeImp(ctx, ctx.fill, width, height );
   }
 }

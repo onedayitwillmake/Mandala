@@ -3,17 +3,19 @@ part of DrawingToolLib;
 class SvgRenderer implements Abstract2DRenderingContext {
 
   Svg.SvgElement _svg;
+  Svg.DefsElement defs;
 
   //  Current State
   num               _lineWidth;
   String            _strokeStyle;
   String            _fillStyle;
-  num               _opacity;
+  num               _opacity = 1.0;
 
   Svg.GElement      _currentGroup;
   Svg.PathElement   _currentPath;
   StringBuffer      _currentMatrixString;
   StringBuffer      _currentPathString;
+
   var               currentLine;
 
 
@@ -22,6 +24,10 @@ class SvgRenderer implements Abstract2DRenderingContext {
     _svg.attributes['width'] = width.toString();
     _svg.attributes['height'] = height.toString();
     _svg.attributes['version'] = "1.1";
+
+    defs = new Svg.SvgElement.tag("defs");
+    _svg.nodes.add( defs );
+
     noStroke();
     noFill();
   }
@@ -120,7 +126,10 @@ class SvgRenderer implements Abstract2DRenderingContext {
     _strokeStyle = 'hsla($h, $s%, $l%, $a)';
   }
   void setFillColorRgb(int r, int g, int b, [num a = 1]) {
-    _fillStyle = 'rgba($r, $g, $b, $a)';
+    int color = (r << 16) + (g << 8) + (b << 0);
+    
+    _fillStyle = '#${((1 << 24) + (r << 16) + (g << 8) + b).toRadixString(16).substring(1, 7)}'; 
+    _opacity = a;
   }
   void setFillColorHsl(int h, num s, num l, [num a = 1]) {
     _fillStyle = 'hsla($h, $s%, $l%, $a)';
@@ -129,8 +138,12 @@ class SvgRenderer implements Abstract2DRenderingContext {
   // Props
   Svg.SvgElement get svg => _svg;
 
-  num   get lineWidth => _lineWidth;
-        set lineWidth(num value) {
-          _lineWidth = value;
-        }
+  num     get lineWidth => _lineWidth;
+          set lineWidth( num value ) => _lineWidth = value;
+
+  String  get fillStyle => _fillStyle;
+          set fillStyle( String value ) => _fillStyle = value;
+
+  String  get strokeStyle => _strokeStyle;
+          set strokeStyle( String value ) => _strokeStyle = value;
 }

@@ -35,4 +35,10 @@ abstract class Abstract2DRenderingContext {
   // Props
   num   get lineWidth;
         set lineWidth(num value);
+
+  String  get fillStyle;
+          set fillStyle( String value );
+
+  String  get strokeStyle;
+          set strokeStyle( String value );
 }

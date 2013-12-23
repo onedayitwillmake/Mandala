@@ -10,7 +10,7 @@ class SmoothFillAction extends SmoothStrokeAction {
     this.settings.strokeStyle = null;
   }
 
-  void execute(CanvasRenderingContext2D ctx, width, height) {
+  void execute(dynamic ctx, width, height) {
     settings.execute(ctx);
     executeImp(ctx, ctx.fill, width, height );
   }
@@ -18,6 +18,6 @@ class SmoothFillAction extends SmoothStrokeAction {
   void executeForSvg(Abstract2DRenderingContext ctx, width, height) {
     settings.executeForSvg(ctx);
     ctx.noStroke();
-    executeForSvgImp(ctx, ctx.fill, width, height);
+    executeImp(ctx, ctx.fill, width, height );
   }
 }
