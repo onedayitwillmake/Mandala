@@ -15,7 +15,7 @@ class RegularFillAction extends RegularStrokeAction {
     executeImp(ctx, ctx.fill, width, height );
   }
   
-  void executeForSvg(Abstract2DRenderingContext ctx, width, height) {
+  void executeForSvg(SvgRenderer ctx, width, height) {
     settings.executeForSvg(ctx);
     ctx.noStroke();
     executeImp(ctx, ctx.fill, width, height );

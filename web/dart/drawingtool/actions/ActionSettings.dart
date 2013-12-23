@@ -14,7 +14,7 @@ class ActionSettings {
     ctx.setFillColorRgb(255,255,255, opacity);
   }
 
-  void executeForSvg(Abstract2DRenderingContext ctx) {
+  void executeForSvg(SvgRenderer ctx) {
     ctx.lineWidth = lineWidth;
     if( strokeStyle == null ) {
       ctx.noStroke();

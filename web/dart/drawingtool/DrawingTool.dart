@@ -1,21 +1,6 @@
 part of DrawingToolLib;
 
 class DrawingTool {
-  /// Emitted when the current action has changed
-  static const String ON_ACTION_CHANGED = "DrawingTool.ON_ACTION_CHANGED";
-  /// Emitted when mirror mode has been toggled
-  static const String ON_MIRROR_MODE_CHANGED = "DrawingTool.ON_MIRROR_MODE_CHANGED";
-  /// Emitted when shouldDrawEditablePoints has been toggled
-  static const String ON_DRAW_POINTS_CHANGED = "DrawingTool.ON_DRAW_POINTS_CHANGED";
-  /// Emitted when the number of sides is updated
-  static const String ON_SIDES_CHANGED = "DrawingTool.ON_SIDES_CHANGED";
-  /// Emitted when the number of sides is updated
-  static const String ON_SCALE_CHANGED = "DrawingTool.ON_SCALE_CHANGED";
-  /// Emitted when the opacity value has been updated
-  static const String ON_OPACITY_CHANGED = "DrawingTool.ON_OPACITY_CHANGED";
-  /// Emitted when the line-width value has been updated
-  static const String ON_LINEWIDTH_CHANGED = "DrawingTool.ON_LINEWIDTH_CHANGED";
-
   EventEmitter              eventEmitter = new EventEmitter();
 
   /// Number of sides in we draw (x2 if mirroring is on)
@@ -25,10 +10,17 @@ class DrawingTool {
   bool                      _isMirrored = true;
 
   /// If true - draggable points are drawn for the current tool
-  bool                      _shouldDrawEditablePoints = true;
+  bool                      _allowEditingPoints = true;
 
   /// Scale the canvas area by this value, 1.0 is unscaled
   num                       _scale = 1.0;
+
+  /// If true the user's input is down while the mouse is moving
+  bool                      _isDragging = false;
+
+  /// Edge bluring amount
+  int                       _blurAmount = 10;
+  num                       _blurOpacity = 0.5;
 
   /// Canvas element we're drawing to
   CanvasElement             _canvas;
@@ -47,10 +39,9 @@ class DrawingTool {
 
   /// Used to offset the touch position if the user has scrolled
   Geom.Point                _winScroll;
+
   /// Used internally to track RAF
   int                       _rafId = 0;
-  /// If true the user's input is down while the mouse is moving
-  bool                      _isDragging = false;
 
 
   /// List of Actions (for example draw regular stroke, change settings )
@@ -62,30 +53,33 @@ class DrawingTool {
     _winScroll = new Geom.Point(window.scrollX, window.scrollY);
 
     _ctx = _canvas.context2D;
-
     _offscreenBuffer = new CanvasElement(width:_canvas.width, height:_canvas.height);
 
+    _setupBackgroundGradients();
+    _setupListeners();
 
-    // SETUP BACKGROUND GRADIENT
+    changeAction( RegularStrokeAction.ACTION_NAME );
+    start();
+  }
+
+  // Creates the background Canvas / SVG gradients used as a backdrop on the drawing
+  void _setupBackgroundGradients() {
+    var colors = ["#383245", "#1B1821"];
+
     _bgGradient = _ctx.createRadialGradient(_canvasRect.width*0.5, _canvasRect.height*0.5, 0, _canvasRect.width*0.5, _canvasRect.height*0.65, _canvasRect.width*0.65);
-    _bgGradient.addColorStop(0, '#383245');
-    _bgGradient.addColorStop(1, '#1B1821');
+    _bgGradient.addColorStop(0, colors[0] );
+    _bgGradient.addColorStop(1, colors[1] );
 
     _bgGradientSvg = new Svg.SvgElement.tag("radialGradient");
     _bgGradientSvg.attributes['id'] = "background-gradient";
     var stop = new Svg.StopElement();
     stop.attributes['offset'] = "0%";
-    stop.attributes['stop-color'] = "#383245";
+    stop.attributes['stop-color'] = colors[0];
     _bgGradientSvg.nodes.add(stop);
     stop = new Svg.StopElement();
     stop.attributes['offset'] = "100%";
-    stop.attributes['stop-color'] = "#1B1821";
+    stop.attributes['stop-color'] = colors[1];
     _bgGradientSvg.nodes.add(stop);
-    
-    _setupListeners();
-
-    changeAction( RegularStrokeAction.ACTION_NAME );
-    start();
   }
 
   /// Sets up DOM and window listeners for input, resize, scroll and RAF
@@ -134,7 +128,7 @@ class DrawingTool {
 
   void _inputDown( Point pos ) {
     _isDragging = true;
-    actionQueue.last.inputDown( _ctx, _alignedPoint( pos ), _shouldDrawEditablePoints );
+    actionQueue.last.inputDown( _ctx, _alignedPoint( pos ), _allowEditingPoints );
   }
 
   void _inputMove( Point pos ) {
@@ -146,21 +140,30 @@ class DrawingTool {
     actionQueue.last.inputUp( _ctx, _alignedPoint( pos ) );
   }
 
-  // Adjust the point position so that 0,0 is the topleft 
+  /// Returns a new [Geom.Point] such that (0,0) is the TL of the canvas, taking the element's offsets into account
   Geom.Point _alignedPoint( Point pos ) {
     num x = (pos.x - _canvasRect.left) - (_canvasRect.width*0.5);
     num y = ( (pos.y - _canvasRect.top) - (_canvasRect.height*0.5) );
     return new Geom.Point(x/_scale,y/_scale);
   }
 
+  /// Updates the current active tool
   void _update( num time ) {
+    // Clear the area
+    _ctx.setTransform(1, 0, 0, 1, 0, 0);
+    _ctx.clearRect(0,0,_canvasRect.width, _canvasRect.height);
     
+    // turn off blending/shadow and draw the offscreen buffer
     _ctx.globalCompositeOperation = 'source-over';
     _ctx.setTransform(1, 0, 0, 1, 0, 0);
+    _ctx.shadowBlur = 0;
+    _ctx.shadowColor = 'rgba(0, 0, 0, 0)';
     _ctx.drawImage(_offscreenBuffer, 0, 0);
+    
+    // Renable blending / shadow
     _ctx.globalCompositeOperation = 'screen';
-    _ctx.shadowBlur = 10;
-    _ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+    _ctx.shadowBlur = _blurAmount;
+    _ctx.shadowColor = 'rgba(255, 255, 255, ${_blurOpacity.toStringAsPrecision(2)} )';
 
     // Draw everything twice if mirroring is turned on
     for( int j = 0; j < (_isMirrored ? 2 : 1); j++) {
@@ -175,7 +178,7 @@ class DrawingTool {
         
         actionQueue.last.execute( _ctx, _canvasRect.width, _canvasRect.height );
         if( xOffset == 1 && i == 0 ) {
-          actionQueue.last.activeDraw( _ctx, _canvasRect.width, _canvasRect.height, _shouldDrawEditablePoints );
+          actionQueue.last.activeDraw( _ctx, _canvasRect.width, _canvasRect.height, _allowEditingPoints );
         }
       }
     }
@@ -183,13 +186,20 @@ class DrawingTool {
     _rafId = window.requestAnimationFrame(_update);
   }
   
-  void updateOffscreenBuffer(){
-    print("Updating offscreen buffer");
-    _offscreenBuffer.width = _offscreenBuffer.width;
+  void _updateOffscreenBuffer(){
+
     CanvasRenderingContext2D hiddenCtx  = _offscreenBuffer.context2D;
+    hiddenCtx.setTransform(1, 0, 0, 1, 0, 0);
+    hiddenCtx.clearRect(0,0,_canvasRect.width, _canvasRect.height);
+
+    hiddenCtx.shadowBlur = 0;
+    hiddenCtx.shadowColor = 'rgba(0, 0, 0, 0)';
     _drawBackground( hiddenCtx );
-    
-    _ctx.globalCompositeOperation = 'screen';
+    hiddenCtx.shadowBlur = _blurAmount;
+    hiddenCtx.shadowColor = 'rgba(255, 255, 255, ${_blurOpacity.toStringAsPrecision(2)} )';
+
+
+    hiddenCtx.globalCompositeOperation = 'screen';
 
     // Draw everything twice if mirroring is turned on
     for( int j = 0; j < (_isMirrored ? 2 : 1); j++) {
@@ -221,11 +231,6 @@ class DrawingTool {
   /// Changes the current action by appending a new instance to the actionQueue
   bool changeAction( String actionName ) {
     
-    // We're already in that mode
-//    if( actionQueue.isNotEmpty && actionQueue.last.name == actionName ) {
-//      return false;
-//    }
-
     BaseAction nextAction = null;
     switch( actionName ) {
       case RegularStrokeAction.ACTION_NAME:
@@ -253,7 +258,7 @@ class DrawingTool {
       nextAction.settings.opacity = actionQueue.last.settings.opacity;
     }
 
-    updateOffscreenBuffer();
+    _updateOffscreenBuffer();
     actionQueue.add( nextAction );
     
     _dispatchActionChangedEvent();
@@ -273,6 +278,7 @@ class DrawingTool {
       break;
       case "sides":
         _sides = value;
+        _updateOffscreenBuffer();
         _dispatchOnSidesChangedEvent();
       break;
       case "scale":
@@ -280,11 +286,12 @@ class DrawingTool {
         _dispatchScaleChangedEvent();
       break;
       case "setEditablePoints":
-        _shouldDrawEditablePoints = value;
+        _allowEditingPoints = value;
         _dispatchOnDrawPointsChanged();
       break;
       case "setMirrorMode":
         _isMirrored = value;
+        _updateOffscreenBuffer();
         _dispatchMirrorModeChangedEvent();
         break;
       case "linewidth":
@@ -304,13 +311,13 @@ class DrawingTool {
     // Current action has no points and user wants to undo - remove that action
     if( actionQueue.last.points.length == 0 ) {
       if( actionQueue.length == 1 ) {
-        updateOffscreenBuffer(); 
+        _updateOffscreenBuffer();
         return; // dont remove the last action
       }
       
       
       actionQueue.removeLast();
-      updateOffscreenBuffer();
+      _updateOffscreenBuffer();
       _dispatchActionChangedEvent();
     }
 
@@ -322,7 +329,7 @@ class DrawingTool {
 
   void _drawBackground( dynamic ctx ) {
     ctx.fillStyle = _bgGradient;
-    _fillRoundedRect(ctx, 0,0,_canvasRect.width,_canvasRect.height, 8);
+    _fillRoundedRect(ctx, 0,0,_canvasRect.width,_canvasRect.height, 4);
   }
 
   void _fillRoundedRect( dynamic ctx, x, y, w, h, r ) {
@@ -340,7 +347,7 @@ class DrawingTool {
     ctx.closePath();
   }
   
-  //// -------- SVG Save
+  /// Creates an SVG Representation of the mandala
   Svg.SvgElement saveSvg( ) {
     
     SvgRenderer svgCtx = new SvgRenderer(_canvasRect.width.toInt(), _canvasRect.height.toInt() );
@@ -400,15 +407,15 @@ class DrawingTool {
     _dispatchLineWidthChangedEvent();
   }
   void _dispatchActionChangedEvent() {
-    eventEmitter.emit( DrawingTool.ON_ACTION_CHANGED, actionQueue.last.name );
+    eventEmitter.emit( DrawingToolEvent.ON_ACTION_CHANGED, actionQueue.last.name );
     _dispatchOpacityChangedEvent();
   }
-  void _dispatchMirrorModeChangedEvent( ) => eventEmitter.emit( DrawingTool.ON_MIRROR_MODE_CHANGED, _isMirrored );
-  void _dispatchOnDrawPointsChanged() => eventEmitter.emit( DrawingTool.ON_DRAW_POINTS_CHANGED, _shouldDrawEditablePoints );
-  void _dispatchOnSidesChangedEvent() => eventEmitter.emit( DrawingTool.ON_SIDES_CHANGED, _sides );
-  void _dispatchScaleChangedEvent() => eventEmitter.emit( DrawingTool.ON_SCALE_CHANGED, _scale );
-  void _dispatchOpacityChangedEvent() => eventEmitter.emit( DrawingTool.ON_OPACITY_CHANGED, actionQueue.last.settings.opacity );
-  void _dispatchLineWidthChangedEvent() => eventEmitter.emit( DrawingTool.ON_LINEWIDTH_CHANGED, actionQueue.last.settings.lineWidth );
+  void _dispatchMirrorModeChangedEvent( ) => eventEmitter.emit( DrawingToolEvent.ON_MIRROR_MODE_CHANGED, _isMirrored );
+  void _dispatchOnDrawPointsChanged() => eventEmitter.emit( DrawingToolEvent.ON_DRAW_POINTS_CHANGED, _allowEditingPoints );
+  void _dispatchOnSidesChangedEvent() => eventEmitter.emit( DrawingToolEvent.ON_SIDES_CHANGED, _sides );
+  void _dispatchScaleChangedEvent() => eventEmitter.emit( DrawingToolEvent.ON_SCALE_CHANGED, _scale );
+  void _dispatchOpacityChangedEvent() => eventEmitter.emit( DrawingToolEvent.ON_OPACITY_CHANGED, actionQueue.last.settings.opacity );
+  void _dispatchLineWidthChangedEvent() => eventEmitter.emit( DrawingToolEvent.ON_LINEWIDTH_CHANGED, actionQueue.last.settings.lineWidth );
 
   /////////////////////////////////////////////////
   ////////////////// PROPERTIES ///////////////////

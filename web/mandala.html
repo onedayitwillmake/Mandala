@@ -10,14 +10,35 @@
 <div id="main-container" class="ui grid">
     <div id="drawingtool-container" class="row">
         <div id="drawingtool" class="twelve wide column">
-            <canvas id="canvas" width="700" height="650" class="center"></canvas>
+
+            <div class="bottom-menu-container row">
+                <div class="ui menu">
+                    <a id="nu-interface-save-svg" class="item">
+                        <i class="save icon"></i>
+                        Save SVG
+                    </a>
+                    <div class="right menu">
+                        <a class="item" data-edit-action="undo">
+                            <i class="undo icon"></i>
+                            Undo
+                        </a>
+                        <a class="item" data-edit-action="undo">
+                            <i class="trash icon"></i>
+                            Clear
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <canvas id="canvas" width="700" height="500" class="center"></canvas>
+            </div>
         </div>
         <div class="four wide column">
             <div class="nu-interface ui two column grid">
-                <div class="row">
+                <div id="drawingmode-container"  class="row">
                     <div class="ui green small label">Drawing mode</div>
                 </div>
-                <div class="row">
+                <div class="menu row">
                     <div class="column">
                         <div class="left action ui vertical small icon menu">
                             <a class="teal item" data-drawingmode="RegularStroke">
@@ -81,7 +102,7 @@
                             <a class="teal item">
                                 <input id="interface-line-width-slider" class="" type="range" min="0.25" max="5" step="0.25"
                                        value="0.5"/>
-                                <span class="slider-label" id="interface-line-width-slider-text">Thickness: 1.0</span>
+                                <span class="slider-label" id="interface-line-width-slider-text">Width: 1.0</span>
                             </a>
                             <!-- SIDE SLIDER -->
                             <a class="teal item">
@@ -98,29 +119,26 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="ui orange small label">Edit</div>
-                </div>
-                <div class="row">
-                    <div class="ui vertical small icon menu">
-                        <a class="item" data-edit-action="undo">
-                            <i class="undo icon"></i>
-                            Undo
-                        </a>
-                        <a class="item" data-edit-action="undo">
-                            <i class="trash icon"></i>
-                            Clear
-                        </a>
-                    </div>
-                </div>
-                <div class="row">
-                   <div class="ui vertical small icon menu">
-                        <a id="nu-interface-save-svg" class="item">
-                            <i class="save icon"></i>
-                            Save SVG
-                        </a>
-                    </div>
-                </div>
+                <!--<div class="row">-->
+                    <!--<div class="ui orange small label">Edit</div>-->
+                <!--</div>-->
+                <!--<div class="row">-->
+                    <!--<div class="ui vertical small icon menu">-->
+                        <!--<a class="item" data-edit-action="undo">-->
+                            <!--<i class="undo icon"></i>-->
+                            <!--Undo-->
+                        <!--</a>-->
+                        <!--<a class="item" data-edit-action="undo">-->
+                            <!--<i class="trash icon"></i>-->
+                            <!--Clear-->
+                        <!--</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="row">-->
+                   <!--<div class="ui vertical small icon menu">-->
+
+                    <!--</div>-->
+                <!--</div>-->
             </div>
         </div>
     </div>

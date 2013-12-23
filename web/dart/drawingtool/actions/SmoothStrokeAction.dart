@@ -52,7 +52,7 @@ class SmoothStrokeAction extends RegularStrokeAction {
     ctx.closePath();
   }
 
-  void executeForSvg(Abstract2DRenderingContext ctx, width, height) {
+  void executeForSvg(SvgRenderer ctx, width, height) {
     settings.executeForSvg(ctx);
     ctx.noFill();
     executeImp( ctx, ctx.stroke, width, height );

@@ -35,6 +35,9 @@ canvas {
 }
 
 
+#drawingmode-container {
+  margin-top: 1.5%;
+}
 .right.action.column {
   margin-left: -1em;
 }
@@ -53,6 +56,15 @@ canvas {
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
 }
+.nu-interface .menu.row {
+  margin-top: 0px;
+  padding-top: 6px;
+  margin-left: -2px;
+}
+.nu-interface .settings-label-container {
+  margin-top: 0;
+  padding-top: 6px;
+}
 .settings.ui.vertical.small.icon.menu {
   font-size: 1em;
   width: 13.5em;
@@ -67,6 +79,10 @@ canvas {
   float: left;
   height: 5px;
   width: 8.5em;
+}
+.bottom-menu-container .ui.menu {
+  width: 700px;
+  margin-bottom: 5px;
 }
 
 

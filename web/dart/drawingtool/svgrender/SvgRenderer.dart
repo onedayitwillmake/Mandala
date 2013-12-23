@@ -1,6 +1,6 @@
 part of DrawingToolLib;
 
-class SvgRenderer implements Abstract2DRenderingContext {
+class SvgRenderer {
 
   Svg.SvgElement _svg;
   Svg.DefsElement defs;
@@ -15,9 +15,6 @@ class SvgRenderer implements Abstract2DRenderingContext {
   Svg.PathElement   _currentPath;
   StringBuffer      _currentMatrixString;
   StringBuffer      _currentPathString;
-
-  var               currentLine;
-
 
   SvgRenderer( int width, int height ) {
     _svg = new Svg.SvgElement.tag("svg");

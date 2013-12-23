@@ -63,13 +63,13 @@ class DrawingToolInterface {
   
   /// Setup events that originate from the drawingModule and effect the user interface
   void _setupIncommingEvents() {
-    _drawingModule.eventEmitter.on(DrawingTool.ON_ACTION_CHANGED, onActionChanged );
-    _drawingModule.eventEmitter.on(DrawingTool.ON_DRAW_POINTS_CHANGED, onDrawPointsChanged );
-    _drawingModule.eventEmitter.on(DrawingTool.ON_MIRROR_MODE_CHANGED, onMirrorModeChanged );
-    _drawingModule.eventEmitter.on(DrawingTool.ON_SIDES_CHANGED, onSideCountChanged );
-    _drawingModule.eventEmitter.on(DrawingTool.ON_SCALE_CHANGED, onScaleChanged );
-    _drawingModule.eventEmitter.on(DrawingTool.ON_OPACITY_CHANGED, onOpacityChanged );
-    _drawingModule.eventEmitter.on(DrawingTool.ON_LINEWIDTH_CHANGED, onLineWidthChanged );
+    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_ACTION_CHANGED, onActionChanged );
+    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_DRAW_POINTS_CHANGED, onDrawPointsChanged );
+    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_MIRROR_MODE_CHANGED, onMirrorModeChanged );
+    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_SIDES_CHANGED, onSideCountChanged );
+    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_SCALE_CHANGED, onScaleChanged );
+    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_OPACITY_CHANGED, onOpacityChanged );
+    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_LINEWIDTH_CHANGED, onLineWidthChanged );
   }
   
   /// Save out an SVG version of the mandala
@@ -116,7 +116,7 @@ class DrawingToolInterface {
   
   void onLineWidthChanged( num lineWidth ) {
     _$lineWidthSlider.value = lineWidth.toStringAsPrecision(2);
-    querySelector("#interface-line-width-slider-text").text = "Thickness: " + (lineWidth*100).toInt().toString();
+    querySelector("#interface-line-width-slider-text").text = "Width: " + (lineWidth*100).toInt().toString();
   }
 
   void onOpacityChanged( num opacity ) {
