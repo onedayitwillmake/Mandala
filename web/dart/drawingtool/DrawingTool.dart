@@ -13,6 +13,8 @@ class DrawingTool {
   static const String ON_SCALE_CHANGED = "DrawingTool.ON_SCALE_CHANGED";
   /// Emitted when the opacity value has been updated
   static const String ON_OPACITY_CHANGED = "DrawingTool.ON_OPACITY_CHANGED";
+  /// Emitted when the line-width value has been updated
+  static const String ON_LINEWIDTH_CHANGED = "DrawingTool.ON_LINEWIDTH_CHANGED";
 
   EventEmitter              eventEmitter = new EventEmitter();
 
@@ -139,6 +141,7 @@ class DrawingTool {
     actionQueue.last.inputUp( _ctx, _alignedPoint( pos ) );
   }
 
+  // Adjust the point position so that 0,0 is the topleft 
   Geom.Point _alignedPoint( Point pos ) {
     num x = (pos.x - _canvasRect.left) - (_canvasRect.width*0.5);
     num y = ( (pos.y - _canvasRect.top) - (_canvasRect.height*0.5) );
@@ -146,7 +149,10 @@ class DrawingTool {
   }
 
   void _update( num time ) {
+    _ctx.canvas.width = _ctx.canvas.width;
+    
     _drawBackground();
+    
     _ctx.globalCompositeOperation = 'screen';
 
     // Draw everything twice if mirroring is turned on
@@ -184,10 +190,11 @@ class DrawingTool {
   
   /// Changes the current action by appending a new instance to the actionQueue
   bool changeAction( String actionName ) {
+    
     // We're already in that mode
-    if( actionQueue.isNotEmpty && actionQueue.last.name == actionName ) {
-      return false;
-    }
+//    if( actionQueue.isNotEmpty && actionQueue.last.name == actionName ) {
+//      return false;
+//    }
 
     BaseAction nextAction = null;
     switch( actionName ) {
@@ -211,24 +218,20 @@ class DrawingTool {
       break;
     }
 
-    // TODO: Call exit on current action?
-    if( nextAction == null ) return false;
-
-    num opacity = 0.25;
+    // Set the newAction's opacity to the current action's opacity
     if( actionQueue.isNotEmpty ) {
-      opacity = actionQueue.last.settings.opacity;
+      nextAction.settings.opacity = actionQueue.last.settings.opacity;
     }
-
-    nextAction.settings.opacity = opacity;
+    
     actionQueue.add( nextAction );
-
+    
     _dispatchActionChangedEvent();
+    
     return true;
   }
 
   void performEditAction( String actionName, [dynamic value] ) {
-    print(actionName);
-    
+   
     switch( actionName ) {
       case "undo":
         _performUndo();
@@ -253,9 +256,14 @@ class DrawingTool {
         _isMirrored = value;
         _dispatchMirrorModeChangedEvent();
         break;
-      case "save-svg":
-        _saveSvg();
+      case "linewidth":
+        actionQueue.last.settings.lineWidth = value;
+        _dispatchLineWidthChangedEvent();
+        break;
     }
+    
+    print(actionName);
+    
   }
 
   /**
@@ -277,7 +285,6 @@ class DrawingTool {
   }
 
   void _drawBackground() {
-    _ctx.canvas.width = _ctx.canvas.width;
     _ctx.fillStyle = _bgGradient;
     _fillRoundedRect(_ctx, 0,0,_canvasRect.width,_canvasRect.height, 8);
   }
@@ -296,17 +303,18 @@ class DrawingTool {
     ctx.fill();
     ctx.closePath();
   }
+  
   //// -------- SVG Save
-  void _saveSvg( ) {
+  Svg.SvgElement saveSvg( ) {
     
-    SvgRenderer svgCtx = new SvgRenderer(_canvasRect.width.toInt(), _canvasRect.height.toInt() );    
+    SvgRenderer svgCtx = new SvgRenderer(_canvasRect.width.toInt(), _canvasRect.height.toInt() );
+    
     svgCtx.defs.nodes.add( _bgGradientSvg );
 
     svgCtx.groupStart();
     svgCtx.fillStyle = "url(#${_bgGradientSvg.id})";
       _fillRoundedRect( svgCtx, 0,0,_canvasRect.width,_canvasRect.height, 8);
     svgCtx.groupEnd();
-    
     
     // Draw everything twice if mirroring is turned on
     for( int j = 0; j < (_isMirrored ? 2 : 1); j++) {
@@ -330,11 +338,22 @@ class DrawingTool {
       }
     }
 
-    document.body.nodes.add( svgCtx.svg );
+    // Arc around
+    svgCtx.groupStart();
+    svgCtx.lineWidth = 2;
+    svgCtx.beginPath();    
+    svgCtx.setStrokeColorRgb(255, 255, 255, 0.75);
+    svgCtx.arc(width*0.5, height*0.5, _canvasRect.width*0.46, 0, PI*2, false);
+    svgCtx.stroke();
+    svgCtx.closePath();
+    svgCtx.groupEnd();
 
+    return svgCtx.svg;
   }
 
-  //// -------- EVENT DISPATCHING
+  /////////////////////////////////////////////////
+  /////////////// EVENT DISPATCHING ///////////////
+  /////////////////////////////////////////////////
   void _dispatchAllStateEvents() {
     _dispatchActionChangedEvent();
     _dispatchMirrorModeChangedEvent();
@@ -342,6 +361,7 @@ class DrawingTool {
     _dispatchOnSidesChangedEvent();
     _dispatchScaleChangedEvent();
     _dispatchOpacityChangedEvent();
+    _dispatchLineWidthChangedEvent();
   }
   void _dispatchActionChangedEvent() {
     eventEmitter.emit( DrawingTool.ON_ACTION_CHANGED, actionQueue.last.name );
@@ -352,4 +372,11 @@ class DrawingTool {
   void _dispatchOnSidesChangedEvent() => eventEmitter.emit( DrawingTool.ON_SIDES_CHANGED, _sides );
   void _dispatchScaleChangedEvent() => eventEmitter.emit( DrawingTool.ON_SCALE_CHANGED, _scale );
   void _dispatchOpacityChangedEvent() => eventEmitter.emit( DrawingTool.ON_OPACITY_CHANGED, actionQueue.last.settings.opacity );
+  void _dispatchLineWidthChangedEvent() => eventEmitter.emit( DrawingTool.ON_LINEWIDTH_CHANGED, actionQueue.last.settings.lineWidth );
+
+  /////////////////////////////////////////////////
+  ////////////////// PROPERTIES ///////////////////
+  /////////////////////////////////////////////////
+  num get width => _canvasRect.width;
+  num get height => _canvasRect.height;
 }

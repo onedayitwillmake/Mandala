@@ -78,6 +78,11 @@
                                        value="100"/>
                                 <span class="slider-label" id="interface-scale-slider-text">Zoom: 1.0</span>
                             </a>
+                            <a class="teal item">
+                                <input id="interface-line-width-slider" class="" type="range" min="0.25" max="2" step="0.25"
+                                       value="0.5"/>
+                                <span class="slider-label" id="interface-line-width-slider-text">Thickness: 1.0</span>
+                            </a>
                             <!-- SIDE SLIDER -->
                             <a class="teal item">
                                 <input id="interface-sidecount-slider" class="" type="range" min="1" max="14" step="1"
@@ -110,7 +115,7 @@
                 </div>
                 <div class="row">
                    <div class="ui vertical small icon menu">
-                        <a class="item" data-edit-action="save-svg">
+                        <a id="nu-interface-save-svg" class="item">
                             <i class="save icon"></i>
                             Save SVG
                         </a>

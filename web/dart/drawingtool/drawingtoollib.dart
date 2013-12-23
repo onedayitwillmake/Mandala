@@ -1,7 +1,8 @@
 library DrawingToolLib;
 import 'dart:html';
+import 'dart:async';
 import 'dart:svg' as Svg;
-import 'dart:math' show PI, Rectangle;
+import 'dart:math' show PI, Rectangle, sin, cos;
 import 'dart:collection';
 import 'package:dart_events/dart_events.dart';
 

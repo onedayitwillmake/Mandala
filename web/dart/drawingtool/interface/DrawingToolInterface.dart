@@ -7,7 +7,8 @@ class DrawingToolInterface {
   RangeInputElement _$sideCountSlider = null;
   RangeInputElement _$scaleSlider = null;
   RangeInputElement _$opacitySlider = null;
-  
+  RangeInputElement _$lineWidthSlider = null;
+
   CheckboxInputElement _$mirrorCheckbox;
   CheckboxInputElement _$drawPointsCheckbox;
 
@@ -28,6 +29,8 @@ class DrawingToolInterface {
     querySelectorAll('[data-edit-action]').forEach((HtmlElement el) {
       el.onClick.listen((e) => _drawingModule.performEditAction( el.attributes['data-edit-action'] ) );
     });
+    
+    querySelector("#nu-interface-save-svg").onClick.listen( _onSvgSave );
     
     // Mirroring toggle
     _$mirrorCheckbox = ( querySelector("[name=toggle-mirroring]") as CheckboxInputElement );
@@ -50,6 +53,12 @@ class DrawingToolInterface {
     _$opacitySlider.onChange.listen((e){
       _drawingModule.performEditAction( "alpha", double.parse( _$opacitySlider.value ) / 100.0 );
     });
+
+    // Opacity slider
+    _$lineWidthSlider = ( querySelector("#interface-line-width-slider") as RangeInputElement );
+    _$lineWidthSlider.onChange.listen((e){
+      _drawingModule.performEditAction( "linewidth", double.parse( _$lineWidthSlider.value ) );
+    });
   }
   
   /// Setup events that originate from the drawingModule and effect the user interface
@@ -60,6 +69,34 @@ class DrawingToolInterface {
     _drawingModule.eventEmitter.on(DrawingTool.ON_SIDES_CHANGED, onSideCountChanged );
     _drawingModule.eventEmitter.on(DrawingTool.ON_SCALE_CHANGED, onScaleChanged );
     _drawingModule.eventEmitter.on(DrawingTool.ON_OPACITY_CHANGED, onOpacityChanged );
+    _drawingModule.eventEmitter.on(DrawingTool.ON_LINEWIDTH_CHANGED, onLineWidthChanged );
+  }
+  
+  /// Save out an SVG version of the mandala
+  void _onSvgSave(e) {
+    // Create the SVG 
+    Svg.SvgElement svg = _drawingModule.saveSvg();
+    
+    // Convert to blob
+    var blob = new Blob([svg.outerHtml], "image/svg+xml");
+    
+    // Open preview window with download link
+    var previewWindow = window.open("", "");
+    var a = new AnchorElement(href: Url.createObjectUrlFromBlob( blob ) );
+    a.text = "Download";
+    a.style.display = "block";
+    a.download = "mandala.svg";
+    a.onClick.listen((e) { // clenaup
+      new Future.delayed(new Duration(seconds:2), () => Url.revokeObjectUrl(a.href));
+    });
+    
+    // Add the <a> tag, followed by the SVG
+    previewWindow.document.body.nodes.add(a); 
+    previewWindow.document.body.nodes.add(svg);
+    
+    // Open window with just SVG data as XML
+//    new Future.delayed(new Duration(seconds:), () => window.open(Url.createObjectUrlFromBlob( blob ), "svg-text") );
+    //, "width=${(_drawingModule.width+50).toInt().toString()},height=${(_drawingModule.height+50).toInt().toString()},location=no,menubar=no");
   }
   
   /////////////////////////////////////////////////
@@ -77,6 +114,11 @@ class DrawingToolInterface {
     querySelector("#interface-sidecount-slider-text").text = "Sides: " + sideCount.toString();
   }
   
+  void onLineWidthChanged( num lineWidth ) {
+    _$lineWidthSlider.value = lineWidth.toStringAsPrecision(2);
+    querySelector("#interface-line-width-slider-text").text = "Thickness: " + (lineWidth*100).toInt().toString();
+  }
+
   void onOpacityChanged( num opacity ) {
     _$opacitySlider.value = (opacity*100).toString();
     querySelector("#interface-opacity-slider-text").text = "Alpha: ." + opacity.toStringAsPrecision(2);

@@ -68,8 +68,25 @@ class SvgRenderer implements Abstract2DRenderingContext {
   
   // Shapes
   void arc(num x,  num y,  num radius,  num startAngle, num endAngle, [bool anticlockwise = false]) {
+    // Due to some SVG thing, if the arc is 360 degrees - it wont render -
+    // So make it 359.9999 degrees
+    bool closeArc = false;
+    if( startAngle.abs() + endAngle.abs() == PI*2 ) {
+      endAngle *= 0.9999999;
+      closeArc = true;
+    }
     
+    
+    // Convert to Polar Coordinates
+    Geom.Point start = new Geom.Point(x + cos(startAngle - PI / 2) * radius, y + sin(startAngle - PI / 2) * radius);
+    Geom.Point end = new Geom.Point(x + cos(endAngle - PI / 2) * radius, y + sin(endAngle - PI / 2) * radius);
+    
+    String arcSweep = (endAngle - startAngle <= PI) ? "0" : "1";
+    
+    _currentPathString.write("M${start.x} ${start.y} ");
+    _currentPathString.write("A${radius} ${radius} 1 1 1 ${end.x} ${end.y} ${closeArc ? 'Z' : '' }");
   }
+
   void rect(num x, num y, num width, num height) {
     var rect = new Svg.SvgElement.tag("rect");
     rect.attributes["width"] = width.toString();
