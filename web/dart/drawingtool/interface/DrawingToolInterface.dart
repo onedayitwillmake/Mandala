@@ -11,6 +11,7 @@ class DrawingToolInterface {
 
   CheckboxInputElement _$mirrorCheckbox;
   CheckboxInputElement _$drawPointsCheckbox;
+  HtmlElement _$advancedToggleButton;
 
   DrawingToolInterface( this._drawingModule ) {
     _setupOutgoingEvents();
@@ -31,7 +32,8 @@ class DrawingToolInterface {
     });
     
     querySelector("#nu-interface-save-svg").onClick.listen( _onSvgSave );
-    
+    querySelector("#nu-interface-save-image").onClick.listen( _onSaveImage );
+
     // Mirroring toggle
     _$mirrorCheckbox = ( querySelector("[name=toggle-mirroring]") as CheckboxInputElement );
     _$mirrorCheckbox.parent.onClick.listen((e) => _drawingModule.performEditAction( "setMirrorMode", !_$mirrorCheckbox.checked ) );
@@ -59,6 +61,13 @@ class DrawingToolInterface {
     _$lineWidthSlider.onChange.listen((e){
       _drawingModule.performEditAction( "linewidth", double.parse( _$lineWidthSlider.value ) );
     });
+
+    // Listen for advanced options toggle
+    _$advancedToggleButton = querySelector("#advanced-toggle")
+    ..onClick.listen( _toggleAdvancedMenus )
+    ..onTouchEnd.listen( _toggleAdvancedMenus );
+    // close out on first call
+    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
   }
   
   /// Setup events that originate from the drawingModule and effect the user interface
@@ -71,15 +80,15 @@ class DrawingToolInterface {
     _drawingModule.eventEmitter.on(DrawingToolEvent.ON_OPACITY_CHANGED, onOpacityChanged );
     _drawingModule.eventEmitter.on(DrawingToolEvent.ON_LINEWIDTH_CHANGED, onLineWidthChanged );
   }
-  
+
   /// Save out an SVG version of the mandala
   void _onSvgSave(e) {
-    // Create the SVG 
+    // Create the SVG
     Svg.SvgElement svg = _drawingModule.saveSvg();
-    
+
     // Convert to blob
     var blob = new Blob([svg.outerHtml], "image/svg+xml");
-//    
+//
 //    // Open preview window with download link
 //    var previewWindow = window.open("", "");
 //    var a = new AnchorElement(href: Url.createObjectUrlFromBlob( blob ) );
@@ -89,15 +98,54 @@ class DrawingToolInterface {
 //    a.onClick.listen((e) { // clenaup
 //      new Future.delayed(new Duration(seconds:2), () => Url.revokeObjectUrl(a.href));
 //    });
-//    
+//
 //    // Add the <a> tag, followed by the SVG
-//    previewWindow.document.body.nodes.add(a); 
+//    previewWindow.document.body.nodes.add(a);
 //    previewWindow.document.body.nodes.add(svg);
-    
+
     // Open window with just SVG data as XML
     window.open(Url.createObjectUrlFromBlob( blob ), "svg-text");
   }
-  
+
+  /// Saves out an image representation of the mandala
+  void _onSaveImage(e) {
+
+    ImageElement img = new ImageElement();
+    img.src = _drawingModule.getDataUrl();
+
+    var newWindow = window.open("", "");
+    newWindow.document.body.nodes.add(img);
+  }
+
+  /**
+  * Toggles the menus under 'advanced', uses the attribute [data-is-showing] in the _$advancedToggleButton to show/hide
+  * Calls TweenMax via JSContext in order to provide animation
+  */
+  void _toggleAdvancedMenus( e ) {
+    var next = _$advancedToggleButton.nextElementSibling;
+    bool menusAreCurrentlyShowing = JSON.decode( _$advancedToggleButton.dataset["isShowing"] );
+    bool shouldHideMenus = !menusAreCurrentlyShowing;
+
+    _$advancedToggleButton.dataset["isShowing"] = (!menusAreCurrentlyShowing).toString();
+
+    int i = 0;
+    while(next != null) {
+      context['TweenMax'].callMethod("to",[next, 0.15, new JsObject.jsify({
+          "delay" : 0.2 + (-i)*0.02,
+          "y": (menusAreCurrentlyShowing) ? "50" : 0,
+          "autoAlpha": (menusAreCurrentlyShowing) ? 0 : 1
+      })]);
+      next.style.pointerEvents = menusAreCurrentlyShowing ? "none" : "auto";
+      next = next.nextElementSibling;
+      i++;
+    }
+
+    // Rotate the chevron
+    context['TweenMax'].callMethod("to",["#advanced-toggle-chevron", 0.15, new JsObject.jsify({
+        "rotation": (menusAreCurrentlyShowing) ? "0" : "180"
+    })]);
+  }
+
   /////////////////////////////////////////////////
   ////////////// INTERFACE LISTENERS //////////////
   /////////////////////////////////////////////////

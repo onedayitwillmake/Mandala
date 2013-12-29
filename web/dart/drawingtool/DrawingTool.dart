@@ -18,8 +18,9 @@ class DrawingTool {
   /// If true the user's input is down while the mouse is moving
   bool                      _isDragging = false;
 
-  /// Edge bluring amount
+  /// Glow amount
   int                       _blurAmount = 10;
+  /// Glow opacity
   num                       _blurOpacity = 0.5;
 
   /// Canvas element we're drawing to
@@ -164,6 +165,7 @@ class DrawingTool {
     _ctx.globalCompositeOperation = 'screen';
     _ctx.shadowBlur = _blurAmount;
     _ctx.shadowColor = 'rgba(255, 255, 255, ${_blurOpacity.toStringAsPrecision(2)} )';
+
 
     // Draw everything twice if mirroring is turned on
     for( int j = 0; j < (_isMirrored ? 2 : 1); j++) {
@@ -327,6 +329,7 @@ class DrawingTool {
     actionQueue.last.undo( _ctx );
   }
 
+  // Draws the background gradient
   void _drawBackground( dynamic ctx ) {
     ctx.fillStyle = _bgGradient;
     _fillRoundedRect(ctx, 0,0,_canvasRect.width,_canvasRect.height, 4);
@@ -392,6 +395,11 @@ class DrawingTool {
     svgCtx.groupEnd();
 
     return svgCtx.svg;
+  }
+
+  /// Returns the canvas as an image
+  String getDataUrl() {
+    return _canvas.toDataUrl();
   }
 
   /////////////////////////////////////////////////

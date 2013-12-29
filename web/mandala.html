@@ -8,6 +8,11 @@
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="css/semantic.css">
     <link type="text/css" rel="stylesheet" href="css/mandala.css">
+
+    <script src="js/TweenMax.min.js"></script>
+    <script src="js/ColorPropsPlugin.min.js"></script>
+    <script src="js/CSSRulePlugin.min.js"></script>
+    <script src="js/ScrollToPlugin.min.js"></script>
 </head>
 <body class="mandala-app">
 <div id="main-container" class="ui grid">
@@ -86,9 +91,9 @@
                 </div>
                 <div class="menu row">
                     <div class="sixteen wide column">
-                        <div class="settings ui vertical small icon menu">
+                        <div class="settings ui vertical small menu">
                             <!-- MIRROR MODE TOGGLE -->
-                            <div class="checkbox-container item">
+                            <div class="item">
                                 <div class="ui toggle checkbox">
                                     <input type="checkbox" name="toggle-mirroring">
                                     <label>Mirror Mode</label>
@@ -103,8 +108,8 @@
                         </div>
                     </div>
                 </div>
-                <div id="advanced-toggle" class="row">
-                    Advanced<span id="advanced-toggle-chevron" class="fa chevron up">&#xf13a;</span>
+                <div id="advanced-toggle" data-is-showing="true" class="row">
+                    Advanced<span id="advanced-toggle-chevron" class="fa chevron up">&#xf139;</span>
                 </div>
                 <!-- TOOL MENU -->
                 <div class="row">
@@ -134,9 +139,9 @@
                 </div>
                 <div class="menu row">
                     <div class="sixteen wide column">
-                        <div class="settings ui vertical small icon menu">
+                        <div class="settings ui vertical small menu">
                             <!-- DrawPoints MODE TOGGLE -->
-                            <div class="checkbox-container item">
+                            <div class="item">
                                 <div class="ui toggle checkbox">
                                     <input type="checkbox" name="toggle-draw-points">
                                     <label>Draw Points</label>
@@ -175,12 +180,11 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
 </div>
-<!--<script type="application/dart" src="dart/mandala.dart"></script>-->
-<!--<script src="packages/browser/dart.js"></script>-->
+<script type="application/dart" src="dart/mandala.dart"></script>
+<script src="packages/browser/dart.js"></script>
+<script src="packages/browser/interop.js"></script>
 </body>
 </html>

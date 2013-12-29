@@ -48,15 +48,10 @@ body {
   font-style: normal;
 }
 canvas {
-  -webkit-touch-callout: none;
   -webkit-user-select: none;
-  -khtml-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  outline: none;
-  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-  /* mobile webkit */
 }
 #main-container {
   margin-top: 60px;
@@ -101,10 +96,12 @@ input[type="range"]::-webkit-slider-thumb {
   text-transform: none;
   font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
   font-weight: 200 !important;
-  font-size: 17px;
+  font-size: 16px;
   vertical-align: middle;
   text-align: center;
   color: white;
+  line-height: 0.5;
+  border-radius: 0.125em;
 }
 #label-drawing-mode-menu {
   background-color: #1abc9c;
@@ -151,6 +148,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 15px;
   color: white;
   text-align: right;
+  cursor: pointer;
 }
 #advanced-toggle-chevron {
   -webkit-transform: rotate(180deg);
