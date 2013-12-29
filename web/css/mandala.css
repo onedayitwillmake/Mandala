@@ -1,16 +1,18 @@
+
 html,
 body {
   font-size: 15px;
   height: 100%;
 }
 body {
-  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-  background: #ecf0f1;
+  font-family: "Raleway", serif;
   margin: 0px;
   padding: 0px;
   color: #555555;
   text-rendering: optimizeLegibility;
   min-width: 320px;
+  background-color: #2C3E4E;
+  font-style: normal;
 }
 canvas {
   -webkit-touch-callout: none;
@@ -26,27 +28,123 @@ canvas {
 #main-container {
   margin-top: 60px;
 }
-#drawingtool-container {
-  width: 1000px !important;
-  margin: 0 auto !important;
-}
 *:focus {
   outline: 0;
 }
 
-
-#right-panel {
-  margin-top: 50px;
+.font-raleway-thin {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 100 !important;
 }
-.right.action.column {
-  margin-left: -1em;
+.font-raleway-extra-light {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 200 !important;
+}
+.font-raleway-light {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 300 !important;
+}
+.font-raleway-regular {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 400 !important;
+}
+.font-raleway-medium {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 400 !important;
+}
+.font-raleway-semi-bold {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 600 !important;
+}
+.font-raleway-bold {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 400 !important;
+}
+
+.font-raleway-thin {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 100 !important;
+}
+.font-raleway-extra-light {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 200 !important;
+}
+.font-raleway-light {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 300 !important;
+}
+.font-raleway-regular {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 400 !important;
+}
+.font-raleway-medium {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 400 !important;
+}
+.font-raleway-semi-bold {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 600 !important;
+}
+.font-raleway-bold {
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 400 !important;
+}
+#drawingtool-container {
+  width: 880px !important;
+  margin: 0 auto !important;
+}
+#right-panel {
+  width: 200px !important;
+  margin-left: 20px;
+  margin-top: 50px;
+  padding: 0 !important;
+}
+.menu .sixteen.wide.column {
+  width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.settings.ui.vertical.small.menu {
+  width: 100% !important;
+}
+.nu-interface .small.label {
+  width: 100%;
+  text-transform: none;
+  font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+  font-weight: 200 !important;
+  font-size: 17px;
+  height: 24px;
+  vertical-align: middle;
+  padding-top: 2px;
+  text-align: center;
+  color: white;
+}
+#label-drawing-mode-menu {
+  background-color: #1abc9c;
+}
+#label-piece-menu {
+  background-color: #3998db;
+}
+#label-tool-menu {
+  background-color: #f39c12;
+}
+#label-editor-menu {
+  background-color: #9b59b6;
+}
+#label-color-menu {
+  background-color: #c0392b;
 }
 .action .item.active {
   -webkit-box-shadow: 0em 0.2em 0em inset !important;
   box-shadow: 0em 0.2em 0em inset !important;
 }
-.action.ui.vertical.small.icon.menu {
-  width: 6.6rem;
+.left.action.ui.vertical.small.icon.menu,
+.right.action.ui.vertical.small.icon.menu {
+  width: 100%;
+}
+.action.column {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 .left.action.ui.vertical.small.icon.menu {
   border-bottom-right-radius: 0;
@@ -56,32 +154,19 @@ canvas {
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
 }
-.nu-interface .menu.row {
-  margin-top: 0px;
-  padding-top: 6px;
-}
-.nu-interface .settings-label-container {
-  margin-top: 0;
-  padding-top: 6px;
-}
-.settings.ui.vertical.small.icon.menu {
-  font-size: 1em;
-  width: 13.5em;
-}
-.checkbox-container.item {
-  text-align: left !important;
-}
-.interface-opacity-slider input[type="range"]::-webkit-slider-thumb {
-  background-color: #2ecc71;
-}
 .nu-interface .settings input[type=range] {
   float: left;
   height: 5px;
   width: 8.5em;
 }
-.bottom-menu-container .ui.menu {
-  width: 700px;
-  margin-bottom: 15px;
+.nu-interface .settings input[type="range"]::-webkit-slider-thumb {
+  background-color: #2ecc71;
+}
+.top-toolbar .ui.menu {
+  font-weight: 100;
+  width: 650px;
+  margin-bottom: 12px;
+  background-color: #f39c12;
 }
 
 
@@ -99,3 +184,4 @@ input[type="range"]::-webkit-slider-thumb {
   width: 12px;
   height: 12px;
 }
+

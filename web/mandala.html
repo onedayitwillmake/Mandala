@@ -3,6 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title>Mandala</title>
+    <link href='http://fonts.googleapis.com/css?family=Alegreya+Sans+SC:100|Raleway:400,100,200,300,500,600,700'
+          rel='stylesheet' type='text/css'>
     <link type="text/css" rel="stylesheet" href="css/semantic.css">
     <link type="text/css" rel="stylesheet" href="css/mandala.css">
 </head>
@@ -11,12 +13,17 @@
     <div id="drawingtool-container" class="row">
         <div id="drawingtool" class="twelve wide column">
 
-            <div class="bottom-menu-container row">
-                <div class="ui small blue menu">
+            <div class="top-toolbar row">
+                <div class="ui small inverted menu">
+                    <a id="nu-interface-save-image" class="item">
+                        <i class="save icon"></i>
+                        Save Image
+                    </a>
                     <a id="nu-interface-save-svg" class="item">
                         <i class="save icon"></i>
                         Save SVG
                     </a>
+
                     <div class="right menu">
                         <a class="item" data-edit-action="undo">
                             <i class="undo icon"></i>
@@ -30,16 +37,16 @@
                 </div>
             </div>
             <div class="row">
-                <canvas id="canvas" width="700" height="500" class="center"></canvas>
+                <canvas id="canvas" width="650" height="650" class="center"></canvas>
             </div>
         </div>
         <div id="right-panel" class="four wide column">
             <div class="nu-interface ui two column grid">
-                <div id="drawingmode-container"  class="row">
-                    <div class="ui green small label">Drawing mode</div>
+                <div id="drawingmode-container" class="row">
+                    <div id="label-drawing-mode-menu" class="ui small label">Drawing Mode</div>
                 </div>
                 <div class="menu row">
-                    <div class="column">
+                    <div class="left action column">
                         <div class="left action ui vertical small icon menu">
                             <a class="teal item" data-drawingmode="RegularStroke">
                                 <i class="pencil icon"></i>
@@ -73,8 +80,9 @@
                         </div>
                     </div>
                 </div>
+                <!-- PIECE MENU -->
                 <div class="menu row">
-                    <div class="ui blue small label">Settings</div>
+                    <div id="label-piece-menu" class="ui small label">Piece</div>
                 </div>
                 <div class="menu row">
                     <div class="sixteen wide column">
@@ -86,6 +94,45 @@
                                     <label>Mirror Mode</label>
                                 </div>
                             </div>
+                            <!-- SIDE SLIDER -->
+                            <a class="teal item">
+                                <input id="interface-sidecount-slider" class="" type="range" min="1" max="14" step="1"
+                                       value="1"/>
+                                <span class="slider-label" id="interface-sidecount-slider-text">Sides: 6</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOOL MENU -->
+                <div class="menu row">
+                    <div id="label-tool-menu" class="ui small label">Tool</div>
+                </div>
+                <div class="menu row">
+                    <div class="sixteen wide column">
+                        <div class="settings ui vertical small icon menu">
+                            <a class="teal item">
+                                <input id="interface-line-width-slider" class="" type="range" min="0.25" max="5" step="0.25"
+                                       value="0.5"/>
+                                <span class="slider-label" id="interface-line-width-slider-text">Width: 1.0</span>
+                            </a>
+                            <!--OPACITY SLIDER-->
+                            <a class="item">
+                                <input id="interface-opacity-slider" class="interface-opacity-slider" type="range"
+                                       min="15" max="75" step="1" value="6"/>
+                                <span class="slider-label" id="interface-opacity-slider-text">Alpha: 0.25</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EDITOR MENU -->
+                <div class="menu row">
+                    <div id="label-editor-menu" class="ui small label">Editor</div>
+                </div>
+                <div class="menu row">
+                    <div class="sixteen wide column">
+                        <div class="settings ui vertical small icon menu">
                             <!-- DrawPoints MODE TOGGLE -->
                             <div class="checkbox-container item">
                                 <div class="ui toggle checkbox">
@@ -99,50 +146,27 @@
                                        value="100"/>
                                 <span class="slider-label" id="interface-scale-slider-text">Zoom: 1.0</span>
                             </a>
-                            <a class="teal item">
-                                <input id="interface-line-width-slider" class="" type="range" min="0.25" max="5" step="0.25"
-                                       value="0.5"/>
-                                <span class="slider-label" id="interface-line-width-slider-text">Width: 1.0</span>
-                            </a>
-                            <!-- SIDE SLIDER -->
-                            <a class="teal item">
-                                <input id="interface-sidecount-slider" class="" type="range" min="1" max="14" step="1"
-                                       value="1"/>
-                                <span class="slider-label" id="interface-sidecount-slider-text">Sides: 6</span>
-                            </a>
-                            <!--OPACITY SLIDER-->
-                            <a class="item">
-                                <input id="interface-opacity-slider" class="interface-opacity-slider" type="range"
-                                       min="15" max="75" step="1" value="6"/>
-                                <span class="slider-label" id="interface-opacity-slider-text">Alpha: 0.25</span>
-                            </a>
                         </div>
                     </div>
                 </div>
-                <!--<div class="row">-->
-                    <!--<div class="ui orange small label">Edit</div>-->
-                <!--</div>-->
-                <!--<div class="row">-->
-                    <!--<div class="ui vertical small icon menu">-->
-                        <!--<a class="item" data-edit-action="undo">-->
-                            <!--<i class="undo icon"></i>-->
-                            <!--Undo-->
-                        <!--</a>-->
-                        <!--<a class="item" data-edit-action="undo">-->
-                            <!--<i class="trash icon"></i>-->
-                            <!--Clear-->
-                        <!--</a>-->
-                    <!--</div>-->
-                <!--</div>-->
-                <!--<div class="row">-->
-                   <!--<div class="ui vertical small icon menu">-->
 
-                    <!--</div>-->
-                <!--</div>-->
+                <!-- COLOR MENU -->
+                <div class="menu row">
+                    <div id="label-color-menu" class="ui small label">Color</div>
+                </div>
+                <div class="menu row">
+                    <div class="sixteen wide column">
+                        <div class="settings ui vertical small icon menu">
+                        </div>
+                    </div>
+                </div>
             </div>
+
+
         </div>
     </div>
-    <script type="application/dart" src="dart/mandala.dart"></script>
-    <script src="packages/browser/dart.js"></script>
+</div>
+<!--<script type="application/dart" src="dart/mandala.dart"></script>-->
+<!--<script src="packages/browser/dart.js"></script>-->
 </body>
 </html>

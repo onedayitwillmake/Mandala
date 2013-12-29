@@ -1,22 +1,90 @@
-// INTERFACE CONTAINER
-// Tigten the vertical spacing between the labels and the stuff under them
-#right-panel {
-  margin-top: 50px;
+@import 'colors';
+@import 'variables';
+@import 'fonts';
+
+////////////////////////////////////////////////
+// DRAWING TOOL ROOT
+////////////////////////////////////////////////
+#drawingtool-container {
+  width: 880px !important;
+  margin: 0 auto !important;
 }
 
-/// ACTION MODE ICON CONTAINER
-.right.action.column {
-  margin-left: -1em;
+////////////////////////////////////////////////
+// RIGHT PANEL
+////////////////////////////////////////////////
+#right-panel {
+  width: 200px !important;
+  margin-left: 20px;
+  margin-top: 50px;
+  padding: 0 !important;
 }
-// ACTION MODE ICONS MENU
+// Make all the columns on the left panel take up the full width
+.menu .sixteen.wide.column {
+  width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+// Make all menus on the setting panel 100% width
+.settings.ui.vertical.small.menu{
+  width: 100% !important;
+}
+
+////////////////////////////////////////////////
+// LABELS
+////////////////////////////////////////////////
+.nu-interface .small.label {
+  width: 100%;
+  text-transform: none;
+  .font-raleway-extra-light;
+  font-size: 17px;
+  height: 24px;
+  vertical-align: middle;
+  padding-top: 2px;
+  text-align: center;
+  color: white;
+}
+// LABEL COLORS
+#label-drawing-mode-menu {
+  background-color: @COLOR_TURQUOISE;
+}
+#label-piece-menu {
+  background-color: @COLOR_PETERRIVER;
+}
+#label-tool-menu {
+  background-color: @COLOR_ORANGE;
+}
+#label-editor-menu {
+  background-color: @COLOR_AMETHYST;
+}
+#label-color-menu {
+  background-color: @COLOR_POMEGRANATE;
+}
+
+////////////////////////////////////////////////
+// ALL MENUS
+////////////////////////////////////////////////
+
+////////////////////////////////////////////////
+// ACTION MENU
+////////////////////////////////////////////////
+// SET ACTIVE ITEM BORDER TO TOP
 .action .item.active {
   -webkit-box-shadow: 0em 0.2em 0em inset !important;
   box-shadow: 0em 0.2em 0em inset !important;
 }
 
-.action.ui.vertical.small.icon.menu {
-  width: 6.6rem;
+.left.action.ui.vertical.small.icon.menu,
+.right.action.ui.vertical.small.icon.menu {
+  width: 100%;
 }
+// Removing spacing between the two columns
+.action.column {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+// Remove rounded inner borders
 .left.action.ui.vertical.small.icon.menu {
   border-bottom-right-radius: 0;
   border-top-right-radius: 0;
@@ -25,40 +93,47 @@
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
 }
-.nu-interface .menu.row {
-  margin-top: 0px;
-  padding-top: 6px;
-}
-.nu-interface .settings-label-container  {
-  margin-top:0;
-  padding-top:6px;
-}
+
+
+//.nu-interface .menu.row {
+//  margin-top: 0px;
+//  padding-top: 6px;
+//}
+//.nu-interface .settings-label-container  {
+//  margin-top:0;
+//  padding-top:6px;
+//}
+
 /////////////////////////////////////////////////
 // SETTINGS SECTION
 ////////////////////////////////////////////////
 // widen the menu
-.settings.ui.vertical.small.icon.menu {
-  font-size: 1em;
-  width: 13.5em;
-}
+//.settings.ui.vertical.small.icon.menu {
+//  font-size: 1em;
+//  width: 13.5em;
+//}
+//
+//// Checkbox are left aligned
+//.checkbox-container.item {
+//  text-align: left !important;
+//}
 
-// Checkbox are left aligned
-.checkbox-container.item {
-  text-align: left !important;
-}
-
-// Slider color
-.interface-opacity-slider input[type="range"]::-webkit-slider-thumb {
-  background-color: rgba(46, 204, 113,1.0);
-}
+/////////////////////////////////////////////////
+// RANGE SLIDER OVERRIDE
+////////////////////////////////////////////////
 .nu-interface .settings input[type=range] {
     float:left;
     height: 5px;
     width: 8.5em;
 }
+.nu-interface .settings input[type="range"]::-webkit-slider-thumb {
+  background-color: rgba(46, 204, 113,1.0);
+}
 
-//// BOTTOM MENU
-.bottom-menu-container .ui.menu {
-  width: 700px;
-  margin-bottom: 15px;
+//// top tool bar
+.top-toolbar .ui.menu {
+  font-weight: 100;
+  width: @canvasWidth;
+  margin-bottom: 12px;
+  background-color: @COLOR_ORANGE;
 }
