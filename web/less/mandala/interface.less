@@ -1,6 +1,7 @@
 @import 'colors';
 @import 'variables';
 @import 'fonts';
+@import 'elements';
 
 ////////////////////////////////////////////////
 // DRAWING TOOL ROOT
@@ -39,9 +40,7 @@
   text-transform: none;
   .font-raleway-extra-light;
   font-size: 17px;
-  height: 24px;
   vertical-align: middle;
-  padding-top: 2px;
   text-align: center;
   color: white;
 }
@@ -95,25 +94,30 @@
 }
 
 
-//.nu-interface .menu.row {
-//  margin-top: 0px;
-//  padding-top: 6px;
-//}
-//.nu-interface .settings-label-container  {
-//  margin-top:0;
-//  padding-top:6px;
-//}
+.nu-interface .menu.row {
+  margin-top: 0px;
+  padding-top: 4px;
+}
 
-/////////////////////////////////////////////////
-// SETTINGS SECTION
 ////////////////////////////////////////////////
-// widen the menu
-//.settings.ui.vertical.small.icon.menu {
-//  font-size: 1em;
-//  width: 13.5em;
-//}
-//
-//// Checkbox are left aligned
+// ADVANCED TOGGLE
+////////////////////////////////////////////////
+#advanced-toggle {
+  .font-raleway-extra-light;
+  font-size: 15px;
+  color: white;
+  text-align: right;
+}
+#advanced-toggle-chevron {
+  .rotation(180deg);
+  
+  font-size: 18px;
+  font-weight: bold;
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+////// Checkbox are left aligned
 //.checkbox-container.item {
 //  text-align: left !important;
 //}

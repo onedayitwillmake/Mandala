@@ -4,7 +4,7 @@ module.exports = function( grunt ) {
             buildCSS: {
                 files: {
                 "../css/semantic.css": "../less/semantic-ui/**/*.less",
-                "../css/mandala.css": "../less/mandala/**/*.less"
+                "../css/mandala.css": "../less/mandala/mandala.less"
                 }
             }
         },

@@ -5,6 +5,7 @@
     <title>Mandala</title>
     <link href='http://fonts.googleapis.com/css?family=Alegreya+Sans+SC:100|Raleway:400,100,200,300,500,600,700'
           rel='stylesheet' type='text/css'>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="css/semantic.css">
     <link type="text/css" rel="stylesheet" href="css/mandala.css">
 </head>
@@ -12,7 +13,6 @@
 <div id="main-container" class="ui grid">
     <div id="drawingtool-container" class="row">
         <div id="drawingtool" class="twelve wide column">
-
             <div class="top-toolbar row">
                 <div class="ui small inverted menu">
                     <a id="nu-interface-save-image" class="item">
@@ -42,22 +42,22 @@
         </div>
         <div id="right-panel" class="four wide column">
             <div class="nu-interface ui two column grid">
-                <div id="drawingmode-container" class="row">
+                <div class="row">
                     <div id="label-drawing-mode-menu" class="ui small label">Drawing Mode</div>
                 </div>
                 <div class="menu row">
                     <div class="left action column">
                         <div class="left action ui vertical small icon menu">
-                            <a class="teal item" data-drawingmode="RegularStroke">
+                            <a class="item" data-drawingmode="RegularStroke">
                                 <i class="pencil icon"></i>
                                 RegularLine
                             </a>
-                            <a class="teal item" data-drawingmode="SmoothStroke">
+                            <a class="item" data-drawingmode="SmoothStroke">
                                 <i class="pencil icon"></i>
                                 SmoothLine
                             </a>
 
-                            <a class="teal item" data-drawingmode="PolygonalStroke">
+                            <a class="item" data-drawingmode="PolygonalStroke">
                                 <i class="star empty icon"></i>
                                 PolyLine
                             </a>
@@ -65,15 +65,15 @@
                     </div>
                     <div class="right action column">
                         <div class="right action ui vertical small icon menu">
-                            <a class="teal item" data-drawingmode="RegularFill">
+                            <a class="item" data-drawingmode="RegularFill">
                                 <i class="edit icon"></i>
                                 RegularFill
                             </a>
-                            <a class="teal item" data-drawingmode="SmoothFill">
+                            <a class="item" data-drawingmode="SmoothFill">
                                 <i class="edit icon"></i>
                                 SmoothFill
                             </a>
-                            <a class="teal item" data-drawingmode="PolygonalFill">
+                            <a class="item" data-drawingmode="PolygonalFill">
                                 <i class="star icon"></i>
                                 PolyFill
                             </a>
@@ -81,7 +81,7 @@
                     </div>
                 </div>
                 <!-- PIECE MENU -->
-                <div class="menu row">
+                <div class="row">
                     <div id="label-piece-menu" class="ui small label">Piece</div>
                 </div>
                 <div class="menu row">
@@ -95,7 +95,7 @@
                                 </div>
                             </div>
                             <!-- SIDE SLIDER -->
-                            <a class="teal item">
+                            <a class="item">
                                 <input id="interface-sidecount-slider" class="" type="range" min="1" max="14" step="1"
                                        value="1"/>
                                 <span class="slider-label" id="interface-sidecount-slider-text">Sides: 6</span>
@@ -103,15 +103,17 @@
                         </div>
                     </div>
                 </div>
-
+                <div id="advanced-toggle" class="row">
+                    Advanced<span id="advanced-toggle-chevron" class="fa chevron up">&#xf13a;</span>
+                </div>
                 <!-- TOOL MENU -->
-                <div class="menu row">
+                <div class="row">
                     <div id="label-tool-menu" class="ui small label">Tool</div>
                 </div>
                 <div class="menu row">
                     <div class="sixteen wide column">
                         <div class="settings ui vertical small icon menu">
-                            <a class="teal item">
+                            <a class="item">
                                 <input id="interface-line-width-slider" class="" type="range" min="0.25" max="5" step="0.25"
                                        value="0.5"/>
                                 <span class="slider-label" id="interface-line-width-slider-text">Width: 1.0</span>
@@ -127,7 +129,7 @@
                 </div>
 
                 <!-- EDITOR MENU -->
-                <div class="menu row">
+                <div class="row">
                     <div id="label-editor-menu" class="ui small label">Editor</div>
                 </div>
                 <div class="menu row">
@@ -141,7 +143,7 @@
                                 </div>
                             </div>
                             <!-- SCALE SLIDER -->
-                            <a class="teal item">
+                            <a class="item">
                                 <input id="interface-scale-slider" class="" type="range" min="100" max="300" step="1"
                                        value="100"/>
                                 <span class="slider-label" id="interface-scale-slider-text">Zoom: 1.0</span>
@@ -151,12 +153,24 @@
                 </div>
 
                 <!-- COLOR MENU -->
-                <div class="menu row">
+                <div class="row">
                     <div id="label-color-menu" class="ui small label">Color</div>
                 </div>
                 <div class="menu row">
                     <div class="sixteen wide column">
-                        <div class="settings ui vertical small icon menu">
+                        <div class="settings ui vertical small menu">
+                            <a class="item">
+                                <input id="interface-color-line-slider" type="color">
+                                <span class="slider-label" id="interface-color-line-text">Line Color</span>
+                            </a>
+                            <a class="item">
+                                <input id="interface-color-gradient-start-slider" type="color">
+                                <span class="slider-label" id="interface-color-gradient-start-text">Gradient Start</span>
+                            </a>
+                            <a class="item">
+                                <input id="interface-color-gradient-end-slider" type="color">
+                                <span class="slider-label" id="interface-color-gradient-end-text">Gradient End</span>
+                            </a>
                         </div>
                     </div>
                 </div>
