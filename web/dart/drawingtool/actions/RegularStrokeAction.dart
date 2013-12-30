@@ -74,6 +74,7 @@ class RegularStrokeAction extends BaseAction {
     points.addAll(simplifiedPoints);
 
     _activePoints = null;
+    onComplete();
   }
 
   List<Geom.Point> _getPointsToDraw() {

@@ -114,6 +114,7 @@ class PolygonalStrokeAction extends BaseAction {
       points.addAll(_activePoints);
 
       _activePoints = null;
+      onComplete();
     }
   }
   
@@ -123,6 +124,7 @@ class PolygonalStrokeAction extends BaseAction {
       // Don't bother making a path if there are less than 3 points
       if( _activePoints == null || _activePoints.length < 3 ) {
         _activePoints = null;
+        onComplete();
         return; 
       }
       

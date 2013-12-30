@@ -98,7 +98,7 @@ class SmoothStrokeAction extends RegularStrokeAction {
   }
 
   void inputUp(dynamic ctx, Geom.Point pos) {
-    // User was dragging - abort!
+    // User was dragging, meaning they're not drawing - so return early
     if( _draggedPoint != null ) {
       _draggedPoint = null;
       return;
@@ -113,5 +113,6 @@ class SmoothStrokeAction extends RegularStrokeAction {
     points.addAll(simplifiedSmoothedPoints);
 
     _activePoints = null;
+    
   }
 }

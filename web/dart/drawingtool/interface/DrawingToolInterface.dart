@@ -72,13 +72,13 @@ class DrawingToolInterface {
   
   /// Setup events that originate from the drawingModule and effect the user interface
   void _setupIncommingEvents() {
-    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_ACTION_CHANGED, onActionChanged );
-    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_DRAW_POINTS_CHANGED, onDrawPointsChanged );
-    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_MIRROR_MODE_CHANGED, onMirrorModeChanged );
-    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_SIDES_CHANGED, onSideCountChanged );
-    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_SCALE_CHANGED, onScaleChanged );
-    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_OPACITY_CHANGED, onOpacityChanged );
-    _drawingModule.eventEmitter.on(DrawingToolEvent.ON_LINEWIDTH_CHANGED, onLineWidthChanged );
+    SharedDispatcher.emitter.on(DrawingToolEvent.ON_ACTION_CHANGED, onActionChanged );
+    SharedDispatcher.emitter.on(DrawingToolEvent.ON_DRAW_POINTS_CHANGED, onDrawPointsChanged );
+    SharedDispatcher.emitter.on(DrawingToolEvent.ON_MIRROR_MODE_CHANGED, onMirrorModeChanged );
+    SharedDispatcher.emitter.on(DrawingToolEvent.ON_SIDES_CHANGED, onSideCountChanged );
+    SharedDispatcher.emitter.on(DrawingToolEvent.ON_SCALE_CHANGED, onScaleChanged );
+    SharedDispatcher.emitter.on(DrawingToolEvent.ON_OPACITY_CHANGED, onOpacityChanged );
+    SharedDispatcher.emitter.on(DrawingToolEvent.ON_LINEWIDTH_CHANGED, onLineWidthChanged );
   }
 
   /// Save out an SVG version of the mandala

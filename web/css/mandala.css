@@ -32,6 +32,11 @@
   font-family: "Raleway", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
   font-weight: 400 !important;
 }
+.font-alegreya-sans {
+  font-family: 'Alegreya Sans SC';
+  font-style: normal;
+  font-weight: 100;
+}
 html,
 body {
   font-size: 15px;
@@ -54,10 +59,24 @@ canvas {
   user-select: none;
 }
 #main-container {
-  margin-top: 60px;
+  margin-top: 20px;
 }
 *:focus {
   outline: 0;
+}
+#title {
+  font-family: 'Alegreya Sans SC';
+  font-style: normal;
+  font-weight: 100;
+  font-size: 48px;
+  width: 650px;
+  border-radius: 6px;
+  border: 1px solid #f1c40f;
+  text-align: center;
+  line-height: 1.2;
+  color: #95a5a6;
+  margin-bottom: 15px;
+  margin-left: 1.5%;
 }
 input[type=range] {
   -webkit-appearance: none;

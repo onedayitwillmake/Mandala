@@ -35,4 +35,7 @@ class BaseAction {
   void executeForSvg(dynamic ctx, width, height){}
   void activeDraw(dynamic ctx, width, height, bool canEditPoints){}
   void undo(dynamic ctx ){}
+  void onComplete() {
+    SharedDispatcher.emitter.emit(ActionEvent.ON_DRAWING_INTERACTION_FINISHED, this);
+  }
 }

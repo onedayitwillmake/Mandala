@@ -1,8 +1,6 @@
 part of DrawingToolLib;
 
 class DrawingTool {
-  EventEmitter              eventEmitter = new EventEmitter();
-
   /// Number of sides in we draw (x2 if mirroring is on)
   int                       _sides = 7;
 
@@ -415,15 +413,15 @@ class DrawingTool {
     _dispatchLineWidthChangedEvent();
   }
   void _dispatchActionChangedEvent() {
-    eventEmitter.emit( DrawingToolEvent.ON_ACTION_CHANGED, actionQueue.last.name );
+    SharedDispatcher.emitter.emit( DrawingToolEvent.ON_ACTION_CHANGED, actionQueue.last.name );
     _dispatchOpacityChangedEvent();
   }
-  void _dispatchMirrorModeChangedEvent( ) => eventEmitter.emit( DrawingToolEvent.ON_MIRROR_MODE_CHANGED, _isMirrored );
-  void _dispatchOnDrawPointsChanged() => eventEmitter.emit( DrawingToolEvent.ON_DRAW_POINTS_CHANGED, _allowEditingPoints );
-  void _dispatchOnSidesChangedEvent() => eventEmitter.emit( DrawingToolEvent.ON_SIDES_CHANGED, _sides );
-  void _dispatchScaleChangedEvent() => eventEmitter.emit( DrawingToolEvent.ON_SCALE_CHANGED, _scale );
-  void _dispatchOpacityChangedEvent() => eventEmitter.emit( DrawingToolEvent.ON_OPACITY_CHANGED, actionQueue.last.settings.opacity );
-  void _dispatchLineWidthChangedEvent() => eventEmitter.emit( DrawingToolEvent.ON_LINEWIDTH_CHANGED, actionQueue.last.settings.lineWidth );
+  void _dispatchMirrorModeChangedEvent( ) => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_MIRROR_MODE_CHANGED, _isMirrored );
+  void _dispatchOnDrawPointsChanged() => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_DRAW_POINTS_CHANGED, _allowEditingPoints );
+  void _dispatchOnSidesChangedEvent() => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_SIDES_CHANGED, _sides );
+  void _dispatchScaleChangedEvent() => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_SCALE_CHANGED, _scale );
+  void _dispatchOpacityChangedEvent() => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_OPACITY_CHANGED, actionQueue.last.settings.opacity );
+  void _dispatchLineWidthChangedEvent() => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_LINEWIDTH_CHANGED, actionQueue.last.settings.lineWidth );
 
   /////////////////////////////////////////////////
   ////////////////// PROPERTIES ///////////////////

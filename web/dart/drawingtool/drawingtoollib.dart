@@ -1,4 +1,5 @@
 library DrawingToolLib;
+
 import 'dart:html';
 import 'dart:async';
 import 'dart:convert';
@@ -11,7 +12,6 @@ import 'package:dart_events/dart_events.dart';
 import 'package:stagexl/stagexl.dart' as Geom show Matrix, Point;
 import '../linegeneralization/line_generalization.dart' as LineGeneralization;
 
-
 part 'actions/BaseAction.dart';
 part 'actions/ActionSettings.dart';
 part 'actions/RegularStrokeAction.dart';
@@ -23,6 +23,8 @@ part 'actions/PolygonalFillAction.dart';
 
 part 'svgrender/SvgRenderer.dart';
 
-part 'events/drawing_tool_events.dart';
+part 'events/drawing_tool_event.dart';
+part 'events/action_event.dart';
+part 'events/SharedDispatcher.dart';
 part 'DrawingTool.dart';
 part 'interface/DrawingToolInterface.dart';
