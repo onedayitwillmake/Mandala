@@ -51,14 +51,17 @@ module.exports = function( grunt ){
   grunt.loadNpmTasks('grunt-dom-munger');
   grunt.loadNpmTasks('grunt-contrib-copy');
 
-  grunt.task.registerTask('foo', 'A sample task that logs stuff.', function( arg1, arg2 ){
+  grunt.task.registerTask('dart2rails', 'Updates the head and post-body partials to work with our dart app, writes the index page', function(){
     // Write all link tags
     grunt.file.write('../../../app/views/layouts/_head.html.erb',  $mandalaDart('link').toString().split("<").join("\n\t<") );
     // Write all script tags
     // any 'src=packages...' reference, change to src'=dart/packages...'
     var allScriptTags = $mandalaDart('script').toString().replace(/src\=\"packages/g, "src=\"dart/packages");
     grunt.file.write('../../../app/views/layouts/_post_body.html.erb', allScriptTags.split("<script").join("\n\t<script") );
+
+    // Write the index partial
+    grunt.file.write('../../../app/views/welcome/index.html.erb', $mandalaDart('#main-container').html() );
   });
 
-  grunt.registerTask('default', ['dom_munger', 'foo']);
+  grunt.registerTask('default', ['dom_munger', 'dart2rails']);
 };
