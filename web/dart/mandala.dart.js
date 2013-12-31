@@ -214,7 +214,7 @@ $$.Closure$4 = [P, {"": "Closure;call$4,$name"}];
   }
 })([
 ["DrawingToolLib", "drawingtool/DrawingToolLib.dart", , R, {
-DrawingTool: {"": "Object;eventEmitter,_sides,_isMirrored,_allowEditingPoints,_scale,_isDragging,_blurAmount,_blurOpacity,_canvas,_ctx,_offscreenBuffer,_bgGradient,_bgGradientSvg,_canvasRect,_winScroll,_rafId,actionQueue",
+DrawingTool: {"": "Object;_sides,_isMirrored,_allowEditingPoints,_scale,_isDragging,_blurAmount,_blurOpacity,_canvas,_ctx,_offscreenBuffer,_bgGradient,_bgGradientSvg,_canvasRect,_winScroll,_rafId,actionQueue",
   _setupBackgroundGradients$0: function() {
     var colors, t1, t2, t3, t4, t5, temp;
     colors = ["#383245", "#1B1821"];
@@ -560,30 +560,30 @@ DrawingTool: {"": "Object;eventEmitter,_sides,_isMirrored,_allowEditingPoints,_s
       case "alpha":
         t1 = this.actionQueue;
         t1.get$last(t1).get$settings().opacity = value;
-        this.eventEmitter.emit$2("DrawingTool.ON_OPACITY_CHANGED", t1.get$last(t1).get$settings().opacity);
+        this._dispatchOpacityChangedEvent$0();
         break;
       case "sides":
         this._sides = value;
         this._updateOffscreenBuffer$0();
-        this.eventEmitter.emit$2("DrawingTool.ON_SIDES_CHANGED", this._sides);
+        $.get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_SIDES_CHANGED", this._sides);
         break;
       case "scale":
         this._scale = value;
-        this.eventEmitter.emit$2("DrawingTool.ON_SCALE_CHANGED", this._scale);
+        $.get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_SCALE_CHANGED", this._scale);
         break;
       case "setEditablePoints":
         this._allowEditingPoints = value;
-        this.eventEmitter.emit$2("DrawingTool.ON_DRAW_POINTS_CHANGED", this._allowEditingPoints);
+        $.get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_DRAW_POINTS_CHANGED", this._allowEditingPoints);
         break;
       case "setMirrorMode":
         this._isMirrored = value;
         this._updateOffscreenBuffer$0();
-        this.eventEmitter.emit$2("DrawingTool.ON_MIRROR_MODE_CHANGED", this._isMirrored);
+        $.get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_MIRROR_MODE_CHANGED", this._isMirrored);
         break;
       case "linewidth":
         t1 = this.actionQueue;
         t1.get$last(t1).get$settings().lineWidth = value;
-        this.eventEmitter.emit$2("DrawingTool.ON_LINEWIDTH_CHANGED", t1.get$last(t1).get$settings().lineWidth);
+        this._dispatchLineWidthChangedEvent$0();
         break;
       default:
     }
@@ -722,23 +722,26 @@ DrawingTool: {"": "Object;eventEmitter,_sides,_isMirrored,_allowEditingPoints,_s
     return svgCtx._svg;
   },
   _dispatchAllStateEvents$0: function() {
-    var t1, t2;
     this._dispatchActionChangedEvent$0();
-    t1 = this.eventEmitter;
-    t1.emit$2("DrawingTool.ON_MIRROR_MODE_CHANGED", this._isMirrored);
-    t1.emit$2("DrawingTool.ON_DRAW_POINTS_CHANGED", this._allowEditingPoints);
-    t1.emit$2("DrawingTool.ON_SIDES_CHANGED", this._sides);
-    t1.emit$2("DrawingTool.ON_SCALE_CHANGED", this._scale);
-    t2 = this.actionQueue;
-    t1.emit$2("DrawingTool.ON_OPACITY_CHANGED", t2.get$last(t2).get$settings().opacity);
-    t1.emit$2("DrawingTool.ON_LINEWIDTH_CHANGED", t2.get$last(t2).get$settings().lineWidth);
+    $.get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_MIRROR_MODE_CHANGED", this._isMirrored);
+    $.get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_DRAW_POINTS_CHANGED", this._allowEditingPoints);
+    $.get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_SIDES_CHANGED", this._sides);
+    $.get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_SCALE_CHANGED", this._scale);
+    this._dispatchOpacityChangedEvent$0();
+    this._dispatchLineWidthChangedEvent$0();
   },
   _dispatchActionChangedEvent$0: function() {
-    var t1, t2;
-    t1 = this.eventEmitter;
-    t2 = this.actionQueue;
-    t1.emit$2("DrawingTool.ON_ACTION_CHANGED", J.get$name$x(t2.get$last(t2)));
-    t1.emit$2("DrawingTool.ON_OPACITY_CHANGED", t2.get$last(t2).get$settings().opacity);
+    var t1 = this.actionQueue;
+    $.get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_ACTION_CHANGED", J.get$name$x(t1.get$last(t1)));
+    this._dispatchOpacityChangedEvent$0();
+  },
+  _dispatchOpacityChangedEvent$0: function() {
+    var t1 = this.actionQueue;
+    return $.get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_OPACITY_CHANGED", t1.get$last(t1).get$settings().opacity);
+  },
+  _dispatchLineWidthChangedEvent$0: function() {
+    var t1 = this.actionQueue;
+    return $.get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_LINEWIDTH_CHANGED", t1.get$last(t1).get$settings().lineWidth);
   },
   DrawingTool$1: function(_canvas) {
     var t1, t2;
@@ -755,7 +758,7 @@ DrawingTool: {"": "Object;eventEmitter,_sides,_isMirrored,_allowEditingPoints,_s
   },
   static: {
 DrawingTool$: function(_canvas) {
-  var t1 = new R.DrawingTool(new Q.EventEmitter(P.LinkedHashMap_LinkedHashMap(null, null, null, J.JSString, [J.JSArray, P.Function])), 7, true, true, 1, false, 10, 0.5, _canvas, null, null, null, null, null, null, 0, P.ListQueue$(null, R.BaseAction));
+  var t1 = new R.DrawingTool(7, true, true, 1, false, 10, 0.5, _canvas, null, null, null, null, null, null, 0, P.ListQueue$(null, R.BaseAction));
   t1.DrawingTool$1(_canvas);
   return t1;
 }}
@@ -1088,6 +1091,7 @@ PolygonalStrokeAction: {"": "BaseAction;_activePoints,_potentialNextPoint,_dragg
       t1.push($.get$BaseAction_LINE_BREAK());
       C.JSArray_methods.addAll$1(t1, this._activePoints);
       this._activePoints = null;
+      $.get$SharedDispatcher_emitter().emit$2("ActionEvent.ON_DRAWING_INTERACTION_FINISHED", this);
     }
   },
   inputUp$2: function(ctx, pos) {
@@ -1099,6 +1103,7 @@ PolygonalStrokeAction: {"": "BaseAction;_activePoints,_potentialNextPoint,_dragg
       t1 = this._activePoints;
       if (t1 == null || t1.length < 3) {
         this._activePoints = null;
+        $.get$SharedDispatcher_emitter().emit$2("ActionEvent.ON_DRAWING_INTERACTION_FINISHED", this);
         return;
       }
       this.inputUp$3(ctx, J.get$last$ax(t1), true);
@@ -1227,6 +1232,7 @@ RegularStrokeAction: {"": "BaseAction;_activePoints,points,name,settings",
     t1.push($.get$BaseAction_LINE_BREAK());
     C.JSArray_methods.addAll$1(t1, simplifiedPoints);
     this._activePoints = null;
+    $.get$SharedDispatcher_emitter().emit$2("ActionEvent.ON_DRAWING_INTERACTION_FINISHED", this);
   },
   _getPointsToDraw$0: function() {
     var t1, pointsToDraw;
@@ -1421,67 +1427,81 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
     t3 = new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(t3), t1._useCapture);
     H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
     t3._tryResume$0();
-    this._DrawingToolLib$_$mirrorCheckbox = H.interceptedTypeCast(document.querySelector("[name=toggle-mirroring]"), "$isCheckboxInputElement");
-    t3 = J.get$parent$x(this._DrawingToolLib$_$mirrorCheckbox);
+    t3 = document.querySelector("#nu-interface-save-image");
     t3.toString;
     t3 = new W._ElementEventStreamImpl(t3, t2, false);
     H.setRuntimeTypeInfo(t3, [null]);
-    t1 = new W._EventStreamSubscription(0, t3._html$_target, t3._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure1(this)), t3._useCapture);
+    t1 = this.get$_onSaveImage();
+    t1 = new W._EventStreamSubscription(0, t3._html$_target, t3._eventType, W._wrapZone(t1), t3._useCapture);
     H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
     t1._tryResume$0();
-    this._DrawingToolLib$_$drawPointsCheckbox = H.interceptedTypeCast(document.querySelector("[name=toggle-draw-points]"), "$isCheckboxInputElement");
-    t1 = J.get$parent$x(this._DrawingToolLib$_$drawPointsCheckbox);
+    this._DrawingToolLib$_$mirrorCheckbox = H.interceptedTypeCast(document.querySelector("[name=toggle-mirroring]"), "$isCheckboxInputElement");
+    t1 = J.get$parent$x(this._DrawingToolLib$_$mirrorCheckbox);
     t1.toString;
     t1 = new W._ElementEventStreamImpl(t1, t2, false);
     H.setRuntimeTypeInfo(t1, [null]);
-    t3 = new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure2(this)), t1._useCapture);
+    t3 = new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure1(this)), t1._useCapture);
     H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
     t3._tryResume$0();
-    this._DrawingToolLib$_$scaleSlider = H.interceptedTypeCast(document.querySelector("#interface-scale-slider"), "$isRangeInputElement");
-    t3 = J.get$onChange$x(this._DrawingToolLib$_$scaleSlider);
-    t1 = new W._EventStreamSubscription(0, t3._html$_target, t3._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure3(this)), t3._useCapture);
-    H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
-    t1._tryResume$0();
-    this._DrawingToolLib$_$sideCountSlider = H.interceptedTypeCast(document.querySelector("#interface-sidecount-slider"), "$isRangeInputElement");
-    t1 = J.get$onChange$x(this._DrawingToolLib$_$sideCountSlider);
-    t3 = new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure4(this)), t1._useCapture);
-    H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
-    t3._tryResume$0();
-    this._DrawingToolLib$_$opacitySlider = H.interceptedTypeCast(document.querySelector("#interface-opacity-slider"), "$isRangeInputElement");
-    t3 = J.get$onChange$x(this._DrawingToolLib$_$opacitySlider);
-    t1 = new W._EventStreamSubscription(0, t3._html$_target, t3._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure5(this)), t3._useCapture);
-    H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
-    t1._tryResume$0();
-    this._DrawingToolLib$_$lineWidthSlider = H.interceptedTypeCast(document.querySelector("#interface-line-width-slider"), "$isRangeInputElement");
-    t1 = J.get$onChange$x(this._DrawingToolLib$_$lineWidthSlider);
-    t3 = new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure6(this)), t1._useCapture);
-    H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
-    t3._tryResume$0();
-    t3 = document.querySelector("#advanced-toggle");
+    this._DrawingToolLib$_$drawPointsCheckbox = H.interceptedTypeCast(document.querySelector("[name=toggle-draw-points]"), "$isCheckboxInputElement");
+    t3 = J.get$parent$x(this._DrawingToolLib$_$drawPointsCheckbox);
     t3.toString;
-    t2 = new W._ElementEventStreamImpl(t3, t2, false);
-    H.setRuntimeTypeInfo(t2, [null]);
-    t1 = this.get$_toggleAdvancedMenus();
-    t1 = new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(t1), t2._useCapture);
-    H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t2, "_EventStream", 0)]);
+    t3 = new W._ElementEventStreamImpl(t3, t2, false);
+    H.setRuntimeTypeInfo(t3, [null]);
+    t1 = new W._EventStreamSubscription(0, t3._html$_target, t3._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure2(this)), t3._useCapture);
+    H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
     t1._tryResume$0();
-    t1 = new W._ElementEventStreamImpl(t3, C.EventStreamProvider_touchend._eventType, false);
-    H.setRuntimeTypeInfo(t1, [null]);
+    this._DrawingToolLib$_$scaleSlider = H.interceptedTypeCast(document.querySelector("#interface-scale-slider"), "$isRangeInputElement");
+    t1 = J.get$onChange$x(this._DrawingToolLib$_$scaleSlider);
+    t3 = new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure3(this)), t1._useCapture);
+    H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
+    t3._tryResume$0();
+    this._DrawingToolLib$_$sideCountSlider = H.interceptedTypeCast(document.querySelector("#interface-sidecount-slider"), "$isRangeInputElement");
+    t3 = J.get$onChange$x(this._DrawingToolLib$_$sideCountSlider);
+    t1 = new W._EventStreamSubscription(0, t3._html$_target, t3._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure4(this)), t3._useCapture);
+    H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
+    t1._tryResume$0();
+    this._DrawingToolLib$_$opacitySlider = H.interceptedTypeCast(document.querySelector("#interface-opacity-slider"), "$isRangeInputElement");
+    t1 = J.get$onChange$x(this._DrawingToolLib$_$opacitySlider);
+    t3 = new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure5(this)), t1._useCapture);
+    H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
+    t3._tryResume$0();
+    this._DrawingToolLib$_$lineWidthSlider = H.interceptedTypeCast(document.querySelector("#interface-line-width-slider"), "$isRangeInputElement");
+    t3 = J.get$onChange$x(this._DrawingToolLib$_$lineWidthSlider);
+    t1 = new W._EventStreamSubscription(0, t3._html$_target, t3._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure6(this)), t3._useCapture);
+    H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
+    t1._tryResume$0();
+    t1 = document.querySelector("#advanced-toggle");
+    t1.toString;
+    t2 = new W._ElementEventStreamImpl(t1, t2, false);
+    H.setRuntimeTypeInfo(t2, [null]);
+    t3 = this.get$_toggleAdvancedMenus();
+    t3 = new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(t3), t2._useCapture);
+    H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t2, "_EventStream", 0)]);
+    t3._tryResume$0();
+    t3 = new W._ElementEventStreamImpl(t1, C.EventStreamProvider_touchend._eventType, false);
+    H.setRuntimeTypeInfo(t3, [null]);
     t2 = this.get$_toggleAdvancedMenus();
-    t2 = new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(t2), t1._useCapture);
-    H.setRuntimeTypeInfo(t2, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
+    t2 = new W._EventStreamSubscription(0, t3._html$_target, t3._eventType, W._wrapZone(t2), t3._useCapture);
+    H.setRuntimeTypeInfo(t2, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
     t2._tryResume$0();
-    this._DrawingToolLib$_$advancedToggleButton = t3;
+    this._DrawingToolLib$_$advancedToggleButton = t1;
     P.Future_Future$delayed(P.Duration$(0, 0, 0, 0, 0, 1), new R.DrawingToolInterface__setupOutgoingEvents_closure7(this), null);
   },
   _setupIncommingEvents$0: function() {
-    var t1 = this._drawingModule.eventEmitter;
+    var t1 = $.get$SharedDispatcher_emitter();
     t1.on$2(t1, "DrawingTool.ON_ACTION_CHANGED", this.get$onActionChanged());
+    t1 = $.get$SharedDispatcher_emitter();
     t1.on$2(t1, "DrawingTool.ON_DRAW_POINTS_CHANGED", this.get$onDrawPointsChanged());
+    t1 = $.get$SharedDispatcher_emitter();
     t1.on$2(t1, "DrawingTool.ON_MIRROR_MODE_CHANGED", this.get$onMirrorModeChanged());
+    t1 = $.get$SharedDispatcher_emitter();
     t1.on$2(t1, "DrawingTool.ON_SIDES_CHANGED", this.get$onSideCountChanged());
+    t1 = $.get$SharedDispatcher_emitter();
     t1.on$2(t1, "DrawingTool.ON_SCALE_CHANGED", this.get$onScaleChanged());
+    t1 = $.get$SharedDispatcher_emitter();
     t1.on$2(t1, "DrawingTool.ON_OPACITY_CHANGED", this.get$onOpacityChanged());
+    t1 = $.get$SharedDispatcher_emitter();
     t1.on$2(t1, "DrawingTool.ON_LINEWIDTH_CHANGED", this.get$onLineWidthChanged());
   },
   _onSvgSave$1: function(e) {
@@ -1491,8 +1511,19 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
   get$_onSvgSave: function() {
     return new R.BoundClosure$1(this, R.DrawingToolInterface.prototype._onSvgSave$1, null, "_onSvgSave$1");
   },
+  _onSaveImage$1: function(e) {
+    var img, t1;
+    img = W.ImageElement_ImageElement(null, null, null);
+    J.set$src$x(img, this._drawingModule._canvas.toDataURL("image/png", null));
+    t1 = J.get$body$x(J.get$document$x(C.Window_methods.open$2(window, "", "")));
+    t1.toString;
+    new W._ChildNodeListLazy(t1)._this.appendChild(img);
+  },
+  get$_onSaveImage: function() {
+    return new R.BoundClosure$1(this, R.DrawingToolInterface.prototype._onSaveImage$1, null, "_onSaveImage$1");
+  },
   _toggleAdvancedMenus$1: function(e) {
-    var t1, next, menusAreCurrentlyShowing, t2, t3, i, j, j0, t4;
+    var t1, next, menusAreCurrentlyShowing, t2, t3, i, t4;
     t1 = this._DrawingToolLib$_$advancedToggleButton;
     next = t1.nextElementSibling;
     t1.toString;
@@ -1504,13 +1535,7 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
     t2 = menusAreCurrentlyShowing === true;
     t3 = String(!t2);
     t1._attributes._element.setAttribute("data-" + t1._toHyphenedName$1("isShowing"), t3);
-    for (i = 0, j = 0; next != null;) {
-      if (next.id === "") {
-        j0 = j + 1;
-        next.id = "menu-num" + C.JSInt_methods.toString$0(j);
-        j = j0;
-      }
-      H.printToConsole("WORKED");
+    for (i = 0; next != null;) {
       t1 = J.$index$asx($.get$context(), "TweenMax");
       t3 = t2 ? "50" : 0;
       t4 = t2 ? 0 : 1;
@@ -5610,7 +5635,7 @@ _Future: {"": "Object;_state,_zone<,_resultOrListeners,_nextListener@,_onValueCa
     this._addListener$1(result);
     return result;
   },
-  get$_value: function() {
+  get$_async$_value: function() {
     return this._resultOrListeners;
   },
   get$_error: function() {
@@ -5902,7 +5927,7 @@ _Future__propagateToListeners_closure0: {"": "Closure;box_2,box_1,hasError_4,lis
     try {
       t2 = this.box_2;
       if (!this.hasError_4) {
-        value = t2.source_4.get$_value();
+        value = t2.source_4.get$_async$_value();
         t2 = this.listener_5;
         t3 = this.box_1;
         if (t2.get$_onValue() != null) {
@@ -7504,13 +7529,13 @@ _LinkedHashMap: {"": "Object;_collection$_length,_strings,_nums,_rest,_first,_la
       if (strings == null)
         return;
       cell = strings[key];
-      return cell == null ? null : cell.get$_collection$_value();
+      return cell == null ? null : cell.get$_value();
     } else if (typeof key === "number" && (key & 0x3ffffff) === key) {
       nums = this._nums;
       if (nums == null)
         return;
       cell = nums[key];
-      return cell == null ? null : cell.get$_collection$_value();
+      return cell == null ? null : cell.get$_value();
     } else {
       rest = this._rest;
       if (rest == null)
@@ -7519,7 +7544,7 @@ _LinkedHashMap: {"": "Object;_collection$_length,_strings,_nums,_rest,_first,_la
       index = this._findBucketIndex$2(bucket, key);
       if (index < 0)
         return;
-      return bucket[index].get$_collection$_value();
+      return bucket[index].get$_value();
     }
   },
   $indexSet: function(_, key, value) {
@@ -7551,7 +7576,7 @@ _LinkedHashMap: {"": "Object;_collection$_length,_strings,_nums,_rest,_first,_la
       else {
         index = this._findBucketIndex$2(bucket, key);
         if (index >= 0)
-          bucket[index].set$_collection$_value(value);
+          bucket[index].set$_value(value);
         else
           bucket.push(this._newLinkedCell$2(key, value));
       }
@@ -7581,7 +7606,7 @@ _LinkedHashMap: {"": "Object;_collection$_length,_strings,_nums,_rest,_first,_la
         return;
       cell = bucket.splice(index, 1)[0];
       this._unlinkCell$1(cell);
-      return cell.get$_collection$_value();
+      return cell.get$_value();
     }
   },
   clear$0: function(_) {
@@ -7600,7 +7625,7 @@ _LinkedHashMap: {"": "Object;_collection$_length,_strings,_nums,_rest,_first,_la
     cell = this._first;
     modifications = this._modifications;
     for (; cell != null;) {
-      action.call$2(cell.get$_key(), cell.get$_collection$_value());
+      action.call$2(cell.get$_key(), cell.get$_value());
       if (modifications !== this._modifications)
         throw H.wrapException(P.ConcurrentModificationError$(this));
       cell = cell.get$_next();
@@ -7611,7 +7636,7 @@ _LinkedHashMap: {"": "Object;_collection$_length,_strings,_nums,_rest,_first,_la
     if (cell == null)
       table[key] = this._newLinkedCell$2(key, value);
     else
-      cell.set$_collection$_value(value);
+      cell.set$_value(value);
   },
   _removeHashTableEntry$2: function(table, key) {
     var cell;
@@ -7622,7 +7647,7 @@ _LinkedHashMap: {"": "Object;_collection$_length,_strings,_nums,_rest,_first,_la
       return;
     this._unlinkCell$1(cell);
     delete table[key];
-    return cell.get$_collection$_value();
+    return cell.get$_value();
   },
   _newLinkedCell$2: function(key, value) {
     var cell, last;
@@ -7692,7 +7717,7 @@ _LinkedHashMap_values_closure: {"": "Closure;this_0",
   $is_args1: true
 },
 
-LinkedHashMapCell: {"": "Object;_key<,_collection$_value@,_next@,_previous@"},
+LinkedHashMapCell: {"": "Object;_key<,_value@,_next@,_previous@"},
 
 LinkedHashMapKeyIterable: {"": "IterableBase;_map",
   get$length: function(_) {
@@ -9285,6 +9310,11 @@ _ElementFactoryProvider_createElement_tag: function(tag, typeExtension) {
   return document.createElement(tag);
 },
 
+ImageElement_ImageElement: function(height, src, width) {
+  var e = document.createElement("img", null);
+  return e;
+},
+
 _JenkinsSmiHash_combine: function(hash, value) {
   hash = 536870911 & hash + value;
   hash = 536870911 & hash + ((524287 & hash) << 10 >>> 0);
@@ -9304,7 +9334,7 @@ _wrapZone: function(callback) {
   return t1.bindUnaryCallback$2$runGuarded(callback, true);
 },
 
-HtmlElement: {"": "Element;", "%": "HTMLAppletElement|HTMLAreaElement|HTMLBRElement|HTMLBaseElement|HTMLBaseFontElement|HTMLBodyElement|HTMLContentElement|HTMLDListElement|HTMLDataListElement|HTMLDetailsElement|HTMLDialogElement|HTMLDirectoryElement|HTMLDivElement|HTMLFontElement|HTMLFrameElement|HTMLFrameSetElement|HTMLHRElement|HTMLHeadElement|HTMLHeadingElement|HTMLHtmlElement|HTMLLabelElement|HTMLLegendElement|HTMLLinkElement|HTMLMarqueeElement|HTMLMenuElement|HTMLModElement|HTMLOListElement|HTMLOptGroupElement|HTMLParagraphElement|HTMLPreElement|HTMLQuoteElement|HTMLScriptElement|HTMLShadowElement|HTMLSourceElement|HTMLSpanElement|HTMLStyleElement|HTMLTableCaptionElement|HTMLTableCellElement|HTMLTableColElement|HTMLTableDataCellElement|HTMLTableElement|HTMLTableHeaderCellElement|HTMLTableRowElement|HTMLTableSectionElement|HTMLTemplateElement|HTMLTitleElement|HTMLTrackElement|HTMLUListElement|HTMLUnknownElement;HTMLElement"},
+HtmlElement: {"": "Element;", "%": "HTMLAppletElement|HTMLAreaElement|HTMLBRElement|HTMLBaseElement|HTMLBaseFontElement|HTMLBodyElement|HTMLContentElement|HTMLDListElement|HTMLDataListElement|HTMLDetailsElement|HTMLDialogElement|HTMLDirectoryElement|HTMLDivElement|HTMLFontElement|HTMLFrameElement|HTMLFrameSetElement|HTMLHRElement|HTMLHeadElement|HTMLHeadingElement|HTMLHtmlElement|HTMLLabelElement|HTMLLegendElement|HTMLLinkElement|HTMLMarqueeElement|HTMLMenuElement|HTMLModElement|HTMLOListElement|HTMLOptGroupElement|HTMLParagraphElement|HTMLPreElement|HTMLQuoteElement|HTMLShadowElement|HTMLSpanElement|HTMLStyleElement|HTMLTableCaptionElement|HTMLTableCellElement|HTMLTableColElement|HTMLTableDataCellElement|HTMLTableElement|HTMLTableHeaderCellElement|HTMLTableRowElement|HTMLTableSectionElement|HTMLTemplateElement|HTMLTitleElement|HTMLUListElement|HTMLUnknownElement;HTMLElement"},
 
 AnchorElement: {"": "HtmlElement;",
   toString$0: function(receiver) {
@@ -9384,7 +9414,7 @@ Document: {"": "Node;",
     H.setRuntimeTypeInfo(t1, [null]);
     return t1;
   },
-  "%": "Document|HTMLDocument|SVGDocument"
+  "%": "SVGDocument;Document"
 },
 
 DocumentFragment: {"": "Node;",
@@ -9454,7 +9484,7 @@ Element: {"": "Node;outerHtml:outerHTML=,className%,nextElementSibling=",
   "%": ";Element"
 },
 
-EmbedElement: {"": "HtmlElement;height},name=,width}", "%": "HTMLEmbedElement"},
+EmbedElement: {"": "HtmlElement;height},name=,src},width}", "%": "HTMLEmbedElement"},
 
 ErrorEvent: {"": "Event;error=", "%": "ErrorEvent"},
 
@@ -9510,13 +9540,15 @@ HtmlCollection: {"": "Interceptor_ListMixin_ImmutableListMixin;",
   "%": "HTMLCollection|HTMLFormControlsCollection|HTMLOptionsCollection"
 },
 
-IFrameElement: {"": "HtmlElement;height},name=,width}", "%": "HTMLIFrameElement"},
+HtmlDocument: {"": "Document;body=", "%": "HTMLDocument"},
+
+IFrameElement: {"": "HtmlElement;height},name=,src},width}", "%": "HTMLIFrameElement"},
 
 ImageData: {"": "Interceptor;", $isImageData: true, "%": "ImageData"},
 
-ImageElement: {"": "HtmlElement;height},width}", "%": "HTMLImageElement"},
+ImageElement: {"": "HtmlElement;height},src},width}", "%": "HTMLImageElement"},
 
-InputElement: {"": "HtmlElement;checked%,height},name=,value%,width}", $isElement: true, $isNode: true, $isCheckboxInputElement: true, $isRangeInputElement: true, "%": "HTMLInputElement"},
+InputElement: {"": "HtmlElement;checked%,height},name=,src},value%,width}", $isElement: true, $isNode: true, $isCheckboxInputElement: true, $isRangeInputElement: true, "%": "HTMLInputElement"},
 
 KeyboardEvent: {"": "UIEvent;",
   get$keyCode: function(receiver) {
@@ -9531,7 +9563,7 @@ LIElement: {"": "HtmlElement;value=", "%": "HTMLLIElement"},
 
 MapElement: {"": "HtmlElement;name=", "%": "HTMLMapElement"},
 
-MediaElement: {"": "HtmlElement;error=", "%": "HTMLAudioElement;HTMLMediaElement"},
+MediaElement: {"": "HtmlElement;error=,src}", "%": "HTMLAudioElement;HTMLMediaElement"},
 
 MetaElement: {"": "HtmlElement;name=", "%": "HTMLMetaElement"},
 
@@ -9622,6 +9654,8 @@ ParamElement: {"": "HtmlElement;name=,value=", "%": "HTMLParamElement"},
 
 ProgressElement: {"": "HtmlElement;value=", "%": "HTMLProgressElement"},
 
+ScriptElement: {"": "HtmlElement;src}", "%": "HTMLScriptElement"},
+
 SelectElement: {"": "HtmlElement;length=,name=,value=", "%": "HTMLSelectElement"},
 
 ShadowRoot: {"": "DocumentFragment;innerHtml:innerHTML=",
@@ -9630,6 +9664,8 @@ ShadowRoot: {"": "DocumentFragment;innerHtml:innerHTML=",
   },
   "%": "ShadowRoot"
 },
+
+SourceElement: {"": "HtmlElement;src}", "%": "HTMLSourceElement"},
 
 SpeechRecognitionError: {"": "Event;error=", "%": "SpeechRecognitionError"},
 
@@ -9682,6 +9718,8 @@ TouchList: {"": "Interceptor_ListMixin_ImmutableListMixin1;",
   "%": "TouchList"
 },
 
+TrackElement: {"": "HtmlElement;src}", "%": "HTMLTrackElement"},
+
 UIEvent: {"": "Event;",
   get$page: function(receiver) {
     var t1 = new P.Point0(receiver.pageX, receiver.pageY);
@@ -9694,6 +9732,9 @@ UIEvent: {"": "Event;",
 VideoElement: {"": "MediaElement;height},width}", "%": "HTMLVideoElement"},
 
 Window: {"": "EventTarget;name=",
+  get$document: function(receiver) {
+    return receiver.document;
+  },
   open$3: function(receiver, url, $name, options) {
     return W._DOMWindowCrossFrame__createSafe(receiver.open(url, $name));
   },
@@ -11567,6 +11608,7 @@ FilteredElementList_removeRange_closure: {"": "Closure;",
 ["", "mandala.dart", , M, {
 main: function() {
   var t1, t2;
+  P.print("HelloDartWorld!");
   $.tool = R.DrawingTool$(H.interceptedTypeCast(document.querySelector("#canvas"), "$isCanvasElement"));
   t1 = new R.DrawingToolInterface($.tool, null, null, null, null, null, null, null, null);
   t1._setupOutgoingEvents$0();
@@ -11674,27 +11716,27 @@ P.Object.$isObject = true;
 W.Element.$isElement = true;
 W.Element.$isNode = true;
 W.Element.$isObject = true;
+J.JSArray.$isList = true;
+J.JSArray.$isObject = true;
+P.Function.$isFunction = true;
+P.Function.$isObject = true;
 P.Match.$isObject = true;
 W.MouseEvent.$isObject = true;
 W.TouchEvent.$isObject = true;
 P.Symbol.$isSymbol = true;
 P.Symbol.$isObject = true;
 W.Event.$isObject = true;
+J.JSBool.$isbool = true;
+J.JSBool.$isObject = true;
 P.Stream.$isStream = true;
 P.Stream.$isObject = true;
 P.StreamSubscription.$isStreamSubscription = true;
 P.StreamSubscription.$isObject = true;
 Z.Point.$isPoint = true;
 Z.Point.$isObject = true;
-J.JSArray.$isList = true;
-J.JSArray.$isObject = true;
-P.Function.$isFunction = true;
-P.Function.$isObject = true;
 R.BaseAction.$isBaseAction = true;
 R.BaseAction.$isObject = true;
 W.KeyboardEvent.$isObject = true;
-J.JSBool.$isbool = true;
-J.JSBool.$isObject = true;
 P.ReceivePort.$isStream = true;
 P.ReceivePort.$asStream = [null];
 P.ReceivePort.$isObject = true;
@@ -12059,6 +12101,9 @@ J.forEach$1$ax = function(receiver, a0) {
 J.get$attributes$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$attributes(receiver);
 };
+J.get$body$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$body(receiver);
+};
 J.get$checked$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$checked(receiver);
 };
@@ -12070,6 +12115,9 @@ J.get$className$x = function(receiver) {
 };
 J.get$context2D$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$context2D(receiver);
+};
+J.get$document$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$document(receiver);
 };
 J.get$error$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$error(receiver);
@@ -12167,6 +12215,9 @@ J.set$height$x = function(receiver, value) {
 J.set$pointerEvents$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$pointerEvents(receiver, value);
 };
+J.set$src$x = function(receiver, value) {
+  return J.getInterceptor$x(receiver).set$src(receiver, value);
+};
 J.set$value$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$value(receiver, value);
 };
@@ -12199,6 +12250,9 @@ J.trim$0$s = function(receiver) {
 };
 Isolate.$lazy($, "LINE_BREAK", "BaseAction_LINE_BREAK", "get$BaseAction_LINE_BREAK", function() {
   return new Z.Point(null, null);
+});
+Isolate.$lazy($, "emitter", "SharedDispatcher_emitter", "get$SharedDispatcher_emitter", function() {
+  return new Q.EventEmitter(P.LinkedHashMap_LinkedHashMap(null, null, null, J.JSString, [J.JSArray, P.Function]));
 });
 Isolate.$lazy($, "globalThis", "globalThis", "get$globalThis", function() {
   return function() { return this; }();

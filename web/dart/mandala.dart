@@ -9,6 +9,7 @@ DrawingTool tool = null;
 DrawingToolInterface toolInterface = null;
 
 void main() {
+  print("HelloDartWorld!");
   tool = new DrawingTool( (querySelector("#canvas") as CanvasElement) );
   toolInterface = new DrawingToolInterface( tool );
 }
