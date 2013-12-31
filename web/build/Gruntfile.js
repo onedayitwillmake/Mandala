@@ -60,7 +60,7 @@ module.exports = function( grunt ){
     grunt.file.write('../../../app/views/layouts/_post_body.html.erb', allScriptTags.split("<script").join("\n\t<script") );
 
     // Write the index partial
-    grunt.file.write('../../../app/views/welcome/index.html.erb', $mandalaDart('#main-container').html() );
+    grunt.file.write('../../../app/views/welcome/index.html.erb', $mandalaDart('#main-container') );
   });
 
   grunt.registerTask('default', ['dom_munger', 'dart2rails']);
