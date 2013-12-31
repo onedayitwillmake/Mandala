@@ -25,15 +25,15 @@ module.exports = function( grunt ){
       main: {
         files: [
           // Fonts
-          {expand: true, cwd: '../', src: ['fonts/*'], dest: railsDir+"public/", filter: 'isFile'},
+          {expand: true, cwd: '../', src: ['fonts/*!(packages)'], dest: railsDir+"public/", filter: 'isFile'},
           // CSS
-          {expand: true, cwd: '../', src: ['css/*'], dest: railsDir+"public/", filter: 'isFile'},
+          {expand: true, cwd: '../', src: ['css/*!(packages)'], dest: railsDir+"public/", filter: 'isFile'},
           // Images excluding demo and editor assets
-          {expand: true, cwd: '../', src: ['images/**'], dest: railsDir+"public/", filter: 'isFile'},
+          {expand: true, cwd: '../', src: ['images/**!(packages)'], dest: railsDir+"public/", filter: 'isFile'},
           // JS
-          {expand: true, cwd: '../', src: ['js/**'], dest: railsDir+"public/", filter: 'isFile'},
+          {expand: true, cwd: '../', src: ['js/**!(packages)'], dest: railsDir+"public/", filter: 'isFile'},
           // DART
-          {expand: true, cwd: '../', src: ['dart/**'], dest: railsDir+"public/", filter: 'isFile'},
+          {expand: true, cwd: '../', src: ['dart/**', '!**/packages/**'], dest: railsDir+"public/", filter: 'isFile'},
           // DART - PACKAGES
           {expand: true, cwd: '../', src: ['dart/packages/**'], dest: railsDir+"public/", filter: 'isFile'}
         ]
@@ -63,5 +63,6 @@ module.exports = function( grunt ){
     grunt.file.write('../../../app/views/welcome/index.html.erb', $mandalaDart('#main-container') );
   });
 
-  grunt.registerTask('default', ['dom_munger', 'dart2rails']);
+  grunt.registerTask('default', ['less', 'dom_munger', 'dart2rails','copy']);
+//  grunt.registerTask('default', ['copy']);
 };

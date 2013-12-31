@@ -33,7 +33,7 @@
   font-weight: 400 !important;
 }
 .font-alegreya-sans {
-  font-family: 'Alegreya Sans SC';
+  font-family: 'Alegreya Sans';
   font-style: normal;
   font-weight: 100;
 }
@@ -65,7 +65,7 @@ canvas {
   outline: 0;
 }
 #title {
-  font-family: 'Alegreya Sans SC';
+  font-family: 'Alegreya Sans';
   font-style: normal;
   font-weight: 100;
   font-size: 48px;
@@ -77,6 +77,13 @@ canvas {
   color: #95a5a6;
   margin-bottom: 15px;
   margin-left: 1.5%;
+}
+#byline {
+  font-size: 12px;
+  display: block;
+  float: right;
+  margin-top: -1.5em;
+  padding-right: 0.6em;
 }
 input[type=range] {
   -webkit-appearance: none;

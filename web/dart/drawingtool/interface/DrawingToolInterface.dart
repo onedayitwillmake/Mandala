@@ -66,10 +66,15 @@ class DrawingToolInterface {
     _$advancedToggleButton = querySelector("#advanced-toggle")
     ..onClick.listen( _toggleAdvancedMenus )
     ..onTouchEnd.listen( _toggleAdvancedMenus );
+
     // close out on first call
-    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
+//    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
   }
-  
+
+  void onSignInDropDownSelected( dynamic thing ) {
+    print(thing);
+  }
+
   /// Setup events that originate from the drawingModule and effect the user interface
   void _setupIncommingEvents() {
     SharedDispatcher.emitter.on(DrawingToolEvent.ON_ACTION_CHANGED, onActionChanged );
