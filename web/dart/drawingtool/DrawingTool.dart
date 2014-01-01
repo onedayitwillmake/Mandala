@@ -1,6 +1,7 @@
 part of DrawingToolLib;
 
 class DrawingTool {
+  String                    mandalaId;
   /// Number of sides in we draw (x2 if mirroring is on)
   int                       _sides = 7;
 
