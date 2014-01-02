@@ -79,7 +79,7 @@ class DrawingToolInterface {
     })]);
 
     // close out on first call
-//    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
+    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
   }
 
   void onSignInDropDownSelected( dynamic thing ) {

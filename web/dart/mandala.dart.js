@@ -1491,6 +1491,7 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
     $.get$context().callMethod$2("jQuery", ["#interface-color-line-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure7(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
     $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-start-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure8(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
     $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-end-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure9(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    P.Future_Future$delayed(P.Duration$(0, 0, 0, 0, 0, 1), new R.DrawingToolInterface__setupOutgoingEvents_closure10(this), null);
   },
   _setupIncommingEvents$0: function() {
     var t1 = $.get$SharedDispatcher_emitter();
@@ -1740,6 +1741,14 @@ DrawingToolInterface__setupOutgoingEvents_closure9: {"": "Closure;this_14",
   "+call:2:0": 0,
   $isFunction: true,
   $is_args2: true
+},
+
+DrawingToolInterface__setupOutgoingEvents_closure10: {"": "Closure;this_15",
+  call$0: function() {
+    return this.this_15._toggleAdvancedMenus$1(null);
+  },
+  "+call:0:0": 0,
+  $isFunction: true
 },
 
 DrawingToolInterface_onActionChanged_closure: {"": "Closure;actionName_0",
@@ -2098,12 +2107,22 @@ SiteApp__onPublishRequested_closure: {"": "Closure;",
     t1 = J.getInterceptor$asx(responseJson);
     if (J.$eq(t1.$index(responseJson, "status"), false))
       document.querySelector("#submission-form .ui.form .info.message .header").textContent = t1.$index(responseJson, "error");
-    else
+    else {
       document.querySelector("#submission-form .ui.form .info.message .header").textContent = "All done";
+      P.Future_Future$delayed(P.Duration$(0, 0, 0, 0, 0, 1), new S.SiteApp__onPublishRequested__closure(responseJson), null);
+    }
   },
   "+call:1:0": 0,
   $isFunction: true,
   $is_args1: true
+},
+
+SiteApp__onPublishRequested__closure: {"": "Closure;responseJson_0",
+  call$0: function() {
+    return J.assign$1$x(C.Window_methods.get$location(window), "/mandalas/" + H.S(J.$index$asx(J.$index$asx(this.responseJson_0, "info"), "id")));
+  },
+  "+call:0:0": 0,
+  $isFunction: true
 },
 
 TopMenuController: {"": "Object;",
@@ -5158,6 +5177,17 @@ _registerErrorHandler: function(errorHandler, zone) {
     return errorHandler;
 },
 
+Future_Future$delayed: function(duration, computation, $T) {
+  var t1, completer, result;
+  t1 = null;
+  completer = new P._SyncCompleter(P._Future$(t1));
+  H.setRuntimeTypeInfo(completer, [t1]);
+  result = completer.future;
+  result = result.then$1(new P.Future_Future$delayed_closure(computation));
+  P.Timer_Timer(duration, new P.Future_Future$delayed_closure0(completer));
+  return result;
+},
+
 Future_wait: function(futures) {
   var t1, t2, t3, future, pos, t4, t5, result, completer;
   t1 = {};
@@ -5655,6 +5685,26 @@ _AsyncBroadcastStreamController: {"": "_BroadcastStreamController;_onListen,_onC
 
 Future: {"": "Object;", $isFuture: true},
 
+Future_Future$delayed_closure: {"": "Closure;computation_0",
+  call$1: function(ignored) {
+    return this.computation_0.call$0();
+  },
+  "+call:1:0": 0,
+  $isFunction: true,
+  $is_args1: true
+},
+
+Future_Future$delayed_closure0: {"": "Closure;completer_1",
+  call$0: function() {
+    var t1 = this.completer_1.future;
+    if (t1._state !== 0)
+      H.throwExpression(P.StateError$("Future already completed"));
+    t1._complete$1(null);
+  },
+  "+call:0:0": 0,
+  $isFunction: true
+},
+
 Future_wait_handleError: {"": "Closure;box_0",
   call$1: function(error) {
     var t1 = this.box_0;
@@ -5715,6 +5765,8 @@ _AsyncCompleter: {"": "_Completer;future",
   },
   $as_Completer: null
 },
+
+_SyncCompleter: {"": "_Completer;future", $as_Completer: null},
 
 _Future: {"": "Object;_state,_zone<,_resultOrListeners,_nextListener@,_onValueCallback,_errorTestCallback,_onErrorCallback,_whenCompleteActionCallback",
   get$_isComplete: function() {

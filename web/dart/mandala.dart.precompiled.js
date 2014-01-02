@@ -1491,6 +1491,7 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
     $.get$context().callMethod$2("jQuery", ["#interface-color-line-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure7(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
     $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-start-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure8(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
     $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-end-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure9(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    P.Future_Future$delayed(P.Duration$(0, 0, 0, 0, 0, 1), new R.DrawingToolInterface__setupOutgoingEvents_closure10(this), null);
   },
   _setupIncommingEvents$0: function() {
     var t1 = $.get$SharedDispatcher_emitter();
@@ -1740,6 +1741,14 @@ DrawingToolInterface__setupOutgoingEvents_closure9: {"": "Closure;this_14",
   "+call:2:0": 0,
   $isFunction: true,
   $is_args2: true
+},
+
+DrawingToolInterface__setupOutgoingEvents_closure10: {"": "Closure;this_15",
+  call$0: function() {
+    return this.this_15._toggleAdvancedMenus$1(null);
+  },
+  "+call:0:0": 0,
+  $isFunction: true
 },
 
 DrawingToolInterface_onActionChanged_closure: {"": "Closure;actionName_0",
@@ -2098,12 +2107,22 @@ SiteApp__onPublishRequested_closure: {"": "Closure;",
     t1 = J.getInterceptor$asx(responseJson);
     if (J.$eq(t1.$index(responseJson, "status"), false))
       document.querySelector("#submission-form .ui.form .info.message .header").textContent = t1.$index(responseJson, "error");
-    else
+    else {
       document.querySelector("#submission-form .ui.form .info.message .header").textContent = "All done";
+      P.Future_Future$delayed(P.Duration$(0, 0, 0, 0, 0, 1), new S.SiteApp__onPublishRequested__closure(responseJson), null);
+    }
   },
   "+call:1:0": 0,
   $isFunction: true,
   $is_args1: true
+},
+
+SiteApp__onPublishRequested__closure: {"": "Closure;responseJson_0",
+  call$0: function() {
+    return J.assign$1$x(C.Window_methods.get$location(window), "/mandalas/" + H.S(J.$index$asx(J.$index$asx(this.responseJson_0, "info"), "id")));
+  },
+  "+call:0:0": 0,
+  $isFunction: true
 },
 
 TopMenuController: {"": "Object;",
@@ -5158,6 +5177,17 @@ _registerErrorHandler: function(errorHandler, zone) {
     return errorHandler;
 },
 
+Future_Future$delayed: function(duration, computation, $T) {
+  var t1, completer, result;
+  t1 = null;
+  completer = new P._SyncCompleter(P._Future$(t1));
+  H.setRuntimeTypeInfo(completer, [t1]);
+  result = completer.future;
+  result = result.then$1(new P.Future_Future$delayed_closure(computation));
+  P.Timer_Timer(duration, new P.Future_Future$delayed_closure0(completer));
+  return result;
+},
+
 Future_wait: function(futures) {
   var t1, t2, t3, future, pos, t4, t5, result, completer;
   t1 = {};
@@ -5655,6 +5685,26 @@ _AsyncBroadcastStreamController: {"": "_BroadcastStreamController;_onListen,_onC
 
 Future: {"": "Object;", $isFuture: true},
 
+Future_Future$delayed_closure: {"": "Closure;computation_0",
+  call$1: function(ignored) {
+    return this.computation_0.call$0();
+  },
+  "+call:1:0": 0,
+  $isFunction: true,
+  $is_args1: true
+},
+
+Future_Future$delayed_closure0: {"": "Closure;completer_1",
+  call$0: function() {
+    var t1 = this.completer_1.future;
+    if (t1._state !== 0)
+      H.throwExpression(P.StateError$("Future already completed"));
+    t1._complete$1(null);
+  },
+  "+call:0:0": 0,
+  $isFunction: true
+},
+
 Future_wait_handleError: {"": "Closure;box_0",
   call$1: function(error) {
     var t1 = this.box_0;
@@ -5715,6 +5765,8 @@ _AsyncCompleter: {"": "_Completer;future",
   },
   $as_Completer: null
 },
+
+_SyncCompleter: {"": "_Completer;future", $as_Completer: null},
 
 _Future: {"": "Object;_state,_zone<,_resultOrListeners,_nextListener@,_onValueCallback,_errorTestCallback,_onErrorCallback,_whenCompleteActionCallback",
   get$_isComplete: function() {
@@ -16554,6 +16606,16 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   DrawingToolInterface__setupOutgoingEvents_closure9.prototype = $desc;
+  function DrawingToolInterface__setupOutgoingEvents_closure10(this_15) {
+    this.this_15 = this_15;
+  }
+  DrawingToolInterface__setupOutgoingEvents_closure10.builtin$cls = "DrawingToolInterface__setupOutgoingEvents_closure10";
+  if (!"name" in DrawingToolInterface__setupOutgoingEvents_closure10)
+    DrawingToolInterface__setupOutgoingEvents_closure10.name = "DrawingToolInterface__setupOutgoingEvents_closure10";
+  $desc = $collectedClasses.DrawingToolInterface__setupOutgoingEvents_closure10;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  DrawingToolInterface__setupOutgoingEvents_closure10.prototype = $desc;
   function DrawingToolInterface_onActionChanged_closure(actionName_0) {
     this.actionName_0 = actionName_0;
   }
@@ -16603,6 +16665,16 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   SiteApp__onPublishRequested_closure.prototype = $desc;
+  function SiteApp__onPublishRequested__closure(responseJson_0) {
+    this.responseJson_0 = responseJson_0;
+  }
+  SiteApp__onPublishRequested__closure.builtin$cls = "SiteApp__onPublishRequested__closure";
+  if (!"name" in SiteApp__onPublishRequested__closure)
+    SiteApp__onPublishRequested__closure.name = "SiteApp__onPublishRequested__closure";
+  $desc = $collectedClasses.SiteApp__onPublishRequested__closure;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  SiteApp__onPublishRequested__closure.prototype = $desc;
   function TopMenuController() {
   }
   TopMenuController.builtin$cls = "TopMenuController";
@@ -17697,6 +17769,26 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Future.prototype = $desc;
+  function Future_Future$delayed_closure(computation_0) {
+    this.computation_0 = computation_0;
+  }
+  Future_Future$delayed_closure.builtin$cls = "Future_Future$delayed_closure";
+  if (!"name" in Future_Future$delayed_closure)
+    Future_Future$delayed_closure.name = "Future_Future$delayed_closure";
+  $desc = $collectedClasses.Future_Future$delayed_closure;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  Future_Future$delayed_closure.prototype = $desc;
+  function Future_Future$delayed_closure0(completer_1) {
+    this.completer_1 = completer_1;
+  }
+  Future_Future$delayed_closure0.builtin$cls = "Future_Future$delayed_closure0";
+  if (!"name" in Future_Future$delayed_closure0)
+    Future_Future$delayed_closure0.name = "Future_Future$delayed_closure0";
+  $desc = $collectedClasses.Future_Future$delayed_closure0;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  Future_Future$delayed_closure0.prototype = $desc;
   function Future_wait_handleError(box_0) {
     this.box_0 = box_0;
   }
@@ -17737,6 +17829,16 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   _AsyncCompleter.prototype = $desc;
+  function _SyncCompleter(future) {
+    this.future = future;
+  }
+  _SyncCompleter.builtin$cls = "_SyncCompleter";
+  if (!"name" in _SyncCompleter)
+    _SyncCompleter.name = "_SyncCompleter";
+  $desc = $collectedClasses._SyncCompleter;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  _SyncCompleter.prototype = $desc;
   function _Future(_state, _zone, _resultOrListeners, _nextListener, _onValueCallback, _errorTestCallback, _onErrorCallback, _whenCompleteActionCallback) {
     this._state = _state;
     this._zone = _zone;
@@ -20059,5 +20161,5 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Closure$4.prototype = $desc;
-  return [HtmlElement, AnchorElement, AnimationEvent, AreaElement, AudioElement, AutocompleteErrorEvent, BRElement, BaseElement, BeforeLoadEvent, BeforeUnloadEvent, Blob, BodyElement, ButtonElement, CDataSection, CanvasElement, CanvasGradient, CanvasPattern, CanvasRenderingContext, CanvasRenderingContext2D, CharacterData, CloseEvent, Comment, CompositionEvent, ContentElement, CssFontFaceLoadEvent, CssStyleDeclaration, CustomEvent, DListElement, DataListElement, DetailsElement, DeviceMotionEvent, DeviceOrientationEvent, DialogElement, DivElement, Document, DocumentFragment, DocumentType, DomError, DomException, Element, EmbedElement, ErrorEvent, Event, EventTarget, FieldSetElement, File, FileError, FocusEvent, FormElement, HRElement, HashChangeEvent, HeadElement, HeadingElement, HtmlCollection, HtmlDocument, HtmlFormControlsCollection, HtmlHtmlElement, HtmlOptionsCollection, HttpRequest, HttpRequestEventTarget, IFrameElement, ImageData, ImageElement, InputElement, KeyboardEvent, KeygenElement, LIElement, LabelElement, LegendElement, LinkElement, Location, MapElement, MediaElement, MediaError, MediaKeyError, MediaKeyEvent, MediaKeyMessageEvent, MediaKeyNeededEvent, MediaStream, MediaStreamEvent, MediaStreamTrackEvent, MenuElement, MessageEvent, MetaElement, MeterElement, MidiConnectionEvent, MidiMessageEvent, ModElement, MouseEvent, Navigator, NavigatorUserMediaError, Node, NodeList, OListElement, ObjectElement, OptGroupElement, OptionElement, OutputElement, OverflowEvent, PageTransitionEvent, ParagraphElement, ParamElement, PopStateEvent, PositionError, PreElement, ProcessingInstruction, ProgressElement, ProgressEvent, QuoteElement, ResourceProgressEvent, RtcDataChannelEvent, RtcDtmfToneChangeEvent, RtcIceCandidateEvent, ScriptElement, SecurityPolicyViolationEvent, SelectElement, ShadowElement, ShadowRoot, SourceElement, SpanElement, SpeechInputEvent, SpeechRecognitionError, SpeechRecognitionEvent, SpeechSynthesisEvent, StorageEvent, StyleElement, TableCaptionElement, TableCellElement, TableColElement, TableElement, TableRowElement, TableSectionElement, TemplateElement, Text, TextAreaElement, TextEvent, TitleElement, Touch, TouchEvent, TouchList, TrackElement, TrackEvent, TransitionEvent, UIEvent, UListElement, UnknownElement, VideoElement, WheelEvent, Window, _Attr, _ClientRect, _Entity, _HTMLAppletElement, _HTMLBaseFontElement, _HTMLDirectoryElement, _HTMLFontElement, _HTMLFrameElement, _HTMLFrameSetElement, _HTMLMarqueeElement, _MutationEvent, _NamedNodeMap, _Notation, _XMLHttpRequestProgressEvent, KeyRange, VersionChangeEvent, AElement, AltGlyphElement, AnimateElement, AnimateMotionElement, AnimateTransformElement, AnimatedLength, AnimatedLengthList, AnimatedNumber, AnimatedNumberList, AnimationElement, CircleElement, ClipPathElement, DefsElement, DescElement, EllipseElement, FEBlendElement, FEColorMatrixElement, FEComponentTransferElement, FECompositeElement, FEConvolveMatrixElement, FEDiffuseLightingElement, FEDisplacementMapElement, FEDistantLightElement, FEFloodElement, FEFuncAElement, FEFuncBElement, FEFuncGElement, FEFuncRElement, FEGaussianBlurElement, FEImageElement, FEMergeElement, FEMergeNodeElement, FEMorphologyElement, FEOffsetElement, FEPointLightElement, FESpecularLightingElement, FESpotLightElement, FETileElement, FETurbulenceElement, FilterElement, ForeignObjectElement, GElement, GraphicsElement, ImageElement0, LineElement, LinearGradientElement, MarkerElement, MaskElement, MetadataElement, PathElement, PatternElement, PointList, PolygonElement, PolylineElement, RadialGradientElement, RectElement, ScriptElement0, SetElement, StopElement, StyleElement0, SvgDocument, SvgElement, SvgSvgElement, SwitchElement, SymbolElement, TSpanElement, TextContentElement, TextElement, TextPathElement, TextPositioningElement, TitleElement0, UseElement, ViewElement, ZoomEvent, _GradientElement, _SVGAltGlyphDefElement, _SVGAltGlyphItemElement, _SVGAnimateColorElement, _SVGComponentTransferFunctionElement, _SVGCursorElement, _SVGFEDropShadowElement, _SVGFontElement, _SVGFontFaceElement, _SVGFontFaceFormatElement, _SVGFontFaceNameElement, _SVGFontFaceSrcElement, _SVGFontFaceUriElement, _SVGGlyphElement, _SVGGlyphRefElement, _SVGHKernElement, _SVGMPathElement, _SVGMissingGlyphElement, _SVGVKernElement, AudioProcessingEvent, OfflineAudioCompletionEvent, ContextEvent, SqlError, TypedData, ByteData, Float32List, Float64List, Int16List, Int32List, Int8List, Uint16List, Uint32List, Uint8ClampedList, Uint8List, DrawingTool, BoundClosure$1, DrawingTool__setupListeners_closure, DrawingTool__setupListeners_closure0, DrawingTool__setupListeners_closure1, DrawingTool__setupListeners_closure2, DrawingTool__setupListeners_closure3, DrawingTool__setupListeners_closure4, DrawingTool__setupListeners_closure5, DrawingTool__setupListeners_closure6, DrawingTool__setupListeners_closure7, DrawingTool__setupListeners_closure8, DrawingTool__setupListeners_closure9, DrawingTool__updateOffscreenBuffer_closure, DrawingTool_saveSvg_closure, ActionSettings, BaseAction, PolygonalFillAction, PolygonalStrokeAction, RegularFillAction, RegularStrokeAction, SmoothFillAction, SmoothStrokeAction, DrawingToolInterface, DrawingToolInterface__setupOutgoingEvents_closure, DrawingToolInterface__setupOutgoingEvents__closure0, DrawingToolInterface__setupOutgoingEvents_closure0, DrawingToolInterface__setupOutgoingEvents__closure, DrawingToolInterface__setupOutgoingEvents_closure1, DrawingToolInterface__setupOutgoingEvents_closure2, DrawingToolInterface__setupOutgoingEvents_closure3, DrawingToolInterface__setupOutgoingEvents_closure4, DrawingToolInterface__setupOutgoingEvents_closure5, DrawingToolInterface__setupOutgoingEvents_closure6, DrawingToolInterface__setupOutgoingEvents_closure7, DrawingToolInterface__setupOutgoingEvents_closure8, DrawingToolInterface__setupOutgoingEvents_closure9, DrawingToolInterface_onActionChanged_closure, SvgRenderer, SiteApp, SiteApp__onPublishRequested_closure, TopMenuController, TopMenuController__setupDropdown_closure, JS_CONST, Interceptor, JSBool, JSNull, JavaScriptObject, PlainJavaScriptObject, UnknownJavaScriptObject, JSArray, JSMutableArray, JSFixedArray, JSExtendableArray, JSNumber, JSInt, JSDouble, JSString, startRootIsolate_closure, startRootIsolate_closure0, _Manager, _IsolateContext, _EventLoop, _EventLoop__runHelper_next, _IsolateEvent, _MainManagerStub, IsolateNatives__processWorkerMessage_closure, _BaseSendPort, _NativeJsSendPort, _NativeJsSendPort_send_closure, _NativeJsSendPort_send__closure, _WorkerSendPort, _WorkerSendPort_send_closure, ReceivePortImpl, BoundClosure$i0, _waitForPendingPorts_closure, _PendingSendPortFinder, _JsSerializer, _JsCopier, _JsDeserializer, _JsVisitedMap, _MessageTraverserVisitedMap, _MessageTraverser, _Copier, _Copier_visitMap_closure, _Serializer, _Deserializer, TimerImpl, TimerImpl_internalCallback, TimerImpl_internalCallback0, JSInvocationMirror, Primitives_applyFunction_closure, Primitives_applyFunction_closure0, Primitives_applyFunction_closure1, TypeErrorDecoder, NullError, JsNoSuchMethodError, UnknownJsTypeError, unwrapException_saveStackTrace, _StackTrace, invokeClosure_closure, invokeClosure_closure0, invokeClosure_closure1, invokeClosure_closure2, invokeClosure_closure3, Closure, BoundClosure, CastErrorImplementation, TypeImpl, initHooks_closure, initHooks_closure0, initHooks_closure1, StringMatch, ListIterable, SubListIterable, ListIterator, MappedIterable, EfficientLengthMappedIterable, MappedIterator, MappedListIterable, WhereIterable, WhereIterator, FixedLengthListMixin, Symbol0, _AsyncError, _BroadcastStream, _BroadcastSubscription, BoundClosure$0, _BroadcastStreamController, BoundClosure$i1, BoundClosure$2, _SyncBroadcastStreamController, _SyncBroadcastStreamController__sendData_closure, _SyncBroadcastStreamController__sendError_closure, _SyncBroadcastStreamController__sendDone_closure, _AsyncBroadcastStreamController, Future, Future_wait_handleError, Future_wait_closure, _Completer, _AsyncCompleter, _Future, _Future__addListener_closure, _Future__chainFutures_closure, _Future__chainFutures_closure0, _Future__asyncComplete_closure, _Future__asyncCompleteError_closure, _Future__propagateToListeners_closure, _Future__propagateToListeners_closure0, _Future__propagateToListeners__closure, _Future__propagateToListeners__closure0, Stream, Stream_contains_closure, Stream_contains__closure, Stream_contains__closure0, Stream_contains_closure0, Stream_forEach_closure, Stream_forEach__closure, Stream_forEach__closure0, Stream_forEach_closure0, Stream_length_closure, Stream_length_closure0, StreamSubscription, _StreamController, _StreamController__subscribe_closure, _StreamController__recordCancel_complete, _SyncStreamControllerDispatch, _AsyncStreamControllerDispatch, _AsyncStreamController, _StreamController__AsyncStreamControllerDispatch, _SyncStreamController, _StreamController__SyncStreamControllerDispatch, _ControllerStream, _ControllerSubscription, _EventSink, _BufferingStreamSubscription, _BufferingStreamSubscription__sendError_sendError, _BufferingStreamSubscription__sendDone_sendDone, _StreamImpl, _DelayedEvent, _DelayedData, _DelayedError, _DelayedDone, _PendingEvents, _PendingEvents_schedule_closure, _StreamImplEvents, _cancelAndError_closure, _cancelAndErrorClosure_closure, _cancelAndValue_closure, _ForwardingStream, _ForwardingStreamSubscription, BoundClosure$20, _MapStream, _BaseZone, _BaseZone_bindCallback_closure, _BaseZone_bindCallback_closure0, _BaseZone_bindUnaryCallback_closure, _BaseZone_bindUnaryCallback_closure0, _rootHandleUncaughtError_closure, _rootHandleUncaughtError__closure, _RootZone, _HashMap, _HashMap_values_closure, _IdentityHashMap, HashMapKeyIterable, HashMapKeyIterator, _LinkedHashMap, _LinkedHashMap_values_closure, LinkedHashMapCell, LinkedHashMapKeyIterable, LinkedHashMapKeyIterator, _HashSet, _IdentityHashSet, HashSetIterator, _LinkedHashSet, LinkedHashSetCell, LinkedHashSetIterator, _HashSetBase, IterableBase, ListBase, ListMixin, Maps_mapToString_closure, ListQueue, _ListQueueIterator, _convertJsonToDart_closure, _convertJsonToDart_walk, Codec, Converter, Encoding, JsonCodec, JsonDecoder, Utf8Codec, Utf8Encoder, _Utf8Encoder, Function__toMangledNames_closure, NoSuchMethodError_toString_closure, DateTime, DateTime_toString_fourDigits, DateTime_toString_threeDigits, DateTime_toString_twoDigits, Duration, Duration_toString_sixDigits, Duration_toString_twoDigits, Error, NullThrownError, ArgumentError, RangeError, NoSuchMethodError, UnsupportedError, UnimplementedError, StateError, ConcurrentModificationError, StackOverflowError, CyclicInitializationError, _ExceptionImplementation, FormatException, Expando, Function, Iterator, Null, Object, Match, StackTrace, StringBuffer, Symbol, Uri__uriEncode_byteToHex, Interceptor_CssStyleDeclarationBase, CssStyleDeclarationBase, _ChildrenElementList, _FrozenElementList, _FrozenElementList$_wrap_closure, Interceptor_ListMixin, Interceptor_ListMixin_ImmutableListMixin, HttpRequest_postFormData_closure, HttpRequest_postFormData_closure0, HttpRequest_request_closure, HttpRequest_request_closure0, _ChildNodeListLazy, Interceptor_ListMixin0, Interceptor_ListMixin_ImmutableListMixin0, Interceptor_ListMixin1, Interceptor_ListMixin_ImmutableListMixin1, Interceptor_ListMixin2, Interceptor_ListMixin_ImmutableListMixin2, _AttributeMap, _ElementAttributeMap, _DataAttributeMap, _DataAttributeMap_forEach_closure, _DataAttributeMap_keys_closure, _DataAttributeMap_values_closure, _MultiElementCssClassSet, _MultiElementCssClassSet_closure, _MultiElementCssClassSet_readClasses_closure, _MultiElementCssClassSet_modify_closure, _MultiElementCssClassSet_remove_closure, _MultiElementCssClassSet__modifyWithReturnValue_closure, _ElementCssClassSet, EventStreamProvider, _EventStream, _ElementEventStreamImpl, _ElementListEventStreamImpl, _EventStreamSubscription, _StreamPool, _StreamPool_add_closure, ImmutableListMixin, FixedSizeListIterator, _DOMWindowCrossFrame, _LocationWrapper, _AttributeClassSet, ReceivePort, JsObject, JsObject__convertDataTree__convert, JsFunction, JsArray, JsObject_ListMixin, _convertToJS_closure, _convertToJS_closure0, _wrapToDart_closure, _wrapToDart_closure0, _wrapToDart_closure1, Point0, TypedData_ListMixin, TypedData_ListMixin_FixedLengthListMixin, TypedData_ListMixin0, TypedData_ListMixin_FixedLengthListMixin0, TypedData_ListMixin1, TypedData_ListMixin_FixedLengthListMixin1, TypedData_ListMixin2, TypedData_ListMixin_FixedLengthListMixin2, TypedData_ListMixin3, TypedData_ListMixin_FixedLengthListMixin3, TypedData_ListMixin4, TypedData_ListMixin_FixedLengthListMixin4, TypedData_ListMixin5, TypedData_ListMixin_FixedLengthListMixin5, TypedData_ListMixin6, TypedData_ListMixin_FixedLengthListMixin6, TypedData_ListMixin7, TypedData_ListMixin_FixedLengthListMixin7, Int64List, Uint64List, EventEmitter, EventEmitter_on_closure, EventEmitter_emit_closure, CssClassSetImpl, CssClassSetImpl_add_closure, FilteredElementList, FilteredElementList__filtered_closure, FilteredElementList_removeRange_closure, Point, Closure$2, Closure$1, Closure$0, Closure$7, Closure$20, Closure$4];
+  return [HtmlElement, AnchorElement, AnimationEvent, AreaElement, AudioElement, AutocompleteErrorEvent, BRElement, BaseElement, BeforeLoadEvent, BeforeUnloadEvent, Blob, BodyElement, ButtonElement, CDataSection, CanvasElement, CanvasGradient, CanvasPattern, CanvasRenderingContext, CanvasRenderingContext2D, CharacterData, CloseEvent, Comment, CompositionEvent, ContentElement, CssFontFaceLoadEvent, CssStyleDeclaration, CustomEvent, DListElement, DataListElement, DetailsElement, DeviceMotionEvent, DeviceOrientationEvent, DialogElement, DivElement, Document, DocumentFragment, DocumentType, DomError, DomException, Element, EmbedElement, ErrorEvent, Event, EventTarget, FieldSetElement, File, FileError, FocusEvent, FormElement, HRElement, HashChangeEvent, HeadElement, HeadingElement, HtmlCollection, HtmlDocument, HtmlFormControlsCollection, HtmlHtmlElement, HtmlOptionsCollection, HttpRequest, HttpRequestEventTarget, IFrameElement, ImageData, ImageElement, InputElement, KeyboardEvent, KeygenElement, LIElement, LabelElement, LegendElement, LinkElement, Location, MapElement, MediaElement, MediaError, MediaKeyError, MediaKeyEvent, MediaKeyMessageEvent, MediaKeyNeededEvent, MediaStream, MediaStreamEvent, MediaStreamTrackEvent, MenuElement, MessageEvent, MetaElement, MeterElement, MidiConnectionEvent, MidiMessageEvent, ModElement, MouseEvent, Navigator, NavigatorUserMediaError, Node, NodeList, OListElement, ObjectElement, OptGroupElement, OptionElement, OutputElement, OverflowEvent, PageTransitionEvent, ParagraphElement, ParamElement, PopStateEvent, PositionError, PreElement, ProcessingInstruction, ProgressElement, ProgressEvent, QuoteElement, ResourceProgressEvent, RtcDataChannelEvent, RtcDtmfToneChangeEvent, RtcIceCandidateEvent, ScriptElement, SecurityPolicyViolationEvent, SelectElement, ShadowElement, ShadowRoot, SourceElement, SpanElement, SpeechInputEvent, SpeechRecognitionError, SpeechRecognitionEvent, SpeechSynthesisEvent, StorageEvent, StyleElement, TableCaptionElement, TableCellElement, TableColElement, TableElement, TableRowElement, TableSectionElement, TemplateElement, Text, TextAreaElement, TextEvent, TitleElement, Touch, TouchEvent, TouchList, TrackElement, TrackEvent, TransitionEvent, UIEvent, UListElement, UnknownElement, VideoElement, WheelEvent, Window, _Attr, _ClientRect, _Entity, _HTMLAppletElement, _HTMLBaseFontElement, _HTMLDirectoryElement, _HTMLFontElement, _HTMLFrameElement, _HTMLFrameSetElement, _HTMLMarqueeElement, _MutationEvent, _NamedNodeMap, _Notation, _XMLHttpRequestProgressEvent, KeyRange, VersionChangeEvent, AElement, AltGlyphElement, AnimateElement, AnimateMotionElement, AnimateTransformElement, AnimatedLength, AnimatedLengthList, AnimatedNumber, AnimatedNumberList, AnimationElement, CircleElement, ClipPathElement, DefsElement, DescElement, EllipseElement, FEBlendElement, FEColorMatrixElement, FEComponentTransferElement, FECompositeElement, FEConvolveMatrixElement, FEDiffuseLightingElement, FEDisplacementMapElement, FEDistantLightElement, FEFloodElement, FEFuncAElement, FEFuncBElement, FEFuncGElement, FEFuncRElement, FEGaussianBlurElement, FEImageElement, FEMergeElement, FEMergeNodeElement, FEMorphologyElement, FEOffsetElement, FEPointLightElement, FESpecularLightingElement, FESpotLightElement, FETileElement, FETurbulenceElement, FilterElement, ForeignObjectElement, GElement, GraphicsElement, ImageElement0, LineElement, LinearGradientElement, MarkerElement, MaskElement, MetadataElement, PathElement, PatternElement, PointList, PolygonElement, PolylineElement, RadialGradientElement, RectElement, ScriptElement0, SetElement, StopElement, StyleElement0, SvgDocument, SvgElement, SvgSvgElement, SwitchElement, SymbolElement, TSpanElement, TextContentElement, TextElement, TextPathElement, TextPositioningElement, TitleElement0, UseElement, ViewElement, ZoomEvent, _GradientElement, _SVGAltGlyphDefElement, _SVGAltGlyphItemElement, _SVGAnimateColorElement, _SVGComponentTransferFunctionElement, _SVGCursorElement, _SVGFEDropShadowElement, _SVGFontElement, _SVGFontFaceElement, _SVGFontFaceFormatElement, _SVGFontFaceNameElement, _SVGFontFaceSrcElement, _SVGFontFaceUriElement, _SVGGlyphElement, _SVGGlyphRefElement, _SVGHKernElement, _SVGMPathElement, _SVGMissingGlyphElement, _SVGVKernElement, AudioProcessingEvent, OfflineAudioCompletionEvent, ContextEvent, SqlError, TypedData, ByteData, Float32List, Float64List, Int16List, Int32List, Int8List, Uint16List, Uint32List, Uint8ClampedList, Uint8List, DrawingTool, BoundClosure$1, DrawingTool__setupListeners_closure, DrawingTool__setupListeners_closure0, DrawingTool__setupListeners_closure1, DrawingTool__setupListeners_closure2, DrawingTool__setupListeners_closure3, DrawingTool__setupListeners_closure4, DrawingTool__setupListeners_closure5, DrawingTool__setupListeners_closure6, DrawingTool__setupListeners_closure7, DrawingTool__setupListeners_closure8, DrawingTool__setupListeners_closure9, DrawingTool__updateOffscreenBuffer_closure, DrawingTool_saveSvg_closure, ActionSettings, BaseAction, PolygonalFillAction, PolygonalStrokeAction, RegularFillAction, RegularStrokeAction, SmoothFillAction, SmoothStrokeAction, DrawingToolInterface, DrawingToolInterface__setupOutgoingEvents_closure, DrawingToolInterface__setupOutgoingEvents__closure0, DrawingToolInterface__setupOutgoingEvents_closure0, DrawingToolInterface__setupOutgoingEvents__closure, DrawingToolInterface__setupOutgoingEvents_closure1, DrawingToolInterface__setupOutgoingEvents_closure2, DrawingToolInterface__setupOutgoingEvents_closure3, DrawingToolInterface__setupOutgoingEvents_closure4, DrawingToolInterface__setupOutgoingEvents_closure5, DrawingToolInterface__setupOutgoingEvents_closure6, DrawingToolInterface__setupOutgoingEvents_closure7, DrawingToolInterface__setupOutgoingEvents_closure8, DrawingToolInterface__setupOutgoingEvents_closure9, DrawingToolInterface__setupOutgoingEvents_closure10, DrawingToolInterface_onActionChanged_closure, SvgRenderer, SiteApp, SiteApp__onPublishRequested_closure, SiteApp__onPublishRequested__closure, TopMenuController, TopMenuController__setupDropdown_closure, JS_CONST, Interceptor, JSBool, JSNull, JavaScriptObject, PlainJavaScriptObject, UnknownJavaScriptObject, JSArray, JSMutableArray, JSFixedArray, JSExtendableArray, JSNumber, JSInt, JSDouble, JSString, startRootIsolate_closure, startRootIsolate_closure0, _Manager, _IsolateContext, _EventLoop, _EventLoop__runHelper_next, _IsolateEvent, _MainManagerStub, IsolateNatives__processWorkerMessage_closure, _BaseSendPort, _NativeJsSendPort, _NativeJsSendPort_send_closure, _NativeJsSendPort_send__closure, _WorkerSendPort, _WorkerSendPort_send_closure, ReceivePortImpl, BoundClosure$i0, _waitForPendingPorts_closure, _PendingSendPortFinder, _JsSerializer, _JsCopier, _JsDeserializer, _JsVisitedMap, _MessageTraverserVisitedMap, _MessageTraverser, _Copier, _Copier_visitMap_closure, _Serializer, _Deserializer, TimerImpl, TimerImpl_internalCallback, TimerImpl_internalCallback0, JSInvocationMirror, Primitives_applyFunction_closure, Primitives_applyFunction_closure0, Primitives_applyFunction_closure1, TypeErrorDecoder, NullError, JsNoSuchMethodError, UnknownJsTypeError, unwrapException_saveStackTrace, _StackTrace, invokeClosure_closure, invokeClosure_closure0, invokeClosure_closure1, invokeClosure_closure2, invokeClosure_closure3, Closure, BoundClosure, CastErrorImplementation, TypeImpl, initHooks_closure, initHooks_closure0, initHooks_closure1, StringMatch, ListIterable, SubListIterable, ListIterator, MappedIterable, EfficientLengthMappedIterable, MappedIterator, MappedListIterable, WhereIterable, WhereIterator, FixedLengthListMixin, Symbol0, _AsyncError, _BroadcastStream, _BroadcastSubscription, BoundClosure$0, _BroadcastStreamController, BoundClosure$i1, BoundClosure$2, _SyncBroadcastStreamController, _SyncBroadcastStreamController__sendData_closure, _SyncBroadcastStreamController__sendError_closure, _SyncBroadcastStreamController__sendDone_closure, _AsyncBroadcastStreamController, Future, Future_Future$delayed_closure, Future_Future$delayed_closure0, Future_wait_handleError, Future_wait_closure, _Completer, _AsyncCompleter, _SyncCompleter, _Future, _Future__addListener_closure, _Future__chainFutures_closure, _Future__chainFutures_closure0, _Future__asyncComplete_closure, _Future__asyncCompleteError_closure, _Future__propagateToListeners_closure, _Future__propagateToListeners_closure0, _Future__propagateToListeners__closure, _Future__propagateToListeners__closure0, Stream, Stream_contains_closure, Stream_contains__closure, Stream_contains__closure0, Stream_contains_closure0, Stream_forEach_closure, Stream_forEach__closure, Stream_forEach__closure0, Stream_forEach_closure0, Stream_length_closure, Stream_length_closure0, StreamSubscription, _StreamController, _StreamController__subscribe_closure, _StreamController__recordCancel_complete, _SyncStreamControllerDispatch, _AsyncStreamControllerDispatch, _AsyncStreamController, _StreamController__AsyncStreamControllerDispatch, _SyncStreamController, _StreamController__SyncStreamControllerDispatch, _ControllerStream, _ControllerSubscription, _EventSink, _BufferingStreamSubscription, _BufferingStreamSubscription__sendError_sendError, _BufferingStreamSubscription__sendDone_sendDone, _StreamImpl, _DelayedEvent, _DelayedData, _DelayedError, _DelayedDone, _PendingEvents, _PendingEvents_schedule_closure, _StreamImplEvents, _cancelAndError_closure, _cancelAndErrorClosure_closure, _cancelAndValue_closure, _ForwardingStream, _ForwardingStreamSubscription, BoundClosure$20, _MapStream, _BaseZone, _BaseZone_bindCallback_closure, _BaseZone_bindCallback_closure0, _BaseZone_bindUnaryCallback_closure, _BaseZone_bindUnaryCallback_closure0, _rootHandleUncaughtError_closure, _rootHandleUncaughtError__closure, _RootZone, _HashMap, _HashMap_values_closure, _IdentityHashMap, HashMapKeyIterable, HashMapKeyIterator, _LinkedHashMap, _LinkedHashMap_values_closure, LinkedHashMapCell, LinkedHashMapKeyIterable, LinkedHashMapKeyIterator, _HashSet, _IdentityHashSet, HashSetIterator, _LinkedHashSet, LinkedHashSetCell, LinkedHashSetIterator, _HashSetBase, IterableBase, ListBase, ListMixin, Maps_mapToString_closure, ListQueue, _ListQueueIterator, _convertJsonToDart_closure, _convertJsonToDart_walk, Codec, Converter, Encoding, JsonCodec, JsonDecoder, Utf8Codec, Utf8Encoder, _Utf8Encoder, Function__toMangledNames_closure, NoSuchMethodError_toString_closure, DateTime, DateTime_toString_fourDigits, DateTime_toString_threeDigits, DateTime_toString_twoDigits, Duration, Duration_toString_sixDigits, Duration_toString_twoDigits, Error, NullThrownError, ArgumentError, RangeError, NoSuchMethodError, UnsupportedError, UnimplementedError, StateError, ConcurrentModificationError, StackOverflowError, CyclicInitializationError, _ExceptionImplementation, FormatException, Expando, Function, Iterator, Null, Object, Match, StackTrace, StringBuffer, Symbol, Uri__uriEncode_byteToHex, Interceptor_CssStyleDeclarationBase, CssStyleDeclarationBase, _ChildrenElementList, _FrozenElementList, _FrozenElementList$_wrap_closure, Interceptor_ListMixin, Interceptor_ListMixin_ImmutableListMixin, HttpRequest_postFormData_closure, HttpRequest_postFormData_closure0, HttpRequest_request_closure, HttpRequest_request_closure0, _ChildNodeListLazy, Interceptor_ListMixin0, Interceptor_ListMixin_ImmutableListMixin0, Interceptor_ListMixin1, Interceptor_ListMixin_ImmutableListMixin1, Interceptor_ListMixin2, Interceptor_ListMixin_ImmutableListMixin2, _AttributeMap, _ElementAttributeMap, _DataAttributeMap, _DataAttributeMap_forEach_closure, _DataAttributeMap_keys_closure, _DataAttributeMap_values_closure, _MultiElementCssClassSet, _MultiElementCssClassSet_closure, _MultiElementCssClassSet_readClasses_closure, _MultiElementCssClassSet_modify_closure, _MultiElementCssClassSet_remove_closure, _MultiElementCssClassSet__modifyWithReturnValue_closure, _ElementCssClassSet, EventStreamProvider, _EventStream, _ElementEventStreamImpl, _ElementListEventStreamImpl, _EventStreamSubscription, _StreamPool, _StreamPool_add_closure, ImmutableListMixin, FixedSizeListIterator, _DOMWindowCrossFrame, _LocationWrapper, _AttributeClassSet, ReceivePort, JsObject, JsObject__convertDataTree__convert, JsFunction, JsArray, JsObject_ListMixin, _convertToJS_closure, _convertToJS_closure0, _wrapToDart_closure, _wrapToDart_closure0, _wrapToDart_closure1, Point0, TypedData_ListMixin, TypedData_ListMixin_FixedLengthListMixin, TypedData_ListMixin0, TypedData_ListMixin_FixedLengthListMixin0, TypedData_ListMixin1, TypedData_ListMixin_FixedLengthListMixin1, TypedData_ListMixin2, TypedData_ListMixin_FixedLengthListMixin2, TypedData_ListMixin3, TypedData_ListMixin_FixedLengthListMixin3, TypedData_ListMixin4, TypedData_ListMixin_FixedLengthListMixin4, TypedData_ListMixin5, TypedData_ListMixin_FixedLengthListMixin5, TypedData_ListMixin6, TypedData_ListMixin_FixedLengthListMixin6, TypedData_ListMixin7, TypedData_ListMixin_FixedLengthListMixin7, Int64List, Uint64List, EventEmitter, EventEmitter_on_closure, EventEmitter_emit_closure, CssClassSetImpl, CssClassSetImpl_add_closure, FilteredElementList, FilteredElementList__filtered_closure, FilteredElementList_removeRange_closure, Point, Closure$2, Closure$1, Closure$0, Closure$7, Closure$20, Closure$4];
 }

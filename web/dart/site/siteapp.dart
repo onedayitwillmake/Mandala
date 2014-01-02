@@ -100,6 +100,7 @@ class SiteApp {
         querySelector("#submission-form .ui.form .info.message .header").text = responseJson['error'];
       } else {
         querySelector("#submission-form .ui.form .info.message .header").text = "All done";
+        new Future.delayed(new Duration(seconds:1), () => window.location.assign( "/mandalas/${responseJson['info']['id']}" ) );
       }
 
     });
