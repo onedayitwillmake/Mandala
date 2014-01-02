@@ -33,6 +33,8 @@ class DrawingTool {
   /// Reference to background gradient which is redrawn each frame
   CanvasGradient            _bgGradient;
   Svg.RadialGradientElement _bgGradientSvg;
+  String                    _gradientStart = "#383245";
+  String                    _gradientEnd = "#1B1821";
 
   /// Canvas bounding rect to offset input positions
   Rectangle                 _canvasRect;
@@ -64,7 +66,7 @@ class DrawingTool {
 
   // Creates the background Canvas / SVG gradients used as a backdrop on the drawing
   void _setupBackgroundGradients() {
-    var colors = ["#383245", "#1B1821"];
+    var colors = [this._gradientStart, this._gradientEnd];
 
     _bgGradient = _ctx.createRadialGradient(_canvasRect.width*0.5, _canvasRect.height*0.5, 0, _canvasRect.width*0.5, _canvasRect.height*0.65, _canvasRect.width*0.65);
     _bgGradient.addColorStop(0, colors[0] );
@@ -267,8 +269,11 @@ class DrawingTool {
     return true;
   }
 
+  void _changeLineColor( value ) {
+
+  }
+
   void performEditAction( String actionName, [dynamic value] ) {
-   
     switch( actionName ) {
       case "undo":
         _performUndo();
@@ -277,6 +282,19 @@ class DrawingTool {
         actionQueue.last.settings.opacity = value;
         _dispatchOpacityChangedEvent();
       break;
+      case "lineColor":
+        _changeLineColor( (value as JsObject).toString() );
+        break;
+      case "gradientStartColor":
+//        this._gradientStart = (value as JsObject).toString();
+//        _setupBackgroundGradients();
+//        _updateOffscreenBuffer();
+        break;
+      case "gradientEndColor":
+//        this._gradientEnd = (value as JsObject).toString();
+//        _setupBackgroundGradients();
+//        _updateOffscreenBuffer();
+        break;
       case "sides":
         _sides = value;
         _updateOffscreenBuffer();
@@ -301,7 +319,7 @@ class DrawingTool {
         break;
     }
     
-    print(actionName);
+    print("No action for ${actionName}");
     
   }
 

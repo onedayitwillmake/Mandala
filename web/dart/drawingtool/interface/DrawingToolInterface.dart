@@ -64,8 +64,19 @@ class DrawingToolInterface {
     ..onClick.listen( _toggleAdvancedMenus )
     ..onTouchEnd.listen( _toggleAdvancedMenus );
 
+    //interface-color-line-slider
+    context.callMethod("jQuery", ['#interface-color-line-slider']).callMethod('spectrum', [new JsObject.jsify({
+        'change'   : new JsFunction.withThis((InputElement element, dynamic color ) => _drawingModule.performEditAction("lineColor", color) )
+    })]);
+    context.callMethod("jQuery", ['#interface-color-gradient-start-slider']).callMethod('spectrum', [new JsObject.jsify({
+        'change'   : new JsFunction.withThis((InputElement element, dynamic color ) => _drawingModule.performEditAction("gradientStartColor", color) )
+    })]);
+    context.callMethod("jQuery", ['#interface-color-gradient-end-slider']).callMethod('spectrum', [new JsObject.jsify({
+        'change'   : new JsFunction.withThis((InputElement element, dynamic color ) => _drawingModule.performEditAction("gradientEndColor", color) )
+    })]);
+
     // close out on first call
-    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
+//    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
   }
 
   void onSignInDropDownSelected( dynamic thing ) {
