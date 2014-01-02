@@ -13,20 +13,23 @@ class DrawingToolInterface {
   CheckboxInputElement _$drawPointsCheckbox;
   HtmlElement _$advancedToggleButton;
 
+  HtmlElement _helperText;
+
   DrawingToolInterface( this._drawingModule ) {
     _setupOutgoingEvents();
     _setupIncommingEvents();
     _drawingModule.start();
   }
-  
+
   /// Setup events that originate from user interface to the drawing module
   void _setupOutgoingEvents() {
     // Toggle drawing mode will call changeAction on _drawingModule
     querySelectorAll('[data-drawingmode]').forEach((HtmlElement el) {
-      el.onClick.listen((e) => _drawingModule.changeAction( el.attributes['data-drawingmode'] ) );
+      el.onClick.listen((e) => _changeDrawingMode( el.attributes['data-drawingmode'] ) );
     });
 
     // Listen for edit actions such as undo and clear
+    _helperText = querySelector("#help-flash");
     querySelectorAll('[data-edit-action]').forEach((HtmlElement el) {
       el.onClick.listen((e) => _drawingModule.performEditAction( el.attributes['data-edit-action'] ) );
     });
@@ -92,6 +95,41 @@ class DrawingToolInterface {
     SharedDispatcher.emitter.on(DrawingToolEvent.ON_SCALE_CHANGED, onScaleChanged );
     SharedDispatcher.emitter.on(DrawingToolEvent.ON_OPACITY_CHANGED, onOpacityChanged );
     SharedDispatcher.emitter.on(DrawingToolEvent.ON_LINEWIDTH_CHANGED, onLineWidthChanged );
+  }
+
+  // Change the drawing mode and flash some helper text
+
+  void _changeDrawingMode( String modeName ) {
+
+    String instructions = null;
+    switch( modeName ) {
+      case RegularFillAction.ACTION_NAME:
+      case RegularStrokeAction.ACTION_NAME:
+        instructions = "";
+        break;
+      case SmoothFillAction.ACTION_NAME:
+      case SmoothStrokeAction.ACTION_NAME:
+        instructions = "Turn on 'Draw Points' to enable dragging";
+        break;
+      case PolygonalFillAction.ACTION_NAME:
+      case PolygonalStrokeAction.ACTION_NAME:
+        instructions = "Press ENTER to end the path";
+        break;
+    }
+
+    _helperText.text = instructions;
+
+
+    // Fade in
+    context['TweenMax'].callMethod("killDelayedCallsTo",[_helperText]);
+    context['TweenMax'].callMethod("to",[_helperText, 0.25, new JsObject.jsify({ 'alpha' : 1, 'display': 'block' })]);
+    // Fade out
+    context['TweenMax'].callMethod("to",[_helperText, 0.5, new JsObject.jsify({
+        'delay' : 4.0,
+        'alpha' : 0,
+        'display': 'none'
+    })]);
+    _drawingModule.changeAction(  modeName );
   }
 
   /**
