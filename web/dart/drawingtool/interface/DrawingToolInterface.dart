@@ -69,6 +69,9 @@ class DrawingToolInterface {
 
     //interface-color-line-slider
     context.callMethod("jQuery", ['#interface-color-line-slider']).callMethod('spectrum', [new JsObject.jsify({
+      'showPalette': true,
+      'showPaletteOnly': true,
+      'palette'  : ["#FFFFFF", "#00ecfc", "#ffdf34", "#ef43ff"],
         'change'   : new JsFunction.withThis((InputElement element, dynamic color ) => _drawingModule.performEditAction("lineColor", color) )
     })]);
     context.callMethod("jQuery", ['#interface-color-gradient-start-slider']).callMethod('spectrum', [new JsObject.jsify({

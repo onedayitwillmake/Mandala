@@ -36,6 +36,8 @@ class DrawingTool {
   String                    _gradientStart = "#383245";
   String                    _gradientEnd = "#1B1821";
 
+  ColorValue                _arcColor = new ColorValue.fromRGB(255,255,255);
+
   /// Canvas bounding rect to offset input positions
   Rectangle                 _canvasRect;
 
@@ -60,7 +62,7 @@ class DrawingTool {
     _setupBackgroundGradients();
     _setupListeners();
 
-    changeAction( RegularStrokeAction.ACTION_NAME );
+    changeAction( RegularStrokeAction.ACTION_NAME, true );
     start();
   }
 
@@ -68,7 +70,7 @@ class DrawingTool {
   void _setupBackgroundGradients() {
     var colors = [this._gradientStart, this._gradientEnd];
 
-    _bgGradient = _ctx.createRadialGradient(_canvasRect.width*0.5, _canvasRect.height*0.5, 0, _canvasRect.width*0.5, _canvasRect.height*0.65, _canvasRect.width*0.65);
+    _bgGradient = _ctx.createRadialGradient(_canvasRect.width*0.5, _canvasRect.height*0.5, 0, _canvasRect.width*0.5, _canvasRect.height*0.5, _canvasRect.width*0.65);
     _bgGradient.addColorStop(0, colors[0] );
     _bgGradient.addColorStop(1, colors[1] );
 
@@ -88,14 +90,14 @@ class DrawingTool {
   void _setupListeners() {
     // Listen for canvas input
       // Down
-    _canvas.onMouseDown.listen((e){ _inputDown( e.page ); });
-    _canvas.onTouchStart.listen((e){ _inputDown( e.touches[0].page ); });
+    _canvas.onMouseDown.listen((e){ e.preventDefault(); _inputDown( e.page ); });
+    _canvas.onTouchStart.listen((e){ e.preventDefault(); _inputDown( e.touches[0].page ); });
       // Move
-    _canvas.onMouseMove.listen((e){ _inputMove( e.page ); });
-    _canvas.onTouchMove.listen((e){ _inputMove( e.touches[0].page ); });
+    _canvas.onMouseMove.listen((e){ e.preventDefault(); _inputMove( e.page ); });
+    _canvas.onTouchMove.listen((e){ e.preventDefault(); _inputMove( e.touches[0].page ); });
       // Up
-    _canvas.onMouseUp.listen((e){ _inputUp( e.page); });
-    _canvas.onTouchEnd.listen((e){ _inputUp( e.touches[0].page ); });
+    _canvas.onMouseUp.listen((e){ e.preventDefault(); _inputUp( e.page); });
+    _canvas.onTouchEnd.listen((e){ e.preventDefault(); _inputUp( e.touches[0].page ); });
 
     // Window resize
     window.onResize.listen((e) {
@@ -115,6 +117,9 @@ class DrawingTool {
     });
     // Keyboard
     window.onKeyDown.listen( (e) => actionQueue.last.keyPressed( _ctx, e) );
+
+    //
+    SharedDispatcher.emitter.on( ActionEvent.ON_DRAWING_INTERACTION_FINISHED, onActionComplete );
   }
 
   void start(){
@@ -225,14 +230,14 @@ class DrawingTool {
     // Draw the arc enveloping the image
     hiddenCtx.beginPath();
     hiddenCtx.lineWidth = 1;
-    hiddenCtx.setStrokeColorRgb(255, 255, 255, 0.75);
+    hiddenCtx.setStrokeColorRgb(_arcColor.r, _arcColor.g, _arcColor.b, 0.75);
     hiddenCtx.arc(0, 0, _canvasRect.width*0.46, 0, PI * 2, false);
     hiddenCtx.stroke();
     hiddenCtx.closePath();
   }
   
   /// Changes the current action by appending a new instance to the actionQueue
-  bool changeAction( String actionName ) {
+  bool changeAction( String actionName,[bool dispatchEvent = true] ) {
     
     BaseAction nextAction = null;
     switch( actionName ) {
@@ -259,19 +264,20 @@ class DrawingTool {
     // Set the newAction's opacity to the current action's opacity
     if( actionQueue.isNotEmpty ) {
       nextAction.settings.opacity = actionQueue.last.settings.opacity;
+      nextAction.settings.strokeColor.copyFrom( actionQueue.last.settings.strokeColor );
+      nextAction.settings.fillColor.copyFrom( actionQueue.last.settings.fillColor );
     }
 
     _updateOffscreenBuffer();
     actionQueue.add( nextAction );
-    
-    _dispatchActionChangedEvent();
-    
+
+    if( dispatchEvent )
+      _dispatchActionChangedEvent();
+
     return true;
   }
 
-  void _changeLineColor( value ) {
 
-  }
 
   void performEditAction( String actionName, [dynamic value] ) {
     switch( actionName ) {
@@ -321,14 +327,31 @@ class DrawingTool {
         _dispatchLineWidthChangedEvent();
         break;
     }
-    
-    print("No action for ${actionName}");
-    
+//    print("No action for ${actionName}");
   }
 
-  /**
-  * Performs an undo operation, will pop the last state if there are not points in that state
-  */
+  void onActionComplete( BaseAction action ) {
+    changeAction( action.name, false );
+  }
+
+  /// Modifies the line color used for drawing
+  void _changeLineColor( value ) {
+    // Have the first one parse it
+    actionQueue.last.settings.fillColor.parseRgb( value );
+    actionQueue.last.settings.strokeColor.parseRgb( value );
+
+    // Copy it to all the othe ones
+    actionQueue.forEach((BaseAction action){
+      action.settings.fillColor.copyFrom( actionQueue.last.settings.fillColor );
+      action.settings.strokeColor.copyFrom( actionQueue.last.settings.strokeColor );
+    });
+
+    _arcColor.copyFrom( actionQueue.last.settings.fillColor );
+    _arcColor *= 2;
+    _updateOffscreenBuffer();
+  }
+
+  /// Performs an undo operation, will pop the last state if there are not points in that state
   void _performUndo() {
     // Current action has no points and user wants to undo - remove that action
     if( actionQueue.last.points.length == 0 ) {
@@ -349,18 +372,20 @@ class DrawingTool {
     actionQueue.last.undo( _ctx );
   }
 
+  /// Wipes the entire drawing canvas
   void _performClear() {
     var lastActionName = actionQueue.last.name;
     actionQueue.clear();
-    changeAction( lastActionName );
+    changeAction( lastActionName, true );
   }
 
-  // Draws the background gradient
+  /// Draws the background gradient
   void _drawBackground( dynamic ctx ) {
     ctx.fillStyle = _bgGradient;
     _fillRoundedRect(ctx, 0,0,_canvasRect.width,_canvasRect.height, 4);
   }
 
+  /// Draws a rounded rectangle with [x],[y],[w],[h] extents
   void _fillRoundedRect( dynamic ctx, x, y, w, h, r ) {
     ctx.beginPath();
     ctx.moveTo(x+r, y);
@@ -413,8 +438,8 @@ class DrawingTool {
     // Arc around
     svgCtx.groupStart();
     svgCtx.lineWidth = 2;
-    svgCtx.beginPath();    
-    svgCtx.setStrokeColorRgb(255, 255, 255, 0.75);
+    svgCtx.beginPath();
+    svgCtx.setStrokeColorRgb(_arcColor.r, _arcColor.g, _arcColor.b, 0.75);
     svgCtx.arc(width*0.5, height*0.5, _canvasRect.width*0.46, 0, PI*2, false);
     svgCtx.stroke();
     svgCtx.closePath();
