@@ -2265,13 +2265,23 @@ SiteApp__onPublishRequested__closure: {"": "Closure;responseJson_0",
 
 TopMenuController: {"": "Object;",
   _setupDropdown$0: function() {
-    $.get$context().callMethod$2("jQuery", [".ui.dropdown"]).callMethod$2("dropdown", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["performance", false, "debug", false, "verbose", false, "duration", 250, "onChange", P.JsFunction_JsFunction$withThis(new S.TopMenuController__setupDropdown_closure())], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    $.get$context().callMethod$2("jQuery", ["#top-menu-dropdown"]).callMethod$2("dropdown", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["performance", false, "debug", false, "verbose", false, "duration", 250, "onChange", P.JsFunction_JsFunction$withThis(new S.TopMenuController__setupDropdown_closure())], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    $.get$context().callMethod$2("jQuery", ["#top-menu-info-dropdown"]).callMethod$2("dropdown", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["performance", false, "debug", false, "verbose", false, "duration", 250, "onChange", P.JsFunction_JsFunction$withThis(new S.TopMenuController__setupDropdown_closure0())], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
   }
 },
 
 TopMenuController__setupDropdown_closure: {"": "Closure;",
   call$3: function(thing, arg1, arg2) {
     return J.assign$1$x(C.Window_methods.get$location(window), C.JSString_methods.$add("/auth/", arg1));
+  },
+  "+call:3:0": 0,
+  $isFunction: true
+},
+
+TopMenuController__setupDropdown_closure0: {"": "Closure;",
+  call$3: function(thing, arg1, arg2) {
+    if (J.$eq(arg1, "github"))
+      J.assign$1$x(C.Window_methods.get$location(window), "https://github.com/onedayitwillmake/Mandala");
   },
   "+call:3:0": 0,
   $isFunction: true
