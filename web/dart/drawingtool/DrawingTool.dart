@@ -278,6 +278,9 @@ class DrawingTool {
       case "undo":
         _performUndo();
       break;
+      case "clear":
+        _performClear();
+        break;
       case "alpha":
         actionQueue.last.settings.opacity = value;
         _dispatchOpacityChangedEvent();
@@ -344,6 +347,12 @@ class DrawingTool {
     if( actionQueue.length == 0 ) return;
 
     actionQueue.last.undo( _ctx );
+  }
+
+  void _performClear() {
+    var lastActionName = actionQueue.last.name;
+    actionQueue.clear();
+    changeAction( lastActionName );
   }
 
   // Draws the background gradient
