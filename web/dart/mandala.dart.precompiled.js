@@ -214,10 +214,10 @@ $$.Closure$4 = [P, {"": "Closure;call$4,$name"}];
   }
 })([
 ["DrawingToolLib", "drawingtool/DrawingToolLib.dart", , R, {
-DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scale,_isDragging,_blurAmount,_blurOpacity,_canvas,_ctx,_offscreenBuffer,_bgGradient,_bgGradientSvg,_canvasRect,_winScroll,_rafId,actionQueue",
+DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scale,_isDragging,_blurAmount,_blurOpacity,_canvas,_ctx,_offscreenBuffer,_bgGradient,_bgGradientSvg,_gradientStart,_gradientEnd,_canvasRect,_winScroll,_rafId,actionQueue",
   _setupBackgroundGradients$0: function() {
     var colors, t1, t2, t3, t4, t5, temp;
-    colors = ["#383245", "#1B1821"];
+    colors = [this._gradientStart, this._gradientEnd];
     t1 = this._ctx;
     t2 = this._canvasRect;
     t3 = J.getInterceptor$x(t2);
@@ -557,10 +557,20 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
       case "undo":
         this._performUndo$0();
         break;
+      case "clear":
+        this._performClear$0();
+        break;
       case "alpha":
         t1 = this.actionQueue;
         t1.get$last(t1).get$settings().opacity = value;
         this._dispatchOpacityChangedEvent$0();
+        break;
+      case "lineColor":
+        J.toString$0(H.interceptedTypeCast(value, "$isJsObject"));
+        break;
+      case "gradientStartColor":
+        break;
+      case "gradientEndColor":
         break;
       case "sides":
         this._sides = value;
@@ -587,7 +597,7 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
         break;
       default:
     }
-    P.print(actionName);
+    P.print("No action for " + actionName);
   },
   performEditAction$1: function(actionName) {
     return this.performEditAction$2(actionName, null);
@@ -606,6 +616,13 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     if (t1.get$length(t1) === 0)
       return;
     t1.get$last(t1).undo$1(this._ctx);
+  },
+  _performClear$0: function() {
+    var t1, lastActionName;
+    t1 = this.actionQueue;
+    lastActionName = J.get$name$x(t1.get$last(t1));
+    t1.clear$0(t1);
+    this.changeAction$1(lastActionName);
   },
   _drawBackground$1: function(ctx) {
     var t1, t2;
@@ -758,7 +775,7 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
   },
   static: {
 DrawingTool$: function(_canvas) {
-  var t1 = new R.DrawingTool(null, 7, true, true, 1, false, 10, 0.5, _canvas, null, null, null, null, null, null, 0, P.ListQueue$(null, R.BaseAction));
+  var t1 = new R.DrawingTool(null, 7, true, true, 1, false, 10, 0.5, _canvas, null, null, null, null, "#383245", "#1B1821", null, null, 0, P.ListQueue$(null, R.BaseAction));
   t1.DrawingTool$1(_canvas);
   return t1;
 }}
@@ -1411,11 +1428,12 @@ SmoothStrokeAction: {"": "RegularStrokeAction;_draggedPoint,_activePoints,points
 
 },
 
-DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingToolLib$_$sideCountSlider,_DrawingToolLib$_$scaleSlider,_DrawingToolLib$_$opacitySlider,_DrawingToolLib$_$lineWidthSlider,_DrawingToolLib$_$mirrorCheckbox,_DrawingToolLib$_$drawPointsCheckbox,_DrawingToolLib$_$advancedToggleButton",
+DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingToolLib$_$sideCountSlider,_DrawingToolLib$_$scaleSlider,_DrawingToolLib$_$opacitySlider,_DrawingToolLib$_$lineWidthSlider,_DrawingToolLib$_$mirrorCheckbox,_DrawingToolLib$_$drawPointsCheckbox,_DrawingToolLib$_$advancedToggleButton,_helperText",
   _setupOutgoingEvents$0: function() {
     var t1, t2, t3;
     t1 = W._FrozenElementList$_wrap(document.querySelectorAll("[data-drawingmode]"), null);
     t1.forEach$1(t1, new R.DrawingToolInterface__setupOutgoingEvents_closure(this));
+    this._helperText = document.querySelector("#help-flash");
     t1 = W._FrozenElementList$_wrap(document.querySelectorAll("[data-edit-action]"), null);
     t1.forEach$1(t1, new R.DrawingToolInterface__setupOutgoingEvents_closure0(this));
     this._DrawingToolLib$_$mirrorCheckbox = H.interceptedTypeCast(document.querySelector("[name=toggle-mirroring]"), "$isCheckboxInputElement");
@@ -1470,6 +1488,9 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
     H.setRuntimeTypeInfo(t2, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
     t2._tryResume$0();
     this._DrawingToolLib$_$advancedToggleButton = t1;
+    $.get$context().callMethod$2("jQuery", ["#interface-color-line-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure7(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-start-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure8(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-end-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure9(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
   },
   _setupIncommingEvents$0: function() {
     var t1 = $.get$SharedDispatcher_emitter();
@@ -1487,8 +1508,32 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
     t1 = $.get$SharedDispatcher_emitter();
     t1.on$2(t1, "DrawingTool.ON_LINEWIDTH_CHANGED", this.get$onLineWidthChanged());
   },
+  _changeDrawingMode$1: function(modeName) {
+    var instructions;
+    switch (modeName) {
+      case "RegularFill":
+      case "RegularStroke":
+        instructions = "";
+        break;
+      case "SmoothFill":
+      case "SmoothStroke":
+        instructions = "Turn on 'Draw Points' to enable dragging";
+        break;
+      case "PolygonalFill":
+      case "PolygonalStroke":
+        instructions = "Press ENTER to end the path";
+        break;
+      default:
+        instructions = null;
+    }
+    this._helperText.textContent = instructions;
+    J.$index$asx($.get$context(), "TweenMax").callMethod$2("killDelayedCallsTo", [this._helperText]);
+    J.$index$asx($.get$context(), "TweenMax").callMethod$2("to", [this._helperText, 0.25, P.JsObject_JsObject$jsify(H.fillLiteralMap(["alpha", 1, "display", "block"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    J.$index$asx($.get$context(), "TweenMax").callMethod$2("to", [this._helperText, 0.5, P.JsObject_JsObject$jsify(H.fillLiteralMap(["delay", 4, "alpha", 0, "display", "none"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    this._drawingModule.changeAction$1(modeName);
+  },
   _toggleAdvancedMenus$1: function(e) {
-    var t1, next, menusAreCurrentlyShowing, t2, t3, i, t4;
+    var t1, next, menusAreCurrentlyShowing, t2, t3, i, t4, t5;
     t1 = this._DrawingToolLib$_$advancedToggleButton;
     next = t1.nextElementSibling;
     t1.toString;
@@ -1504,8 +1549,9 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
       t1 = J.$index$asx($.get$context(), "TweenMax");
       t3 = t2 ? "50" : 0;
       t4 = t2 ? 0 : 1;
-      t4 = H.fillLiteralMap(["delay", 0.2 + -i * 0.02, "y", t3, "autoAlpha", t4], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
-      t1.callMethod$2("to", [next, 0.15, P._wrapToDart(P.JsObject__convertDataTree(t4))]);
+      t5 = t2 ? "none" : "block";
+      t5 = H.fillLiteralMap(["delay", 0.2 + -i * 0.02, "y", t3, "autoAlpha", t4, "display", t5], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null));
+      t1.callMethod$2("to", [next, 0.15, P._wrapToDart(P.JsObject__convertDataTree(t5))]);
       t1 = next.style;
       J.set$pointerEvents$x(t1, t2 ? "none" : "auto");
       next = next.nextElementSibling;
@@ -1584,7 +1630,7 @@ DrawingToolInterface__setupOutgoingEvents_closure: {"": "Closure;this_0",
 
 DrawingToolInterface__setupOutgoingEvents__closure0: {"": "Closure;this_1,el_2",
   call$1: function(e) {
-    return this.this_1._drawingModule.changeAction$1(J.get$attributes$x(this.el_2)._element.getAttribute("data-drawingmode"));
+    return this.this_1._changeDrawingMode$1(J.get$attributes$x(this.el_2)._element.getAttribute("data-drawingmode"));
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -1667,6 +1713,33 @@ DrawingToolInterface__setupOutgoingEvents_closure6: {"": "Closure;this_11",
   "+call:1:0": 0,
   $isFunction: true,
   $is_args1: true
+},
+
+DrawingToolInterface__setupOutgoingEvents_closure7: {"": "Closure;this_12",
+  call$2: function(element, color) {
+    return this.this_12._drawingModule.performEditAction$2("lineColor", color);
+  },
+  "+call:2:0": 0,
+  $isFunction: true,
+  $is_args2: true
+},
+
+DrawingToolInterface__setupOutgoingEvents_closure8: {"": "Closure;this_13",
+  call$2: function(element, color) {
+    return this.this_13._drawingModule.performEditAction$2("gradientStartColor", color);
+  },
+  "+call:2:0": 0,
+  $isFunction: true,
+  $is_args2: true
+},
+
+DrawingToolInterface__setupOutgoingEvents_closure9: {"": "Closure;this_14",
+  call$2: function(element, color) {
+    return this.this_14._drawingModule.performEditAction$2("gradientEndColor", color);
+  },
+  "+call:2:0": 0,
+  $isFunction: true,
+  $is_args2: true
 },
 
 DrawingToolInterface_onActionChanged_closure: {"": "Closure;actionName_0",
@@ -1920,6 +1993,8 @@ recursiveToleranceBar: function(points, i, lookAhead, tolerance) {
 SiteApp: {"": "Object;_topMenu,_SiteLib$_drawingModule",
   _setupToolbar$0: function() {
     var t1, t2, t3;
+    if (this._SiteLib$_drawingModule == null)
+      return;
     t1 = document.querySelector("#nu-interface-save-svg");
     t1.toString;
     t2 = C.EventStreamProvider_click._eventType;
@@ -1939,12 +2014,20 @@ SiteApp: {"": "Object;_topMenu,_SiteLib$_drawingModule",
     t1._tryResume$0();
     t1 = document.querySelector("#nu-interface-publish");
     t1.toString;
-    t2 = new W._ElementEventStreamImpl(t1, t2, false);
+    t1 = new W._ElementEventStreamImpl(t1, t2, false);
+    H.setRuntimeTypeInfo(t1, [null]);
+    t3 = this.get$_displaySubmissionForm();
+    t3 = new W._EventStreamSubscription(0, t1._target, t1._eventType, W._wrapZone(t3), t1._useCapture);
+    H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
+    t3._tryResume$0();
+    t3 = document.querySelector("#submission-form .submit");
+    t3.toString;
+    t2 = new W._ElementEventStreamImpl(t3, t2, false);
     H.setRuntimeTypeInfo(t2, [null]);
-    t1 = this.get$_onPublishRequested();
-    t1 = new W._EventStreamSubscription(0, t2._target, t2._eventType, W._wrapZone(t1), t2._useCapture);
-    H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t2, "_EventStream", 0)]);
-    t1._tryResume$0();
+    t3 = this.get$_onPublishRequested();
+    t3 = new W._EventStreamSubscription(0, t2._target, t2._eventType, W._wrapZone(t3), t2._useCapture);
+    H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t2, "_EventStream", 0)]);
+    t3._tryResume$0();
   },
   _onSvgSave$1: function(e) {
     var blob = W.Blob_Blob([J.get$outerHtml$x(this._SiteLib$_drawingModule.saveSvg$0())], "image/svg+xml", null);
@@ -1965,16 +2048,62 @@ SiteApp: {"": "Object;_topMenu,_SiteLib$_drawingModule",
   get$_onSaveImage: function() {
     return new R.BoundClosure$1(this, S.SiteApp.prototype._onSaveImage$1, null, "_onSaveImage$1");
   },
+  _displaySubmissionForm$1: function(e) {
+    var form, t1;
+    form = document.querySelector("#submission-form");
+    t1 = document.querySelector("body");
+    t1.toString;
+    t1 = new W._DataAttributeMap(new W._ElementAttributeMap(t1));
+    if (t1._attributes._element.getAttribute("data-" + t1._toHyphenedName$1("isLoggedIn")) === "false") {
+      if (J.get$display$x(form.style) === "flex") {
+        J.set$display$x(form.style, "none");
+        return;
+      }
+      J.set$display$x(form.style, "flex");
+      document.querySelector("#submission-form .ui.form .info.message .header").textContent = "You must be signed in to publish";
+      J.set$display$x(document.querySelector("#submission-form .ui.form .info.message").style, "block");
+      J.set$display$x(document.querySelector("#submission-form .submit").style, "none");
+      J.set$display$x(document.querySelector("#submission-form .field").style, "none");
+      return;
+    }
+    J.set$display$x(document.querySelector("#submission-form .ui.form .info.message").style, "none");
+    J.set$pointerEvents$x(document.querySelector("#submission-form .submit").style, "auto");
+    J.set$opacity$x(document.querySelector("#submission-form .submit").style, "1");
+    t1 = form.style;
+    C.CssStyleDeclaration_methods.set$display(t1, J.getInterceptor$x(t1).get$display(t1) === "flex" ? "none" : "flex");
+  },
+  get$_displaySubmissionForm: function() {
+    return new R.BoundClosure$1(this, S.SiteApp.prototype._displaySubmissionForm$1, null, "_displaySubmissionForm$1");
+  },
   _onPublishRequested$1: function(e) {
-    var t1, imageData;
+    var t1, imageData, t2;
+    J.set$pointerEvents$x(document.querySelector("#submission-form .submit").style, "none");
+    J.set$opacity$x(document.querySelector("#submission-form .submit").style, "0.25");
     t1 = this._SiteLib$_drawingModule;
     imageData = t1._canvas.toDataURL("image/png", null);
+    t2 = H.interceptedTypeCast(document.querySelector("#submission-form-title"), "$isInputElement").value;
     t1.mandalaId;
-    W.HttpRequest_postFormData("/mandalas/create_from_tool", H.fillLiteralMap(["image_data", imageData, "id", ""], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)), null, null, null, null);
+    W.HttpRequest_postFormData("/mandalas/create_from_tool", H.fillLiteralMap(["image_data", imageData, "title", t2, "id", ""], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)), null, null, null, null).then$1(new S.SiteApp__onPublishRequested_closure());
   },
   get$_onPublishRequested: function() {
     return new R.BoundClosure$1(this, S.SiteApp.prototype._onPublishRequested$1, null, "_onPublishRequested$1");
   }
+},
+
+SiteApp__onPublishRequested_closure: {"": "Closure;",
+  call$1: function(req) {
+    var responseJson, t1;
+    responseJson = C.C_JsonCodec.decode$1(J.get$responseText$x(req));
+    J.set$display$x(document.querySelector("#submission-form .ui.form .info.message").style, "block");
+    t1 = J.getInterceptor$asx(responseJson);
+    if (J.$eq(t1.$index(responseJson, "status"), false))
+      document.querySelector("#submission-form .ui.form .info.message .header").textContent = t1.$index(responseJson, "error");
+    else
+      document.querySelector("#submission-form .ui.form .info.message .header").textContent = "All done";
+  },
+  "+call:1:0": 0,
+  $isFunction: true,
+  $is_args1: true
 },
 
 TopMenuController: {"": "Object;",
@@ -2136,7 +2265,7 @@ JSArray: {"": "List/Interceptor;",
   get$first: function(receiver) {
     if (receiver.length > 0)
       return receiver[0];
-    throw H.wrapException(new P.StateError("No elements"));
+    throw H.wrapException(P.StateError$("No elements"));
   },
   get$last: function(receiver) {
     var t1 = receiver.length;
@@ -8513,6 +8642,21 @@ ListQueue: {"": "IterableBase;_table,_head,_tail,_modificationCount",
     }
     return false;
   },
+  clear$0: function(_) {
+    var i, t1, t2, t3, t4;
+    i = this._head;
+    t1 = this._tail;
+    if (i !== t1) {
+      for (t2 = this._table, t3 = t2.length, t4 = t3 - 1; i !== t1; i = (i + 1 & t4) >>> 0) {
+        if (i < 0 || i >= t3)
+          throw H.ioore(t2, i);
+        t2[i] = null;
+      }
+      this._tail = 0;
+      this._head = 0;
+      this._modificationCount = this._modificationCount + 1;
+    }
+  },
   toString$0: function(_) {
     return H.IterableMixinWorkaround_toStringIterable(this, "{", "}");
   },
@@ -9822,7 +9966,7 @@ HtmlCollection: {"": "Interceptor_ListMixin_ImmutableListMixin;",
 
 HtmlDocument: {"": "Document;body=", "%": "HTMLDocument"},
 
-HttpRequest: {"": "HttpRequestEventTarget;",
+HttpRequest: {"": "HttpRequestEventTarget;responseText=",
   open$5$async$password$user: function(receiver, method, url, async, password, user) {
     return receiver.open(method, url, async, user, password);
   },
@@ -9843,7 +9987,7 @@ ImageData: {"": "Interceptor;", $isImageData: true, "%": "ImageData"},
 
 ImageElement: {"": "HtmlElement;height},src},width}", "%": "HTMLImageElement"},
 
-InputElement: {"": "HtmlElement;checked%,height},name=,src},value%,width}", $isElement: true, $isNode: true, $isCheckboxInputElement: true, $isRangeInputElement: true, "%": "HTMLInputElement"},
+InputElement: {"": "HtmlElement;checked%,height},name=,src},value%,width}", $isInputElement: true, $isElement: true, $isNode: true, $isCheckboxInputElement: true, $isRangeInputElement: true, "%": "HTMLInputElement"},
 
 KeyboardEvent: {"": "UIEvent;",
   get$keyCode: function(receiver) {
@@ -10183,6 +10327,15 @@ _NamedNodeMap: {"": "Interceptor_ListMixin_ImmutableListMixin2;",
 Interceptor_CssStyleDeclarationBase: {"": "Interceptor+CssStyleDeclarationBase;"},
 
 CssStyleDeclarationBase: {"": "Object;",
+  get$display: function(receiver) {
+    return this.getPropertyValue$1(receiver, "display");
+  },
+  set$display: function(receiver, value) {
+    this.setProperty$3(receiver, "display", value, "");
+  },
+  set$opacity: function(receiver, value) {
+    this.setProperty$3(receiver, "opacity", value, "");
+  },
   get$page: function(receiver) {
     return this.getPropertyValue$1(receiver, "page");
   },
@@ -11986,17 +12139,21 @@ FilteredElementList_removeRange_closure: {"": "Closure;",
 ["", "mandala.dart", , M, {
 main: function() {
   var t1, t2, site;
-  $.tool = R.DrawingTool$(H.interceptedTypeCast(document.querySelector("#canvas"), "$isCanvasElement"));
-  t1 = new R.DrawingToolInterface($.tool, null, null, null, null, null, null, null, null);
-  t1._setupOutgoingEvents$0();
-  t1._setupIncommingEvents$0();
-  t2 = t1._drawingModule;
-  t2.start$0(t2);
-  $.toolInterface = t1;
+  if (document.querySelector("#canvas") != null) {
+    P.print("NO NULL");
+    $.tool = R.DrawingTool$(H.interceptedTypeCast(document.querySelector("#canvas"), "$isCanvasElement"));
+    t1 = new R.DrawingToolInterface($.tool, null, null, null, null, null, null, null, null, null);
+    t1._setupOutgoingEvents$0();
+    t1._setupIncommingEvents$0();
+    t2 = t1._drawingModule;
+    t2.start$0(t2);
+    $.toolInterface = t1;
+  }
   site = new S.SiteApp(null, $.tool);
   t1 = new S.TopMenuController();
   t1._setupDropdown$0();
   site._topMenu = t1;
+  $.get$context().callMethod$2("jQuery", [".ui.rating"]).callMethod$2("rating", ["enable"]);
   site._setupToolbar$0();
 }},
 1],
@@ -12096,11 +12253,12 @@ P.Duration.$isDuration = true;
 P.Duration.$isObject = true;
 J.JSArray.$isList = true;
 J.JSArray.$isObject = true;
+P.Object.$isObject = true;
 W.Element.$isElement = true;
 W.Element.$isNode = true;
 W.Element.$isObject = true;
-P.Object.$isObject = true;
 W.MouseEvent.$isObject = true;
+W.HttpRequest.$isHttpRequest = true;
 W.HttpRequest.$isObject = true;
 W.ProgressEvent.$isObject = true;
 P.Symbol.$isSymbol = true;
@@ -12112,12 +12270,12 @@ J.JSBool.$isbool = true;
 J.JSBool.$isObject = true;
 W.TouchEvent.$isObject = true;
 W.Event.$isObject = true;
+Z.Point.$isPoint = true;
+Z.Point.$isObject = true;
 P.Stream.$isStream = true;
 P.Stream.$isObject = true;
 P.StreamSubscription.$isStreamSubscription = true;
 P.StreamSubscription.$isObject = true;
-Z.Point.$isPoint = true;
-Z.Point.$isObject = true;
 R.BaseAction.$isBaseAction = true;
 R.BaseAction.$isObject = true;
 W.KeyboardEvent.$isObject = true;
@@ -12132,6 +12290,53 @@ W.HtmlElement.$isHtmlElement = true;
 W.HtmlElement.$isElement = true;
 W.HtmlElement.$isNode = true;
 W.HtmlElement.$isObject = true;
+W.InputElement.$isInputElement = true;
+W.InputElement.$isHtmlElement = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isElement = true;
+W.InputElement.$isNode = true;
+W.InputElement.$isObject = true;
 P._BufferingStreamSubscription.$is_BufferingStreamSubscription = true;
 P._BufferingStreamSubscription.$is_EventSink = true;
 P._BufferingStreamSubscription.$isStreamSubscription = true;
@@ -12235,6 +12440,7 @@ J.getInterceptor$x = function(receiver) {
 C.C_JsonCodec = new P.JsonCodec();
 C.C__DelayedDone = new P._DelayedDone();
 C.C__RootZone = new P._RootZone();
+C.CssStyleDeclaration_methods = W.CssStyleDeclaration.prototype;
 C.Duration_0 = new P.Duration(0);
 C.EventStreamProvider_blur = new W.EventStreamProvider("blur");
 C.EventStreamProvider_change = new W.EventStreamProvider("change");
@@ -12508,6 +12714,9 @@ J.get$className$x = function(receiver) {
 J.get$context2D$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$context2D(receiver);
 };
+J.get$display$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$display(receiver);
+};
 J.get$document$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$document(receiver);
 };
@@ -12559,6 +12768,9 @@ J.get$parent$x = function(receiver) {
 J.get$points$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$points(receiver);
 };
+J.get$responseText$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$responseText(receiver);
+};
 J.get$touches$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$touches(receiver);
 };
@@ -12604,8 +12816,14 @@ J.set$checked$x = function(receiver, value) {
 J.set$className$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$className(receiver, value);
 };
+J.set$display$x = function(receiver, value) {
+  return J.getInterceptor$x(receiver).set$display(receiver, value);
+};
 J.set$height$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$height(receiver, value);
+};
+J.set$opacity$x = function(receiver, value) {
+  return J.getInterceptor$x(receiver).set$opacity(receiver, value);
 };
 J.set$pointerEvents$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$pointerEvents(receiver, value);
@@ -13637,6 +13855,9 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   HttpRequest.prototype = $desc;
+  HttpRequest.prototype.get$responseText = function(receiver) {
+    return receiver.responseText;
+  };
   function HttpRequestEventTarget() {
   }
   HttpRequestEventTarget.builtin$cls = "HttpRequestEventTarget";
@@ -15893,7 +16114,7 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Uint8List.prototype = $desc;
-  function DrawingTool(mandalaId, _sides, _isMirrored, _allowEditingPoints, _scale, _isDragging, _blurAmount, _blurOpacity, _canvas, _ctx, _offscreenBuffer, _bgGradient, _bgGradientSvg, _canvasRect, _winScroll, _rafId, actionQueue) {
+  function DrawingTool(mandalaId, _sides, _isMirrored, _allowEditingPoints, _scale, _isDragging, _blurAmount, _blurOpacity, _canvas, _ctx, _offscreenBuffer, _bgGradient, _bgGradientSvg, _gradientStart, _gradientEnd, _canvasRect, _winScroll, _rafId, actionQueue) {
     this.mandalaId = mandalaId;
     this._sides = _sides;
     this._isMirrored = _isMirrored;
@@ -15907,6 +16128,8 @@ function dart_precompiled($collectedClasses) {
     this._offscreenBuffer = _offscreenBuffer;
     this._bgGradient = _bgGradient;
     this._bgGradientSvg = _bgGradientSvg;
+    this._gradientStart = _gradientStart;
+    this._gradientEnd = _gradientEnd;
     this._canvasRect = _canvasRect;
     this._winScroll = _winScroll;
     this._rafId = _rafId;
@@ -16180,7 +16403,7 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   SmoothStrokeAction.prototype = $desc;
-  function DrawingToolInterface(_drawingModule, _lastSelectedTool, _DrawingToolLib$_$sideCountSlider, _DrawingToolLib$_$scaleSlider, _DrawingToolLib$_$opacitySlider, _DrawingToolLib$_$lineWidthSlider, _DrawingToolLib$_$mirrorCheckbox, _DrawingToolLib$_$drawPointsCheckbox, _DrawingToolLib$_$advancedToggleButton) {
+  function DrawingToolInterface(_drawingModule, _lastSelectedTool, _DrawingToolLib$_$sideCountSlider, _DrawingToolLib$_$scaleSlider, _DrawingToolLib$_$opacitySlider, _DrawingToolLib$_$lineWidthSlider, _DrawingToolLib$_$mirrorCheckbox, _DrawingToolLib$_$drawPointsCheckbox, _DrawingToolLib$_$advancedToggleButton, _helperText) {
     this._drawingModule = _drawingModule;
     this._lastSelectedTool = _lastSelectedTool;
     this._DrawingToolLib$_$sideCountSlider = _DrawingToolLib$_$sideCountSlider;
@@ -16190,6 +16413,7 @@ function dart_precompiled($collectedClasses) {
     this._DrawingToolLib$_$mirrorCheckbox = _DrawingToolLib$_$mirrorCheckbox;
     this._DrawingToolLib$_$drawPointsCheckbox = _DrawingToolLib$_$drawPointsCheckbox;
     this._DrawingToolLib$_$advancedToggleButton = _DrawingToolLib$_$advancedToggleButton;
+    this._helperText = _helperText;
   }
   DrawingToolInterface.builtin$cls = "DrawingToolInterface";
   if (!"name" in DrawingToolInterface)
@@ -16300,6 +16524,36 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   DrawingToolInterface__setupOutgoingEvents_closure6.prototype = $desc;
+  function DrawingToolInterface__setupOutgoingEvents_closure7(this_12) {
+    this.this_12 = this_12;
+  }
+  DrawingToolInterface__setupOutgoingEvents_closure7.builtin$cls = "DrawingToolInterface__setupOutgoingEvents_closure7";
+  if (!"name" in DrawingToolInterface__setupOutgoingEvents_closure7)
+    DrawingToolInterface__setupOutgoingEvents_closure7.name = "DrawingToolInterface__setupOutgoingEvents_closure7";
+  $desc = $collectedClasses.DrawingToolInterface__setupOutgoingEvents_closure7;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  DrawingToolInterface__setupOutgoingEvents_closure7.prototype = $desc;
+  function DrawingToolInterface__setupOutgoingEvents_closure8(this_13) {
+    this.this_13 = this_13;
+  }
+  DrawingToolInterface__setupOutgoingEvents_closure8.builtin$cls = "DrawingToolInterface__setupOutgoingEvents_closure8";
+  if (!"name" in DrawingToolInterface__setupOutgoingEvents_closure8)
+    DrawingToolInterface__setupOutgoingEvents_closure8.name = "DrawingToolInterface__setupOutgoingEvents_closure8";
+  $desc = $collectedClasses.DrawingToolInterface__setupOutgoingEvents_closure8;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  DrawingToolInterface__setupOutgoingEvents_closure8.prototype = $desc;
+  function DrawingToolInterface__setupOutgoingEvents_closure9(this_14) {
+    this.this_14 = this_14;
+  }
+  DrawingToolInterface__setupOutgoingEvents_closure9.builtin$cls = "DrawingToolInterface__setupOutgoingEvents_closure9";
+  if (!"name" in DrawingToolInterface__setupOutgoingEvents_closure9)
+    DrawingToolInterface__setupOutgoingEvents_closure9.name = "DrawingToolInterface__setupOutgoingEvents_closure9";
+  $desc = $collectedClasses.DrawingToolInterface__setupOutgoingEvents_closure9;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  DrawingToolInterface__setupOutgoingEvents_closure9.prototype = $desc;
   function DrawingToolInterface_onActionChanged_closure(actionName_0) {
     this.actionName_0 = actionName_0;
   }
@@ -16340,6 +16594,15 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   SiteApp.prototype = $desc;
+  function SiteApp__onPublishRequested_closure() {
+  }
+  SiteApp__onPublishRequested_closure.builtin$cls = "SiteApp__onPublishRequested_closure";
+  if (!"name" in SiteApp__onPublishRequested_closure)
+    SiteApp__onPublishRequested_closure.name = "SiteApp__onPublishRequested_closure";
+  $desc = $collectedClasses.SiteApp__onPublishRequested_closure;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  SiteApp__onPublishRequested_closure.prototype = $desc;
   function TopMenuController() {
   }
   TopMenuController.builtin$cls = "TopMenuController";
@@ -19796,5 +20059,5 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Closure$4.prototype = $desc;
-  return [HtmlElement, AnchorElement, AnimationEvent, AreaElement, AudioElement, AutocompleteErrorEvent, BRElement, BaseElement, BeforeLoadEvent, BeforeUnloadEvent, Blob, BodyElement, ButtonElement, CDataSection, CanvasElement, CanvasGradient, CanvasPattern, CanvasRenderingContext, CanvasRenderingContext2D, CharacterData, CloseEvent, Comment, CompositionEvent, ContentElement, CssFontFaceLoadEvent, CssStyleDeclaration, CustomEvent, DListElement, DataListElement, DetailsElement, DeviceMotionEvent, DeviceOrientationEvent, DialogElement, DivElement, Document, DocumentFragment, DocumentType, DomError, DomException, Element, EmbedElement, ErrorEvent, Event, EventTarget, FieldSetElement, File, FileError, FocusEvent, FormElement, HRElement, HashChangeEvent, HeadElement, HeadingElement, HtmlCollection, HtmlDocument, HtmlFormControlsCollection, HtmlHtmlElement, HtmlOptionsCollection, HttpRequest, HttpRequestEventTarget, IFrameElement, ImageData, ImageElement, InputElement, KeyboardEvent, KeygenElement, LIElement, LabelElement, LegendElement, LinkElement, Location, MapElement, MediaElement, MediaError, MediaKeyError, MediaKeyEvent, MediaKeyMessageEvent, MediaKeyNeededEvent, MediaStream, MediaStreamEvent, MediaStreamTrackEvent, MenuElement, MessageEvent, MetaElement, MeterElement, MidiConnectionEvent, MidiMessageEvent, ModElement, MouseEvent, Navigator, NavigatorUserMediaError, Node, NodeList, OListElement, ObjectElement, OptGroupElement, OptionElement, OutputElement, OverflowEvent, PageTransitionEvent, ParagraphElement, ParamElement, PopStateEvent, PositionError, PreElement, ProcessingInstruction, ProgressElement, ProgressEvent, QuoteElement, ResourceProgressEvent, RtcDataChannelEvent, RtcDtmfToneChangeEvent, RtcIceCandidateEvent, ScriptElement, SecurityPolicyViolationEvent, SelectElement, ShadowElement, ShadowRoot, SourceElement, SpanElement, SpeechInputEvent, SpeechRecognitionError, SpeechRecognitionEvent, SpeechSynthesisEvent, StorageEvent, StyleElement, TableCaptionElement, TableCellElement, TableColElement, TableElement, TableRowElement, TableSectionElement, TemplateElement, Text, TextAreaElement, TextEvent, TitleElement, Touch, TouchEvent, TouchList, TrackElement, TrackEvent, TransitionEvent, UIEvent, UListElement, UnknownElement, VideoElement, WheelEvent, Window, _Attr, _ClientRect, _Entity, _HTMLAppletElement, _HTMLBaseFontElement, _HTMLDirectoryElement, _HTMLFontElement, _HTMLFrameElement, _HTMLFrameSetElement, _HTMLMarqueeElement, _MutationEvent, _NamedNodeMap, _Notation, _XMLHttpRequestProgressEvent, KeyRange, VersionChangeEvent, AElement, AltGlyphElement, AnimateElement, AnimateMotionElement, AnimateTransformElement, AnimatedLength, AnimatedLengthList, AnimatedNumber, AnimatedNumberList, AnimationElement, CircleElement, ClipPathElement, DefsElement, DescElement, EllipseElement, FEBlendElement, FEColorMatrixElement, FEComponentTransferElement, FECompositeElement, FEConvolveMatrixElement, FEDiffuseLightingElement, FEDisplacementMapElement, FEDistantLightElement, FEFloodElement, FEFuncAElement, FEFuncBElement, FEFuncGElement, FEFuncRElement, FEGaussianBlurElement, FEImageElement, FEMergeElement, FEMergeNodeElement, FEMorphologyElement, FEOffsetElement, FEPointLightElement, FESpecularLightingElement, FESpotLightElement, FETileElement, FETurbulenceElement, FilterElement, ForeignObjectElement, GElement, GraphicsElement, ImageElement0, LineElement, LinearGradientElement, MarkerElement, MaskElement, MetadataElement, PathElement, PatternElement, PointList, PolygonElement, PolylineElement, RadialGradientElement, RectElement, ScriptElement0, SetElement, StopElement, StyleElement0, SvgDocument, SvgElement, SvgSvgElement, SwitchElement, SymbolElement, TSpanElement, TextContentElement, TextElement, TextPathElement, TextPositioningElement, TitleElement0, UseElement, ViewElement, ZoomEvent, _GradientElement, _SVGAltGlyphDefElement, _SVGAltGlyphItemElement, _SVGAnimateColorElement, _SVGComponentTransferFunctionElement, _SVGCursorElement, _SVGFEDropShadowElement, _SVGFontElement, _SVGFontFaceElement, _SVGFontFaceFormatElement, _SVGFontFaceNameElement, _SVGFontFaceSrcElement, _SVGFontFaceUriElement, _SVGGlyphElement, _SVGGlyphRefElement, _SVGHKernElement, _SVGMPathElement, _SVGMissingGlyphElement, _SVGVKernElement, AudioProcessingEvent, OfflineAudioCompletionEvent, ContextEvent, SqlError, TypedData, ByteData, Float32List, Float64List, Int16List, Int32List, Int8List, Uint16List, Uint32List, Uint8ClampedList, Uint8List, DrawingTool, BoundClosure$1, DrawingTool__setupListeners_closure, DrawingTool__setupListeners_closure0, DrawingTool__setupListeners_closure1, DrawingTool__setupListeners_closure2, DrawingTool__setupListeners_closure3, DrawingTool__setupListeners_closure4, DrawingTool__setupListeners_closure5, DrawingTool__setupListeners_closure6, DrawingTool__setupListeners_closure7, DrawingTool__setupListeners_closure8, DrawingTool__setupListeners_closure9, DrawingTool__updateOffscreenBuffer_closure, DrawingTool_saveSvg_closure, ActionSettings, BaseAction, PolygonalFillAction, PolygonalStrokeAction, RegularFillAction, RegularStrokeAction, SmoothFillAction, SmoothStrokeAction, DrawingToolInterface, DrawingToolInterface__setupOutgoingEvents_closure, DrawingToolInterface__setupOutgoingEvents__closure0, DrawingToolInterface__setupOutgoingEvents_closure0, DrawingToolInterface__setupOutgoingEvents__closure, DrawingToolInterface__setupOutgoingEvents_closure1, DrawingToolInterface__setupOutgoingEvents_closure2, DrawingToolInterface__setupOutgoingEvents_closure3, DrawingToolInterface__setupOutgoingEvents_closure4, DrawingToolInterface__setupOutgoingEvents_closure5, DrawingToolInterface__setupOutgoingEvents_closure6, DrawingToolInterface_onActionChanged_closure, SvgRenderer, SiteApp, TopMenuController, TopMenuController__setupDropdown_closure, JS_CONST, Interceptor, JSBool, JSNull, JavaScriptObject, PlainJavaScriptObject, UnknownJavaScriptObject, JSArray, JSMutableArray, JSFixedArray, JSExtendableArray, JSNumber, JSInt, JSDouble, JSString, startRootIsolate_closure, startRootIsolate_closure0, _Manager, _IsolateContext, _EventLoop, _EventLoop__runHelper_next, _IsolateEvent, _MainManagerStub, IsolateNatives__processWorkerMessage_closure, _BaseSendPort, _NativeJsSendPort, _NativeJsSendPort_send_closure, _NativeJsSendPort_send__closure, _WorkerSendPort, _WorkerSendPort_send_closure, ReceivePortImpl, BoundClosure$i0, _waitForPendingPorts_closure, _PendingSendPortFinder, _JsSerializer, _JsCopier, _JsDeserializer, _JsVisitedMap, _MessageTraverserVisitedMap, _MessageTraverser, _Copier, _Copier_visitMap_closure, _Serializer, _Deserializer, TimerImpl, TimerImpl_internalCallback, TimerImpl_internalCallback0, JSInvocationMirror, Primitives_applyFunction_closure, Primitives_applyFunction_closure0, Primitives_applyFunction_closure1, TypeErrorDecoder, NullError, JsNoSuchMethodError, UnknownJsTypeError, unwrapException_saveStackTrace, _StackTrace, invokeClosure_closure, invokeClosure_closure0, invokeClosure_closure1, invokeClosure_closure2, invokeClosure_closure3, Closure, BoundClosure, CastErrorImplementation, TypeImpl, initHooks_closure, initHooks_closure0, initHooks_closure1, StringMatch, ListIterable, SubListIterable, ListIterator, MappedIterable, EfficientLengthMappedIterable, MappedIterator, MappedListIterable, WhereIterable, WhereIterator, FixedLengthListMixin, Symbol0, _AsyncError, _BroadcastStream, _BroadcastSubscription, BoundClosure$0, _BroadcastStreamController, BoundClosure$i1, BoundClosure$2, _SyncBroadcastStreamController, _SyncBroadcastStreamController__sendData_closure, _SyncBroadcastStreamController__sendError_closure, _SyncBroadcastStreamController__sendDone_closure, _AsyncBroadcastStreamController, Future, Future_wait_handleError, Future_wait_closure, _Completer, _AsyncCompleter, _Future, _Future__addListener_closure, _Future__chainFutures_closure, _Future__chainFutures_closure0, _Future__asyncComplete_closure, _Future__asyncCompleteError_closure, _Future__propagateToListeners_closure, _Future__propagateToListeners_closure0, _Future__propagateToListeners__closure, _Future__propagateToListeners__closure0, Stream, Stream_contains_closure, Stream_contains__closure, Stream_contains__closure0, Stream_contains_closure0, Stream_forEach_closure, Stream_forEach__closure, Stream_forEach__closure0, Stream_forEach_closure0, Stream_length_closure, Stream_length_closure0, StreamSubscription, _StreamController, _StreamController__subscribe_closure, _StreamController__recordCancel_complete, _SyncStreamControllerDispatch, _AsyncStreamControllerDispatch, _AsyncStreamController, _StreamController__AsyncStreamControllerDispatch, _SyncStreamController, _StreamController__SyncStreamControllerDispatch, _ControllerStream, _ControllerSubscription, _EventSink, _BufferingStreamSubscription, _BufferingStreamSubscription__sendError_sendError, _BufferingStreamSubscription__sendDone_sendDone, _StreamImpl, _DelayedEvent, _DelayedData, _DelayedError, _DelayedDone, _PendingEvents, _PendingEvents_schedule_closure, _StreamImplEvents, _cancelAndError_closure, _cancelAndErrorClosure_closure, _cancelAndValue_closure, _ForwardingStream, _ForwardingStreamSubscription, BoundClosure$20, _MapStream, _BaseZone, _BaseZone_bindCallback_closure, _BaseZone_bindCallback_closure0, _BaseZone_bindUnaryCallback_closure, _BaseZone_bindUnaryCallback_closure0, _rootHandleUncaughtError_closure, _rootHandleUncaughtError__closure, _RootZone, _HashMap, _HashMap_values_closure, _IdentityHashMap, HashMapKeyIterable, HashMapKeyIterator, _LinkedHashMap, _LinkedHashMap_values_closure, LinkedHashMapCell, LinkedHashMapKeyIterable, LinkedHashMapKeyIterator, _HashSet, _IdentityHashSet, HashSetIterator, _LinkedHashSet, LinkedHashSetCell, LinkedHashSetIterator, _HashSetBase, IterableBase, ListBase, ListMixin, Maps_mapToString_closure, ListQueue, _ListQueueIterator, _convertJsonToDart_closure, _convertJsonToDart_walk, Codec, Converter, Encoding, JsonCodec, JsonDecoder, Utf8Codec, Utf8Encoder, _Utf8Encoder, Function__toMangledNames_closure, NoSuchMethodError_toString_closure, DateTime, DateTime_toString_fourDigits, DateTime_toString_threeDigits, DateTime_toString_twoDigits, Duration, Duration_toString_sixDigits, Duration_toString_twoDigits, Error, NullThrownError, ArgumentError, RangeError, NoSuchMethodError, UnsupportedError, UnimplementedError, StateError, ConcurrentModificationError, StackOverflowError, CyclicInitializationError, _ExceptionImplementation, FormatException, Expando, Function, Iterator, Null, Object, Match, StackTrace, StringBuffer, Symbol, Uri__uriEncode_byteToHex, Interceptor_CssStyleDeclarationBase, CssStyleDeclarationBase, _ChildrenElementList, _FrozenElementList, _FrozenElementList$_wrap_closure, Interceptor_ListMixin, Interceptor_ListMixin_ImmutableListMixin, HttpRequest_postFormData_closure, HttpRequest_postFormData_closure0, HttpRequest_request_closure, HttpRequest_request_closure0, _ChildNodeListLazy, Interceptor_ListMixin0, Interceptor_ListMixin_ImmutableListMixin0, Interceptor_ListMixin1, Interceptor_ListMixin_ImmutableListMixin1, Interceptor_ListMixin2, Interceptor_ListMixin_ImmutableListMixin2, _AttributeMap, _ElementAttributeMap, _DataAttributeMap, _DataAttributeMap_forEach_closure, _DataAttributeMap_keys_closure, _DataAttributeMap_values_closure, _MultiElementCssClassSet, _MultiElementCssClassSet_closure, _MultiElementCssClassSet_readClasses_closure, _MultiElementCssClassSet_modify_closure, _MultiElementCssClassSet_remove_closure, _MultiElementCssClassSet__modifyWithReturnValue_closure, _ElementCssClassSet, EventStreamProvider, _EventStream, _ElementEventStreamImpl, _ElementListEventStreamImpl, _EventStreamSubscription, _StreamPool, _StreamPool_add_closure, ImmutableListMixin, FixedSizeListIterator, _DOMWindowCrossFrame, _LocationWrapper, _AttributeClassSet, ReceivePort, JsObject, JsObject__convertDataTree__convert, JsFunction, JsArray, JsObject_ListMixin, _convertToJS_closure, _convertToJS_closure0, _wrapToDart_closure, _wrapToDart_closure0, _wrapToDart_closure1, Point0, TypedData_ListMixin, TypedData_ListMixin_FixedLengthListMixin, TypedData_ListMixin0, TypedData_ListMixin_FixedLengthListMixin0, TypedData_ListMixin1, TypedData_ListMixin_FixedLengthListMixin1, TypedData_ListMixin2, TypedData_ListMixin_FixedLengthListMixin2, TypedData_ListMixin3, TypedData_ListMixin_FixedLengthListMixin3, TypedData_ListMixin4, TypedData_ListMixin_FixedLengthListMixin4, TypedData_ListMixin5, TypedData_ListMixin_FixedLengthListMixin5, TypedData_ListMixin6, TypedData_ListMixin_FixedLengthListMixin6, TypedData_ListMixin7, TypedData_ListMixin_FixedLengthListMixin7, Int64List, Uint64List, EventEmitter, EventEmitter_on_closure, EventEmitter_emit_closure, CssClassSetImpl, CssClassSetImpl_add_closure, FilteredElementList, FilteredElementList__filtered_closure, FilteredElementList_removeRange_closure, Point, Closure$2, Closure$1, Closure$0, Closure$7, Closure$20, Closure$4];
+  return [HtmlElement, AnchorElement, AnimationEvent, AreaElement, AudioElement, AutocompleteErrorEvent, BRElement, BaseElement, BeforeLoadEvent, BeforeUnloadEvent, Blob, BodyElement, ButtonElement, CDataSection, CanvasElement, CanvasGradient, CanvasPattern, CanvasRenderingContext, CanvasRenderingContext2D, CharacterData, CloseEvent, Comment, CompositionEvent, ContentElement, CssFontFaceLoadEvent, CssStyleDeclaration, CustomEvent, DListElement, DataListElement, DetailsElement, DeviceMotionEvent, DeviceOrientationEvent, DialogElement, DivElement, Document, DocumentFragment, DocumentType, DomError, DomException, Element, EmbedElement, ErrorEvent, Event, EventTarget, FieldSetElement, File, FileError, FocusEvent, FormElement, HRElement, HashChangeEvent, HeadElement, HeadingElement, HtmlCollection, HtmlDocument, HtmlFormControlsCollection, HtmlHtmlElement, HtmlOptionsCollection, HttpRequest, HttpRequestEventTarget, IFrameElement, ImageData, ImageElement, InputElement, KeyboardEvent, KeygenElement, LIElement, LabelElement, LegendElement, LinkElement, Location, MapElement, MediaElement, MediaError, MediaKeyError, MediaKeyEvent, MediaKeyMessageEvent, MediaKeyNeededEvent, MediaStream, MediaStreamEvent, MediaStreamTrackEvent, MenuElement, MessageEvent, MetaElement, MeterElement, MidiConnectionEvent, MidiMessageEvent, ModElement, MouseEvent, Navigator, NavigatorUserMediaError, Node, NodeList, OListElement, ObjectElement, OptGroupElement, OptionElement, OutputElement, OverflowEvent, PageTransitionEvent, ParagraphElement, ParamElement, PopStateEvent, PositionError, PreElement, ProcessingInstruction, ProgressElement, ProgressEvent, QuoteElement, ResourceProgressEvent, RtcDataChannelEvent, RtcDtmfToneChangeEvent, RtcIceCandidateEvent, ScriptElement, SecurityPolicyViolationEvent, SelectElement, ShadowElement, ShadowRoot, SourceElement, SpanElement, SpeechInputEvent, SpeechRecognitionError, SpeechRecognitionEvent, SpeechSynthesisEvent, StorageEvent, StyleElement, TableCaptionElement, TableCellElement, TableColElement, TableElement, TableRowElement, TableSectionElement, TemplateElement, Text, TextAreaElement, TextEvent, TitleElement, Touch, TouchEvent, TouchList, TrackElement, TrackEvent, TransitionEvent, UIEvent, UListElement, UnknownElement, VideoElement, WheelEvent, Window, _Attr, _ClientRect, _Entity, _HTMLAppletElement, _HTMLBaseFontElement, _HTMLDirectoryElement, _HTMLFontElement, _HTMLFrameElement, _HTMLFrameSetElement, _HTMLMarqueeElement, _MutationEvent, _NamedNodeMap, _Notation, _XMLHttpRequestProgressEvent, KeyRange, VersionChangeEvent, AElement, AltGlyphElement, AnimateElement, AnimateMotionElement, AnimateTransformElement, AnimatedLength, AnimatedLengthList, AnimatedNumber, AnimatedNumberList, AnimationElement, CircleElement, ClipPathElement, DefsElement, DescElement, EllipseElement, FEBlendElement, FEColorMatrixElement, FEComponentTransferElement, FECompositeElement, FEConvolveMatrixElement, FEDiffuseLightingElement, FEDisplacementMapElement, FEDistantLightElement, FEFloodElement, FEFuncAElement, FEFuncBElement, FEFuncGElement, FEFuncRElement, FEGaussianBlurElement, FEImageElement, FEMergeElement, FEMergeNodeElement, FEMorphologyElement, FEOffsetElement, FEPointLightElement, FESpecularLightingElement, FESpotLightElement, FETileElement, FETurbulenceElement, FilterElement, ForeignObjectElement, GElement, GraphicsElement, ImageElement0, LineElement, LinearGradientElement, MarkerElement, MaskElement, MetadataElement, PathElement, PatternElement, PointList, PolygonElement, PolylineElement, RadialGradientElement, RectElement, ScriptElement0, SetElement, StopElement, StyleElement0, SvgDocument, SvgElement, SvgSvgElement, SwitchElement, SymbolElement, TSpanElement, TextContentElement, TextElement, TextPathElement, TextPositioningElement, TitleElement0, UseElement, ViewElement, ZoomEvent, _GradientElement, _SVGAltGlyphDefElement, _SVGAltGlyphItemElement, _SVGAnimateColorElement, _SVGComponentTransferFunctionElement, _SVGCursorElement, _SVGFEDropShadowElement, _SVGFontElement, _SVGFontFaceElement, _SVGFontFaceFormatElement, _SVGFontFaceNameElement, _SVGFontFaceSrcElement, _SVGFontFaceUriElement, _SVGGlyphElement, _SVGGlyphRefElement, _SVGHKernElement, _SVGMPathElement, _SVGMissingGlyphElement, _SVGVKernElement, AudioProcessingEvent, OfflineAudioCompletionEvent, ContextEvent, SqlError, TypedData, ByteData, Float32List, Float64List, Int16List, Int32List, Int8List, Uint16List, Uint32List, Uint8ClampedList, Uint8List, DrawingTool, BoundClosure$1, DrawingTool__setupListeners_closure, DrawingTool__setupListeners_closure0, DrawingTool__setupListeners_closure1, DrawingTool__setupListeners_closure2, DrawingTool__setupListeners_closure3, DrawingTool__setupListeners_closure4, DrawingTool__setupListeners_closure5, DrawingTool__setupListeners_closure6, DrawingTool__setupListeners_closure7, DrawingTool__setupListeners_closure8, DrawingTool__setupListeners_closure9, DrawingTool__updateOffscreenBuffer_closure, DrawingTool_saveSvg_closure, ActionSettings, BaseAction, PolygonalFillAction, PolygonalStrokeAction, RegularFillAction, RegularStrokeAction, SmoothFillAction, SmoothStrokeAction, DrawingToolInterface, DrawingToolInterface__setupOutgoingEvents_closure, DrawingToolInterface__setupOutgoingEvents__closure0, DrawingToolInterface__setupOutgoingEvents_closure0, DrawingToolInterface__setupOutgoingEvents__closure, DrawingToolInterface__setupOutgoingEvents_closure1, DrawingToolInterface__setupOutgoingEvents_closure2, DrawingToolInterface__setupOutgoingEvents_closure3, DrawingToolInterface__setupOutgoingEvents_closure4, DrawingToolInterface__setupOutgoingEvents_closure5, DrawingToolInterface__setupOutgoingEvents_closure6, DrawingToolInterface__setupOutgoingEvents_closure7, DrawingToolInterface__setupOutgoingEvents_closure8, DrawingToolInterface__setupOutgoingEvents_closure9, DrawingToolInterface_onActionChanged_closure, SvgRenderer, SiteApp, SiteApp__onPublishRequested_closure, TopMenuController, TopMenuController__setupDropdown_closure, JS_CONST, Interceptor, JSBool, JSNull, JavaScriptObject, PlainJavaScriptObject, UnknownJavaScriptObject, JSArray, JSMutableArray, JSFixedArray, JSExtendableArray, JSNumber, JSInt, JSDouble, JSString, startRootIsolate_closure, startRootIsolate_closure0, _Manager, _IsolateContext, _EventLoop, _EventLoop__runHelper_next, _IsolateEvent, _MainManagerStub, IsolateNatives__processWorkerMessage_closure, _BaseSendPort, _NativeJsSendPort, _NativeJsSendPort_send_closure, _NativeJsSendPort_send__closure, _WorkerSendPort, _WorkerSendPort_send_closure, ReceivePortImpl, BoundClosure$i0, _waitForPendingPorts_closure, _PendingSendPortFinder, _JsSerializer, _JsCopier, _JsDeserializer, _JsVisitedMap, _MessageTraverserVisitedMap, _MessageTraverser, _Copier, _Copier_visitMap_closure, _Serializer, _Deserializer, TimerImpl, TimerImpl_internalCallback, TimerImpl_internalCallback0, JSInvocationMirror, Primitives_applyFunction_closure, Primitives_applyFunction_closure0, Primitives_applyFunction_closure1, TypeErrorDecoder, NullError, JsNoSuchMethodError, UnknownJsTypeError, unwrapException_saveStackTrace, _StackTrace, invokeClosure_closure, invokeClosure_closure0, invokeClosure_closure1, invokeClosure_closure2, invokeClosure_closure3, Closure, BoundClosure, CastErrorImplementation, TypeImpl, initHooks_closure, initHooks_closure0, initHooks_closure1, StringMatch, ListIterable, SubListIterable, ListIterator, MappedIterable, EfficientLengthMappedIterable, MappedIterator, MappedListIterable, WhereIterable, WhereIterator, FixedLengthListMixin, Symbol0, _AsyncError, _BroadcastStream, _BroadcastSubscription, BoundClosure$0, _BroadcastStreamController, BoundClosure$i1, BoundClosure$2, _SyncBroadcastStreamController, _SyncBroadcastStreamController__sendData_closure, _SyncBroadcastStreamController__sendError_closure, _SyncBroadcastStreamController__sendDone_closure, _AsyncBroadcastStreamController, Future, Future_wait_handleError, Future_wait_closure, _Completer, _AsyncCompleter, _Future, _Future__addListener_closure, _Future__chainFutures_closure, _Future__chainFutures_closure0, _Future__asyncComplete_closure, _Future__asyncCompleteError_closure, _Future__propagateToListeners_closure, _Future__propagateToListeners_closure0, _Future__propagateToListeners__closure, _Future__propagateToListeners__closure0, Stream, Stream_contains_closure, Stream_contains__closure, Stream_contains__closure0, Stream_contains_closure0, Stream_forEach_closure, Stream_forEach__closure, Stream_forEach__closure0, Stream_forEach_closure0, Stream_length_closure, Stream_length_closure0, StreamSubscription, _StreamController, _StreamController__subscribe_closure, _StreamController__recordCancel_complete, _SyncStreamControllerDispatch, _AsyncStreamControllerDispatch, _AsyncStreamController, _StreamController__AsyncStreamControllerDispatch, _SyncStreamController, _StreamController__SyncStreamControllerDispatch, _ControllerStream, _ControllerSubscription, _EventSink, _BufferingStreamSubscription, _BufferingStreamSubscription__sendError_sendError, _BufferingStreamSubscription__sendDone_sendDone, _StreamImpl, _DelayedEvent, _DelayedData, _DelayedError, _DelayedDone, _PendingEvents, _PendingEvents_schedule_closure, _StreamImplEvents, _cancelAndError_closure, _cancelAndErrorClosure_closure, _cancelAndValue_closure, _ForwardingStream, _ForwardingStreamSubscription, BoundClosure$20, _MapStream, _BaseZone, _BaseZone_bindCallback_closure, _BaseZone_bindCallback_closure0, _BaseZone_bindUnaryCallback_closure, _BaseZone_bindUnaryCallback_closure0, _rootHandleUncaughtError_closure, _rootHandleUncaughtError__closure, _RootZone, _HashMap, _HashMap_values_closure, _IdentityHashMap, HashMapKeyIterable, HashMapKeyIterator, _LinkedHashMap, _LinkedHashMap_values_closure, LinkedHashMapCell, LinkedHashMapKeyIterable, LinkedHashMapKeyIterator, _HashSet, _IdentityHashSet, HashSetIterator, _LinkedHashSet, LinkedHashSetCell, LinkedHashSetIterator, _HashSetBase, IterableBase, ListBase, ListMixin, Maps_mapToString_closure, ListQueue, _ListQueueIterator, _convertJsonToDart_closure, _convertJsonToDart_walk, Codec, Converter, Encoding, JsonCodec, JsonDecoder, Utf8Codec, Utf8Encoder, _Utf8Encoder, Function__toMangledNames_closure, NoSuchMethodError_toString_closure, DateTime, DateTime_toString_fourDigits, DateTime_toString_threeDigits, DateTime_toString_twoDigits, Duration, Duration_toString_sixDigits, Duration_toString_twoDigits, Error, NullThrownError, ArgumentError, RangeError, NoSuchMethodError, UnsupportedError, UnimplementedError, StateError, ConcurrentModificationError, StackOverflowError, CyclicInitializationError, _ExceptionImplementation, FormatException, Expando, Function, Iterator, Null, Object, Match, StackTrace, StringBuffer, Symbol, Uri__uriEncode_byteToHex, Interceptor_CssStyleDeclarationBase, CssStyleDeclarationBase, _ChildrenElementList, _FrozenElementList, _FrozenElementList$_wrap_closure, Interceptor_ListMixin, Interceptor_ListMixin_ImmutableListMixin, HttpRequest_postFormData_closure, HttpRequest_postFormData_closure0, HttpRequest_request_closure, HttpRequest_request_closure0, _ChildNodeListLazy, Interceptor_ListMixin0, Interceptor_ListMixin_ImmutableListMixin0, Interceptor_ListMixin1, Interceptor_ListMixin_ImmutableListMixin1, Interceptor_ListMixin2, Interceptor_ListMixin_ImmutableListMixin2, _AttributeMap, _ElementAttributeMap, _DataAttributeMap, _DataAttributeMap_forEach_closure, _DataAttributeMap_keys_closure, _DataAttributeMap_values_closure, _MultiElementCssClassSet, _MultiElementCssClassSet_closure, _MultiElementCssClassSet_readClasses_closure, _MultiElementCssClassSet_modify_closure, _MultiElementCssClassSet_remove_closure, _MultiElementCssClassSet__modifyWithReturnValue_closure, _ElementCssClassSet, EventStreamProvider, _EventStream, _ElementEventStreamImpl, _ElementListEventStreamImpl, _EventStreamSubscription, _StreamPool, _StreamPool_add_closure, ImmutableListMixin, FixedSizeListIterator, _DOMWindowCrossFrame, _LocationWrapper, _AttributeClassSet, ReceivePort, JsObject, JsObject__convertDataTree__convert, JsFunction, JsArray, JsObject_ListMixin, _convertToJS_closure, _convertToJS_closure0, _wrapToDart_closure, _wrapToDart_closure0, _wrapToDart_closure1, Point0, TypedData_ListMixin, TypedData_ListMixin_FixedLengthListMixin, TypedData_ListMixin0, TypedData_ListMixin_FixedLengthListMixin0, TypedData_ListMixin1, TypedData_ListMixin_FixedLengthListMixin1, TypedData_ListMixin2, TypedData_ListMixin_FixedLengthListMixin2, TypedData_ListMixin3, TypedData_ListMixin_FixedLengthListMixin3, TypedData_ListMixin4, TypedData_ListMixin_FixedLengthListMixin4, TypedData_ListMixin5, TypedData_ListMixin_FixedLengthListMixin5, TypedData_ListMixin6, TypedData_ListMixin_FixedLengthListMixin6, TypedData_ListMixin7, TypedData_ListMixin_FixedLengthListMixin7, Int64List, Uint64List, EventEmitter, EventEmitter_on_closure, EventEmitter_emit_closure, CssClassSetImpl, CssClassSetImpl_add_closure, FilteredElementList, FilteredElementList__filtered_closure, FilteredElementList_removeRange_closure, Point, Closure$2, Closure$1, Closure$0, Closure$7, Closure$20, Closure$4];
 }
