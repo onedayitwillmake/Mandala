@@ -109,7 +109,7 @@ class PolygonalStrokeAction extends BaseAction {
     _activePoints.add(pos);
 
     if( _activePoints.length < 3 ) return;
-    if( pos.distanceTo(_activePoints.first) < MIN_DISTANCE_BEFORE_CLOSING || forceClose ) {
+    if( forceClose ) {
       points.add(BaseAction.LINE_BREAK);
       points.addAll(_activePoints);
 

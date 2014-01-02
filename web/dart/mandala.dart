@@ -11,7 +11,6 @@ DrawingToolInterface toolInterface = null;
 
 void main() {
   if( querySelector("#canvas") != null ) {
-    print("NO NULL");
     tool = new DrawingTool( (querySelector("#canvas") as CanvasElement) );
     toolInterface = new DrawingToolInterface( tool );
   }

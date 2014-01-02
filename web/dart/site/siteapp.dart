@@ -51,12 +51,12 @@ class SiteApp {
 
   /// Saves out an image representation of the mandala
   void _onSaveImage(e) {
-    print("ImageSave");
-    ImageElement img = new ImageElement();
-    img.src = _drawingModule.getDataUrl();
+//    print("ImageSave");
+//    ImageElement img = new ImageElement();
+//    img.src = _drawingModule.getDataUrl();
 
-    var newWindow = window.open("", "");
-    newWindow.document.body.nodes.add(img);
+    var newWindow = window.open(_drawingModule.getDataUrl(), "");
+//    newWindow.document.body.nodes.add(img);
   }
 
   void _displaySubmissionForm( e ) {

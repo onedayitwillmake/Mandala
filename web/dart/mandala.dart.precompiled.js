@@ -2210,13 +2210,7 @@ SiteApp: {"": "Object;_topMenu,_SiteLib$_drawingModule",
     return new R.BoundClosure$1(this, S.SiteApp.prototype._onSvgSave$1, null, "_onSvgSave$1");
   },
   _onSaveImage$1: function(e) {
-    var img, t1;
-    P.print("ImageSave");
-    img = W.ImageElement_ImageElement(null, null, null);
-    J.set$src$x(img, this._SiteLib$_drawingModule.getDataUrl$0());
-    t1 = J.get$body$x(J.get$document$x(C.Window_methods.open$2(window, "", "")));
-    t1.toString;
-    new W._ChildNodeListLazy(t1)._this.appendChild(img);
+    C.Window_methods.open$2(window, this._SiteLib$_drawingModule.getDataUrl$0(), "");
   },
   get$_onSaveImage: function() {
     return new R.BoundClosure$1(this, S.SiteApp.prototype._onSaveImage$1, null, "_onSaveImage$1");
@@ -9950,11 +9944,6 @@ HttpRequest_request: function(url, method, mimeType, onProgress, requestHeaders,
   return completer.future;
 },
 
-ImageElement_ImageElement: function(height, src, width) {
-  var e = document.createElement("img", null);
-  return e;
-},
-
 Window__isDartLocation: function(thing) {
   var t1, t2, exception;
   try {
@@ -9987,7 +9976,7 @@ _wrapZone: function(callback) {
   return t1.bindUnaryCallback$2$runGuarded(callback, true);
 },
 
-HtmlElement: {"": "Element;", "%": "HTMLAppletElement|HTMLAreaElement|HTMLBRElement|HTMLBaseElement|HTMLBaseFontElement|HTMLBodyElement|HTMLContentElement|HTMLDListElement|HTMLDataListElement|HTMLDetailsElement|HTMLDialogElement|HTMLDirectoryElement|HTMLDivElement|HTMLFontElement|HTMLFrameElement|HTMLFrameSetElement|HTMLHRElement|HTMLHeadElement|HTMLHeadingElement|HTMLHtmlElement|HTMLLabelElement|HTMLLegendElement|HTMLLinkElement|HTMLMarqueeElement|HTMLMenuElement|HTMLModElement|HTMLOListElement|HTMLOptGroupElement|HTMLParagraphElement|HTMLPreElement|HTMLQuoteElement|HTMLShadowElement|HTMLSpanElement|HTMLStyleElement|HTMLTableCaptionElement|HTMLTableCellElement|HTMLTableColElement|HTMLTableDataCellElement|HTMLTableElement|HTMLTableHeaderCellElement|HTMLTableRowElement|HTMLTableSectionElement|HTMLTemplateElement|HTMLTitleElement|HTMLUListElement|HTMLUnknownElement;HTMLElement"},
+HtmlElement: {"": "Element;", "%": "HTMLAppletElement|HTMLAreaElement|HTMLBRElement|HTMLBaseElement|HTMLBaseFontElement|HTMLBodyElement|HTMLContentElement|HTMLDListElement|HTMLDataListElement|HTMLDetailsElement|HTMLDialogElement|HTMLDirectoryElement|HTMLDivElement|HTMLFontElement|HTMLFrameElement|HTMLFrameSetElement|HTMLHRElement|HTMLHeadElement|HTMLHeadingElement|HTMLHtmlElement|HTMLLabelElement|HTMLLegendElement|HTMLLinkElement|HTMLMarqueeElement|HTMLMenuElement|HTMLModElement|HTMLOListElement|HTMLOptGroupElement|HTMLParagraphElement|HTMLPreElement|HTMLQuoteElement|HTMLScriptElement|HTMLShadowElement|HTMLSourceElement|HTMLSpanElement|HTMLStyleElement|HTMLTableCaptionElement|HTMLTableCellElement|HTMLTableColElement|HTMLTableDataCellElement|HTMLTableElement|HTMLTableHeaderCellElement|HTMLTableRowElement|HTMLTableSectionElement|HTMLTemplateElement|HTMLTitleElement|HTMLTrackElement|HTMLUListElement|HTMLUnknownElement;HTMLElement"},
 
 AnchorElement: {"": "HtmlElement;",
   toString$0: function(receiver) {
@@ -10067,7 +10056,7 @@ Document: {"": "Node;",
     H.setRuntimeTypeInfo(t1, [null]);
     return t1;
   },
-  "%": "SVGDocument;Document"
+  "%": "Document|HTMLDocument|SVGDocument"
 },
 
 DocumentFragment: {"": "Node;",
@@ -10137,7 +10126,7 @@ Element: {"": "Node;outerHtml:outerHTML=,className%,nextElementSibling=",
   "%": ";Element"
 },
 
-EmbedElement: {"": "HtmlElement;height},name=,src},width}", "%": "HTMLEmbedElement"},
+EmbedElement: {"": "HtmlElement;height},name=,width}", "%": "HTMLEmbedElement"},
 
 ErrorEvent: {"": "Event;error=", "%": "ErrorEvent"},
 
@@ -10199,8 +10188,6 @@ HtmlCollection: {"": "Interceptor_ListMixin_ImmutableListMixin;",
   "%": "HTMLCollection|HTMLFormControlsCollection|HTMLOptionsCollection"
 },
 
-HtmlDocument: {"": "Document;body=", "%": "HTMLDocument"},
-
 HttpRequest: {"": "HttpRequestEventTarget;responseText=",
   open$5$async$password$user: function(receiver, method, url, async, password, user) {
     return receiver.open(method, url, async, user, password);
@@ -10216,13 +10203,13 @@ HttpRequest: {"": "HttpRequestEventTarget;responseText=",
 
 HttpRequestEventTarget: {"": "EventTarget;", "%": ";XMLHttpRequestEventTarget"},
 
-IFrameElement: {"": "HtmlElement;height},name=,src},width}", "%": "HTMLIFrameElement"},
+IFrameElement: {"": "HtmlElement;height},name=,width}", "%": "HTMLIFrameElement"},
 
 ImageData: {"": "Interceptor;", $isImageData: true, "%": "ImageData"},
 
-ImageElement: {"": "HtmlElement;height},src},width}", "%": "HTMLImageElement"},
+ImageElement: {"": "HtmlElement;height},width}", "%": "HTMLImageElement"},
 
-InputElement: {"": "HtmlElement;checked%,height},name=,src},value%,width}", $isInputElement: true, $isElement: true, $isNode: true, $isCheckboxInputElement: true, $isRangeInputElement: true, "%": "HTMLInputElement"},
+InputElement: {"": "HtmlElement;checked%,height},name=,value%,width}", $isInputElement: true, $isElement: true, $isNode: true, $isCheckboxInputElement: true, $isRangeInputElement: true, "%": "HTMLInputElement"},
 
 KeyboardEvent: {"": "UIEvent;",
   get$keyCode: function(receiver) {
@@ -10248,7 +10235,7 @@ Location: {"": "Interceptor;",
 
 MapElement: {"": "HtmlElement;name=", "%": "HTMLMapElement"},
 
-MediaElement: {"": "HtmlElement;error=,src}", "%": "HTMLAudioElement;HTMLMediaElement"},
+MediaElement: {"": "HtmlElement;error=", "%": "HTMLAudioElement;HTMLMediaElement"},
 
 MetaElement: {"": "HtmlElement;name=", "%": "HTMLMetaElement"},
 
@@ -10341,8 +10328,6 @@ ProgressElement: {"": "HtmlElement;value=", "%": "HTMLProgressElement"},
 
 ProgressEvent: {"": "Event;", "%": "ProgressEvent|ResourceProgressEvent|XMLHttpRequestProgressEvent"},
 
-ScriptElement: {"": "HtmlElement;src}", "%": "HTMLScriptElement"},
-
 SelectElement: {"": "HtmlElement;length=,name=,value=", "%": "HTMLSelectElement"},
 
 ShadowRoot: {"": "DocumentFragment;innerHtml:innerHTML=",
@@ -10351,8 +10336,6 @@ ShadowRoot: {"": "DocumentFragment;innerHtml:innerHTML=",
   },
   "%": "ShadowRoot"
 },
-
-SourceElement: {"": "HtmlElement;src}", "%": "HTMLSourceElement"},
 
 SpeechRecognitionError: {"": "Event;error=", "%": "SpeechRecognitionError"},
 
@@ -10405,8 +10388,6 @@ TouchList: {"": "Interceptor_ListMixin_ImmutableListMixin1;",
   "%": "TouchList"
 },
 
-TrackElement: {"": "HtmlElement;src}", "%": "HTMLTrackElement"},
-
 UIEvent: {"": "Event;",
   get$page: function(receiver) {
     var t1 = new P.Point0(receiver.pageX, receiver.pageY);
@@ -10419,9 +10400,6 @@ UIEvent: {"": "Event;",
 VideoElement: {"": "MediaElement;height},width}", "%": "HTMLVideoElement"},
 
 Window: {"": "EventTarget;name=",
-  get$document: function(receiver) {
-    return receiver.document;
-  },
   open$3: function(receiver, url, $name, options) {
     return W._DOMWindowCrossFrame__createSafe(receiver.open(url, $name));
   },
@@ -12417,7 +12395,6 @@ FilteredElementList_removeRange_closure: {"": "Closure;",
 main: function() {
   var t1, t2, site;
   if (document.querySelector("#canvas") != null) {
-    P.print("NO NULL");
     $.tool = R.DrawingTool$(H.interceptedTypeCast(document.querySelector("#canvas"), "$isCanvasElement"));
     t1 = new R.DrawingToolInterface($.tool, null, null, null, null, null, null, null, null, null);
     t1._setupOutgoingEvents$0();
@@ -12981,9 +12958,6 @@ J.forEach$1$ax = function(receiver, a0) {
 J.get$attributes$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$attributes(receiver);
 };
-J.get$body$x = function(receiver) {
-  return J.getInterceptor$x(receiver).get$body(receiver);
-};
 J.get$checked$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$checked(receiver);
 };
@@ -12998,9 +12972,6 @@ J.get$context2D$x = function(receiver) {
 };
 J.get$display$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$display(receiver);
-};
-J.get$document$x = function(receiver) {
-  return J.getInterceptor$x(receiver).get$document(receiver);
 };
 J.get$error$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$error(receiver);
@@ -13106,9 +13077,6 @@ J.set$opacity$x = function(receiver, value) {
 };
 J.set$pointerEvents$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$pointerEvents(receiver, value);
-};
-J.set$src$x = function(receiver, value) {
-  return J.getInterceptor$x(receiver).set$src(receiver, value);
 };
 J.set$value$x = function(receiver, value) {
   return J.getInterceptor$x(receiver).set$value(receiver, value);
@@ -13951,9 +13919,6 @@ function dart_precompiled($collectedClasses) {
   EmbedElement.prototype.get$name = function(receiver) {
     return receiver.name;
   };
-  EmbedElement.prototype.set$src = function(receiver, v) {
-    return receiver.src = v;
-  };
   EmbedElement.prototype.set$width = function(receiver, v) {
     return receiver.width = v;
   };
@@ -14098,9 +14063,6 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   HtmlDocument.prototype = $desc;
-  HtmlDocument.prototype.get$body = function(receiver) {
-    return receiver.body;
-  };
   function HtmlFormControlsCollection() {
   }
   HtmlFormControlsCollection.builtin$cls = "HtmlFormControlsCollection";
@@ -14164,9 +14126,6 @@ function dart_precompiled($collectedClasses) {
   IFrameElement.prototype.get$name = function(receiver) {
     return receiver.name;
   };
-  IFrameElement.prototype.set$src = function(receiver, v) {
-    return receiver.src = v;
-  };
   IFrameElement.prototype.set$width = function(receiver, v) {
     return receiver.width = v;
   };
@@ -14191,9 +14150,6 @@ function dart_precompiled($collectedClasses) {
   ImageElement.prototype.set$height = function(receiver, v) {
     return receiver.height = v;
   };
-  ImageElement.prototype.set$src = function(receiver, v) {
-    return receiver.src = v;
-  };
   ImageElement.prototype.set$width = function(receiver, v) {
     return receiver.width = v;
   };
@@ -14217,9 +14173,6 @@ function dart_precompiled($collectedClasses) {
   };
   InputElement.prototype.get$name = function(receiver) {
     return receiver.name;
-  };
-  InputElement.prototype.set$src = function(receiver, v) {
-    return receiver.src = v;
   };
   InputElement.prototype.get$value = function(receiver) {
     return receiver.value;
@@ -14322,9 +14275,6 @@ function dart_precompiled($collectedClasses) {
   MediaElement.prototype = $desc;
   MediaElement.prototype.get$error = function(receiver) {
     return receiver.error;
-  };
-  MediaElement.prototype.set$src = function(receiver, v) {
-    return receiver.src = v;
   };
   function MediaError() {
   }
@@ -14734,9 +14684,6 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   ScriptElement.prototype = $desc;
-  ScriptElement.prototype.set$src = function(receiver, v) {
-    return receiver.src = v;
-  };
   function SecurityPolicyViolationEvent() {
   }
   SecurityPolicyViolationEvent.builtin$cls = "SecurityPolicyViolationEvent";
@@ -14794,9 +14741,6 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   SourceElement.prototype = $desc;
-  SourceElement.prototype.set$src = function(receiver, v) {
-    return receiver.src = v;
-  };
   function SpanElement() {
   }
   SpanElement.builtin$cls = "SpanElement";
@@ -15010,9 +14954,6 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   TrackElement.prototype = $desc;
-  TrackElement.prototype.set$src = function(receiver, v) {
-    return receiver.src = v;
-  };
   function TrackEvent() {
   }
   TrackEvent.builtin$cls = "TrackEvent";
