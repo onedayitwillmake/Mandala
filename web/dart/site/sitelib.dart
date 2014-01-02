@@ -9,4 +9,5 @@ import 'dart:collection';
 import '../drawingtool/drawingtoollib.dart';
 
 part 'siteapp.dart';
+part 'thumbnail_list.dart';
 part 'top_menu_controller.dart';

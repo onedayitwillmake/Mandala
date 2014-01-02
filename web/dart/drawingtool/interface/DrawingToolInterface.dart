@@ -65,7 +65,7 @@ class DrawingToolInterface {
     ..onTouchEnd.listen( _toggleAdvancedMenus );
 
     // close out on first call
-//    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
+    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
   }
 
   void onSignInDropDownSelected( dynamic thing ) {
@@ -99,7 +99,8 @@ class DrawingToolInterface {
       context['TweenMax'].callMethod("to",[next, 0.15, new JsObject.jsify({
           "delay" : 0.2 + (-i)*0.02,
           "y": (menusAreCurrentlyShowing) ? "50" : 0,
-          "autoAlpha": (menusAreCurrentlyShowing) ? 0 : 1
+          "autoAlpha": (menusAreCurrentlyShowing) ? 0 : 1,
+          "display" : menusAreCurrentlyShowing ? "none" : "block"
       })]);
       next.style.pointerEvents = menusAreCurrentlyShowing ? "none" : "auto";
       next = next.nextElementSibling;
