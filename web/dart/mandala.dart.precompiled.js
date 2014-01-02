@@ -214,7 +214,7 @@ $$.Closure$4 = [P, {"": "Closure;call$4,$name"}];
   }
 })([
 ["DrawingToolLib", "drawingtool/DrawingToolLib.dart", , R, {
-DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scale,_isDragging,_blurAmount,_blurOpacity,_canvas,_ctx,_offscreenBuffer,_bgGradient,_bgGradientSvg,_gradientStart,_gradientEnd,_canvasRect,_winScroll,_rafId,actionQueue",
+DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scale,_isDragging,_blurAmount,_blurOpacity,_canvas,_ctx,_offscreenBuffer,_bgGradient,_bgGradientSvg,_gradientStart,_gradientEnd,_arcColor,_canvasRect,_winScroll,_rafId,actionQueue",
   _setupBackgroundGradients$0: function() {
     var colors, t1, t2, t3, t4, t5, temp;
     colors = [this._gradientStart, this._gradientEnd];
@@ -228,7 +228,8 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     t2 = t3.get$height(t2);
     if (typeof t2 !== "number")
       throw t2.$mul();
-    this._bgGradient = t1.createRadialGradient(t5, t2 * 0.5, 0, t5, t2 * 0.65, t4 * 0.65);
+    t2 *= 0.5;
+    this._bgGradient = t1.createRadialGradient(t5, t2, 0, t5, t2, t4 * 0.65);
     this._bgGradient.addColorStop(0, colors[0]);
     this._bgGradient.addColorStop(1, colors[1]);
     this._bgGradientSvg = document.createElementNS("http://www.w3.org/2000/svg", "radialGradient");
@@ -309,6 +310,8 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     t1 = new W._EventStreamSubscription(0, t3._target, t3._eventType, W._wrapZone(new R.DrawingTool__setupListeners_closure9(this)), t3._useCapture);
     H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
     t1._tryResume$0();
+    t1 = $.get$SharedDispatcher_emitter();
+    t1.on$2(t1, "ActionEvent.ON_DRAWING_INTERACTION_FINISHED", this.get$onActionComplete());
   },
   start$0: function(_) {
     var t1, t2;
@@ -501,7 +504,11 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     }
     hiddenCtx.beginPath();
     hiddenCtx.lineWidth = 1;
-    hiddenCtx.strokeStyle = "rgba(255, 255, 255, 0.75)";
+    t1 = this._arcColor;
+    t2 = t1.r;
+    t3 = t1.g;
+    t1 = t1.b;
+    hiddenCtx.strokeStyle = "rgba(" + H.S(t2) + ", " + H.S(t3) + ", " + H.S(t1) + ", 0.75)";
     t1 = J.get$width$x(this._canvasRect);
     if (typeof t1 !== "number")
       throw t1.$mul();
@@ -509,30 +516,30 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     hiddenCtx.stroke();
     hiddenCtx.closePath();
   },
-  changeAction$1: function(actionName) {
-    var t1, nextAction;
+  changeAction$2: function(actionName, $dispatchEvent) {
+    var t1, nextAction, t2;
     switch (actionName) {
       case "RegularStroke":
         t1 = P.List_List(null, Z.Point);
         H.setRuntimeTypeInfo(t1, [Z.Point]);
-        nextAction = new R.RegularStrokeAction(null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)"));
+        nextAction = new R.RegularStrokeAction(null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
         break;
       case "SmoothStroke":
         t1 = P.List_List(null, Z.Point);
         H.setRuntimeTypeInfo(t1, [Z.Point]);
-        nextAction = new R.SmoothStrokeAction(null, null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)"));
+        nextAction = new R.SmoothStrokeAction(null, null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
         nextAction.name = "SmoothStroke";
         break;
       case "PolygonalFill":
         t1 = P.List_List(null, Z.Point);
         H.setRuntimeTypeInfo(t1, [Z.Point]);
-        nextAction = new R.PolygonalFillAction(null, null, null, t1, "PolygonalStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)"));
+        nextAction = new R.PolygonalFillAction(null, null, null, t1, "PolygonalStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
         nextAction.name = "PolygonalFill";
         break;
       case "PolygonalStroke":
         t1 = P.List_List(null, Z.Point);
         H.setRuntimeTypeInfo(t1, [Z.Point]);
-        nextAction = new R.PolygonalStrokeAction(null, null, null, t1, "PolygonalStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)"));
+        nextAction = new R.PolygonalStrokeAction(null, null, null, t1, "PolygonalStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
         break;
       case "SmoothFill":
         nextAction = R.SmoothFillAction$();
@@ -544,12 +551,20 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
         nextAction = null;
     }
     t1 = this.actionQueue;
-    if (!t1.get$isEmpty(t1))
-      nextAction.settings.opacity = t1.get$last(t1).get$settings().opacity;
+    if (!t1.get$isEmpty(t1)) {
+      t2 = nextAction.settings;
+      t2.opacity = t1.get$last(t1).get$settings().opacity;
+      t2.strokeColor.copyFrom$1(t1.get$last(t1).get$settings().strokeColor);
+      t2.fillColor.copyFrom$1(t1.get$last(t1).get$settings().fillColor);
+    }
     this._updateOffscreenBuffer$0();
     t1._add$1(nextAction);
-    this._dispatchActionChangedEvent$0();
+    if ($dispatchEvent)
+      this._dispatchActionChangedEvent$0();
     return true;
+  },
+  changeAction$1: function(actionName) {
+    return this.changeAction$2(actionName, true);
   },
   performEditAction$2: function(actionName, value) {
     var t1;
@@ -566,7 +581,7 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
         this._dispatchOpacityChangedEvent$0();
         break;
       case "lineColor":
-        J.toString$0(H.interceptedTypeCast(value, "$isJsObject"));
+        this._changeLineColor$1(J.toString$0(H.interceptedTypeCast(value, "$isJsObject")));
         break;
       case "gradientStartColor":
         break;
@@ -597,10 +612,25 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
         break;
       default:
     }
-    P.print("No action for " + actionName);
   },
   performEditAction$1: function(actionName) {
     return this.performEditAction$2(actionName, null);
+  },
+  onActionComplete$1: function(action) {
+    this.changeAction$2(J.get$name$x(action), false);
+  },
+  get$onActionComplete: function() {
+    return new R.BoundClosure$1(this, R.DrawingTool.prototype.onActionComplete$1, null, "onActionComplete$1");
+  },
+  _changeLineColor$1: function(value) {
+    var t1 = this.actionQueue;
+    t1.get$last(t1).get$settings().fillColor.parseRgb$1(value);
+    t1.get$last(t1).get$settings().strokeColor.parseRgb$1(value);
+    t1.forEach$1(t1, new R.DrawingTool__changeLineColor_closure(this));
+    this._arcColor.copyFrom$1(t1.get$last(t1).get$settings().fillColor);
+    t1 = this._arcColor;
+    this._arcColor = t1.$mul(t1, 2);
+    this._updateOffscreenBuffer$0();
   },
   _performUndo$0: function() {
     var t1 = this.actionQueue;
@@ -622,7 +652,7 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     t1 = this.actionQueue;
     lastActionName = J.get$name$x(t1.get$last(t1));
     t1.clear$0(t1);
-    this.changeAction$1(lastActionName);
+    this.changeAction$2(lastActionName, true);
   },
   _drawBackground$1: function(ctx) {
     var t1, t2;
@@ -719,7 +749,8 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     svgCtx.groupStart$0();
     svgCtx._lineWidth = 2;
     svgCtx.beginPath$0(svgCtx);
-    svgCtx.setStrokeColorRgb$4(svgCtx, 255, 255, 255, 0.75);
+    t1 = this._arcColor;
+    svgCtx.setStrokeColorRgb$4(svgCtx, t1.r, t1.g, t1.b, 0.75);
     t1 = this._canvasRect;
     t2 = J.getInterceptor$x(t1);
     t3 = t2.get$width(t1);
@@ -770,12 +801,12 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     this._offscreenBuffer = W.CanvasElement_CanvasElement(t1.height, t2);
     this._setupBackgroundGradients$0();
     this._setupListeners$0();
-    this.changeAction$1("RegularStroke");
+    this.changeAction$2("RegularStroke", true);
     this.start$0(this);
   },
   static: {
 DrawingTool$: function(_canvas) {
-  var t1 = new R.DrawingTool(null, 7, true, true, 1, false, 10, 0.5, _canvas, null, null, null, null, "#383245", "#1B1821", null, null, 0, P.ListQueue$(null, R.BaseAction));
+  var t1 = new R.DrawingTool(null, 7, true, true, 1, false, 10, 0.5, _canvas, null, null, null, null, "#383245", "#1B1821", new R.ColorValue(255, 255, 255), null, null, 0, P.ListQueue$(null, R.BaseAction));
   t1.DrawingTool$1(_canvas);
   return t1;
 }}
@@ -784,7 +815,9 @@ DrawingTool$: function(_canvas) {
 
 DrawingTool__setupListeners_closure: {"": "Closure;this_0",
   call$1: function(e) {
-    this.this_0._inputDown$1(J.get$page$x(e));
+    var t1 = J.getInterceptor$x(e);
+    t1.preventDefault$0(e);
+    this.this_0._inputDown$1(t1.get$page(e));
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -793,7 +826,9 @@ DrawingTool__setupListeners_closure: {"": "Closure;this_0",
 
 DrawingTool__setupListeners_closure0: {"": "Closure;this_1",
   call$1: function(e) {
-    var t1 = J.get$touches$x(e);
+    var t1 = J.getInterceptor$x(e);
+    t1.preventDefault$0(e);
+    t1 = t1.get$touches(e);
     if (0 >= t1.length)
       throw H.ioore(t1, 0);
     t1 = t1[0];
@@ -809,10 +844,12 @@ DrawingTool__setupListeners_closure0: {"": "Closure;this_1",
 DrawingTool__setupListeners_closure1: {"": "Closure;this_2",
   call$1: function(e) {
     var t1, t2, t3;
-    t1 = this.this_2;
-    t2 = J.get$page$x(e);
-    t3 = t1.actionQueue;
-    t3.get$last(t3).inputMove$3(t1._ctx, t1._alignedPoint$1(t2), t1._isDragging);
+    t1 = J.getInterceptor$x(e);
+    t1.preventDefault$0(e);
+    t2 = this.this_2;
+    t1 = t1.get$page(e);
+    t3 = t2.actionQueue;
+    t3.get$last(t3).inputMove$3(t2._ctx, t2._alignedPoint$1(t1), t2._isDragging);
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -822,15 +859,17 @@ DrawingTool__setupListeners_closure1: {"": "Closure;this_2",
 DrawingTool__setupListeners_closure2: {"": "Closure;this_3",
   call$1: function(e) {
     var t1, t2, t3;
-    t1 = this.this_3;
-    t2 = J.get$touches$x(e);
-    if (0 >= t2.length)
-      throw H.ioore(t2, 0);
-    t2 = t2[0];
-    t2 = new P.Point0(t2.pageX, t2.pageY);
-    H.setRuntimeTypeInfo(t2, [null]);
-    t3 = t1.actionQueue;
-    t3.get$last(t3).inputMove$3(t1._ctx, t1._alignedPoint$1(t2), t1._isDragging);
+    t1 = J.getInterceptor$x(e);
+    t1.preventDefault$0(e);
+    t2 = this.this_3;
+    t1 = t1.get$touches(e);
+    if (0 >= t1.length)
+      throw H.ioore(t1, 0);
+    t1 = t1[0];
+    t1 = new P.Point0(t1.pageX, t1.pageY);
+    H.setRuntimeTypeInfo(t1, [null]);
+    t3 = t2.actionQueue;
+    t3.get$last(t3).inputMove$3(t2._ctx, t2._alignedPoint$1(t1), t2._isDragging);
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -839,7 +878,9 @@ DrawingTool__setupListeners_closure2: {"": "Closure;this_3",
 
 DrawingTool__setupListeners_closure3: {"": "Closure;this_4",
   call$1: function(e) {
-    this.this_4._inputUp$1(J.get$page$x(e));
+    var t1 = J.getInterceptor$x(e);
+    t1.preventDefault$0(e);
+    this.this_4._inputUp$1(t1.get$page(e));
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -848,7 +889,9 @@ DrawingTool__setupListeners_closure3: {"": "Closure;this_4",
 
 DrawingTool__setupListeners_closure4: {"": "Closure;this_5",
   call$1: function(e) {
-    var t1 = J.get$touches$x(e);
+    var t1 = J.getInterceptor$x(e);
+    t1.preventDefault$0(e);
+    t1 = t1.get$touches(e);
     if (0 >= t1.length)
       throw H.ioore(t1, 0);
     t1 = t1[0];
@@ -929,6 +972,17 @@ DrawingTool__updateOffscreenBuffer_closure: {"": "Closure;this_0,hiddenCtx_1",
   $is_args1: true
 },
 
+DrawingTool__changeLineColor_closure: {"": "Closure;this_0",
+  call$1: function(action) {
+    var t1 = this.this_0.actionQueue;
+    action.get$settings().fillColor.copyFrom$1(t1.get$last(t1).get$settings().fillColor);
+    action.get$settings().strokeColor.copyFrom$1(t1.get$last(t1).get$settings().strokeColor);
+  },
+  "+call:1:0": 0,
+  $isFunction: true,
+  $is_args1: true
+},
+
 DrawingTool_saveSvg_closure: {"": "Closure;this_0,svgCtx_1",
   call$1: function(action) {
     var t1, t2;
@@ -941,19 +995,83 @@ DrawingTool_saveSvg_closure: {"": "Closure;this_0,svgCtx_1",
   $is_args1: true
 },
 
-ActionSettings: {"": "Object;lineWidth,opacity,strokeStyle,fillStyle",
+ActionSettings: {"": "Object;lineWidth,opacity,strokeStyle,fillStyle,strokeColor,fillColor",
   execute$1: function(ctx) {
+    var t1, t2, t3, t4;
     ctx.lineWidth = this.lineWidth;
-    ctx.strokeStyle = "rgba(255, 255, 255, " + H.S(this.opacity) + ")";
-    ctx.fillStyle = "rgba(255, 255, 255, " + H.S(this.opacity) + ")";
+    t1 = this.strokeColor;
+    t2 = t1.r;
+    t3 = t1.g;
+    t1 = t1.b;
+    t4 = this.opacity;
+    ctx.strokeStyle = "rgba(" + H.S(t2) + ", " + H.S(t3) + ", " + H.S(t1) + ", " + H.S(t4) + ")";
+    t4 = this.fillColor;
+    t1 = t4.r;
+    t3 = t4.g;
+    t4 = t4.b;
+    t2 = this.opacity;
+    ctx.fillStyle = "rgba(" + H.S(t1) + ", " + H.S(t3) + ", " + H.S(t4) + ", " + H.S(t2) + ")";
   },
   executeForSvg$1: function(ctx) {
+    var t1;
     ctx._lineWidth = this.lineWidth;
     if (this.strokeStyle == null)
       ctx._strokeStyle = "none";
-    else
-      ctx.setStrokeColorRgb$4(ctx, 255, 255, 255, this.opacity);
-    ctx.setFillColorRgb$4(ctx, 255, 255, 255, this.opacity);
+    else {
+      t1 = this.strokeColor;
+      ctx.setStrokeColorRgb$4(ctx, t1.r, t1.g, t1.b, this.opacity);
+    }
+    t1 = this.fillColor;
+    ctx.setFillColorRgb$4(ctx, t1.r, t1.g, t1.b, this.opacity);
+  }
+},
+
+ColorValue: {"": "Object;r>,g<,b<",
+  copyFrom$1: function(other) {
+    this.r = other.get$r(other);
+    this.g = other.get$g();
+    this.b = other.get$b();
+  },
+  parseRgb$1: function(value) {
+    var tokens, t1, t2;
+    tokens = value.split(",");
+    if (tokens.length < 3)
+      throw H.wrapException(P.Exception_Exception("Invalid color value format"));
+    t1 = J.substring$1$s(tokens[0], 4);
+    t2 = tokens.length;
+    if (0 >= t2)
+      throw H.ioore(tokens, 0);
+    tokens[0] = t1;
+    if (2 >= t2)
+      throw H.ioore(tokens, 2);
+    t2 = tokens[2];
+    t1 = J.getInterceptor$asx(t2);
+    t2 = t1.substring$2(t2, 0, J.$sub$n(t1.get$length(t2), 1));
+    if (2 >= tokens.length)
+      throw H.ioore(tokens, 2);
+    tokens[2] = t2;
+    this.r = H.Primitives_parseInt(tokens[0], null, null);
+    if (1 >= tokens.length)
+      throw H.ioore(tokens, 1);
+    this.g = H.Primitives_parseInt(tokens[1], null, null);
+    if (2 >= tokens.length)
+      throw H.ioore(tokens, 2);
+    this.b = H.Primitives_parseInt(tokens[2], null, null);
+    this.r = P.max(0, P.min(255, this.r));
+    this.g = P.max(0, P.min(255, this.g));
+    this.b = P.max(0, P.min(255, this.b));
+  },
+  $mul: function(_, value) {
+    return new R.ColorValue(J.toInt$0$n(J.$mul$n(this.r, value)), J.toInt$0$n(J.$mul$n(this.g, value)), J.toInt$0$n(J.$mul$n(this.b, value)));
+  },
+  $add: function(_, other) {
+    return new R.ColorValue(J.$add$ns(this.r, J.get$r$x(other)), J.$add$ns(this.g, other.get$g()), J.$add$ns(this.b, other.get$b()));
+  },
+  $sub: function(_, other) {
+    return new R.ColorValue(J.$sub$n(this.r, C.JSInt_methods.get$r(other)), J.$sub$n(this.g, other.get$g()), J.$sub$n(this.b, other.get$b()));
+  },
+  toString$0: function(_) {
+    return "rgba(" + H.S(this.r) + ", " + H.S(this.g) + ", " + H.S(this.b) + ", 1.0)";
   }
 },
 
@@ -1173,7 +1291,7 @@ RegularFillAction: {"": "RegularStrokeAction;_activePoints,points,name,settings"
 RegularFillAction$: function() {
   var t1 = P.List_List(null, Z.Point);
   H.setRuntimeTypeInfo(t1, [Z.Point]);
-  t1 = new R.RegularFillAction(null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)"));
+  t1 = new R.RegularFillAction(null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
   t1.RegularFillAction$0();
   return t1;
 }}
@@ -1295,7 +1413,7 @@ SmoothFillAction: {"": "SmoothStrokeAction;_draggedPoint,_activePoints,points,na
 SmoothFillAction$: function() {
   var t1 = P.List_List(null, Z.Point);
   H.setRuntimeTypeInfo(t1, [Z.Point]);
-  t1 = new R.SmoothFillAction(null, null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)"));
+  t1 = new R.SmoothFillAction(null, null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
   t1.name = "SmoothStroke";
   t1.SmoothFillAction$0();
   return t1;
@@ -1488,7 +1606,7 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
     H.setRuntimeTypeInfo(t2, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
     t2._tryResume$0();
     this._DrawingToolLib$_$advancedToggleButton = t1;
-    $.get$context().callMethod$2("jQuery", ["#interface-color-line-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure7(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    $.get$context().callMethod$2("jQuery", ["#interface-color-line-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["showPalette", true, "showPaletteOnly", true, "palette", ["#FFFFFF", "#00ecfc", "#ffdf34", "#ef43ff"], "change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure7(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
     $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-start-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure8(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
     $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-end-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure9(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
     P.Future_Future$delayed(P.Duration$(0, 0, 0, 0, 0, 1), new R.DrawingToolInterface__setupOutgoingEvents_closure10(this), null);
@@ -1850,11 +1968,31 @@ SvgRenderer: {"": "Object;_svg,defs,_lineWidth,_strokeStyle,_fillStyle,_opacity,
     new W._ElementAttributeMap(t1)._element.setAttribute("fill", this._fillStyle);
   },
   setStrokeColorRgb$4: function(_, r, g, b, a) {
-    this._strokeStyle = "#" + C.JSString_methods.substring$2(C.JSInt_methods.toRadixString$1(16777216 + (r << 16 >>> 0) + (g << 8 >>> 0) + b, 16), 1, 7);
+    var t1, t2;
+    t1 = J.getInterceptor$n(r);
+    t1.$shl(r, 16);
+    t2 = J.getInterceptor$n(g);
+    t2.$shl(g, 8);
+    J.$shl$n(b, 0);
+    t1 = t1.$shl(r, 16);
+    t2 = t2.$shl(g, 8);
+    if (typeof b !== "number")
+      throw H.iae(b);
+    this._strokeStyle = "#" + C.JSString_methods.substring$2(C.JSNumber_methods.toRadixString$1(16777216 + t1 + t2 + b, 16), 1, 7);
     this._opacity = a;
   },
   setFillColorRgb$4: function(_, r, g, b, a) {
-    this._fillStyle = "#" + C.JSString_methods.substring$2(C.JSInt_methods.toRadixString$1(16777216 + (r << 16 >>> 0) + (g << 8 >>> 0) + b, 16), 1, 7);
+    var t1, t2;
+    t1 = J.getInterceptor$n(r);
+    t1.$shl(r, 16);
+    t2 = J.getInterceptor$n(g);
+    t2.$shl(g, 8);
+    J.$shl$n(b, 0);
+    t1 = t1.$shl(r, 16);
+    t2 = t2.$shl(g, 8);
+    if (typeof b !== "number")
+      throw H.iae(b);
+    this._fillStyle = "#" + C.JSString_methods.substring$2(C.JSNumber_methods.toRadixString$1(16777216 + t1 + t2 + b, 16), 1, 7);
     this._opacity = a;
   },
   SvgRenderer$2: function(width, height) {
@@ -2271,6 +2409,8 @@ JSArray: {"": "List/Interceptor;",
     return receiver[index];
   },
   sublist$2: function(receiver, start, end) {
+    if (start == null)
+      H.throwExpression(new P.ArgumentError(null));
     if (typeof start !== "number" || Math.floor(start) !== start)
       throw H.wrapException(new P.ArgumentError(start));
     if (start < 0 || start > receiver.length)
@@ -2381,6 +2521,9 @@ JSExtendableArray: {"": "JSMutableArray;", $isJSExtendableArray: true},
 JSNumber: {"": "num/Interceptor;",
   get$isNegative: function(receiver) {
     return receiver === 0 ? 1 / receiver < 0 : receiver < 0;
+  },
+  get$isNaN: function(receiver) {
+    return isNaN(receiver);
   },
   remainder$1: function(receiver, b) {
     return receiver % b;
@@ -2500,9 +2643,9 @@ JSNumber: {"": "num/Interceptor;",
 
 },
 
-JSInt: {"": "int/JSNumber;", $isnum: true, $isint: true},
+JSInt: {"": "int/JSNumber;", $isdouble: true, $isnum: true, $isint: true},
 
-JSDouble: {"": "double/JSNumber;", $isnum: true},
+JSDouble: {"": "double/JSNumber;", $isdouble: true, $isnum: true},
 
 JSString: {"": "String/Interceptor;",
   codeUnitAt$1: function(receiver, index) {
@@ -9964,7 +10107,13 @@ EmbedElement: {"": "HtmlElement;height},name=,src},width}", "%": "HTMLEmbedEleme
 
 ErrorEvent: {"": "Event;error=", "%": "ErrorEvent"},
 
-Event: {"": "Interceptor;", $isEvent: true, "%": "AudioProcessingEvent|AutocompleteErrorEvent|BeforeLoadEvent|BeforeUnloadEvent|CSSFontFaceLoadEvent|CloseEvent|CustomEvent|DeviceMotionEvent|DeviceOrientationEvent|HashChangeEvent|IDBVersionChangeEvent|MIDIConnectionEvent|MIDIMessageEvent|MediaKeyEvent|MediaKeyMessageEvent|MediaKeyNeededEvent|MediaStreamEvent|MediaStreamTrackEvent|MessageEvent|MutationEvent|OfflineAudioCompletionEvent|OverflowEvent|PageTransitionEvent|PopStateEvent|RTCDTMFToneChangeEvent|RTCDataChannelEvent|RTCIceCandidateEvent|SecurityPolicyViolationEvent|SpeechInputEvent|SpeechRecognitionEvent|StorageEvent|TrackEvent|TransitionEvent|WebGLContextEvent|WebKitAnimationEvent|WebKitTransitionEvent;Event"},
+Event: {"": "Interceptor;",
+  preventDefault$0: function(receiver) {
+    return receiver.preventDefault();
+  },
+  $isEvent: true,
+  "%": "AudioProcessingEvent|AutocompleteErrorEvent|BeforeLoadEvent|BeforeUnloadEvent|CSSFontFaceLoadEvent|CloseEvent|CustomEvent|DeviceMotionEvent|DeviceOrientationEvent|HashChangeEvent|IDBVersionChangeEvent|MIDIConnectionEvent|MIDIMessageEvent|MediaKeyEvent|MediaKeyMessageEvent|MediaKeyNeededEvent|MediaStreamEvent|MediaStreamTrackEvent|MessageEvent|MutationEvent|OfflineAudioCompletionEvent|OverflowEvent|PageTransitionEvent|PopStateEvent|RTCDTMFToneChangeEvent|RTCDataChannelEvent|RTCIceCandidateEvent|SecurityPolicyViolationEvent|SpeechInputEvent|SpeechRecognitionEvent|StorageEvent|TrackEvent|TransitionEvent|WebGLContextEvent|WebKitAnimationEvent|WebKitTransitionEvent;Event"
+},
 
 EventTarget: {"": "Interceptor;",
   addEventListener$3: function(receiver, type, listener, useCapture) {
@@ -11101,6 +11250,8 @@ _LocationWrapper: {"": "Object;_ptr",
 ["dart.dom.indexed_db", "dart:indexed_db", , P, {
 KeyRange: {"": "Interceptor;", $isKeyRange: true, "%": "IDBKeyRange"}}],
 ["dart.dom.svg", "dart:svg", , P, {
+CircleElement: {"": "GraphicsElement;r=", "%": "SVGCircleElement"},
+
 FEBlendElement: {"": "SvgElement;x=,y=", "%": "SVGFEBlendElement"},
 
 FEColorMatrixElement: {"": "SvgElement;x=,y=", "%": "SVGFEColorMatrixElement"},
@@ -11143,7 +11294,7 @@ ForeignObjectElement: {"": "GraphicsElement;x=,y=", "%": "SVGForeignObjectElemen
 
 GElement: {"": "GraphicsElement;", $isGElement: true, "%": "SVGGElement"},
 
-GraphicsElement: {"": "SvgElement;", "%": "SVGAElement|SVGCircleElement|SVGClipPathElement|SVGDefsElement|SVGEllipseElement|SVGLineElement|SVGPathElement|SVGSwitchElement;SVGGraphicsElement"},
+GraphicsElement: {"": "SvgElement;", "%": "SVGAElement|SVGClipPathElement|SVGDefsElement|SVGEllipseElement|SVGLineElement|SVGPathElement|SVGSwitchElement;SVGGraphicsElement"},
 
 ImageElement0: {"": "GraphicsElement;x=,y=", "%": "SVGImageElement"},
 
@@ -11154,6 +11305,8 @@ PatternElement: {"": "SvgElement;x=,y=", "%": "SVGPatternElement"},
 PolygonElement: {"": "GraphicsElement;points=", "%": "SVGPolygonElement"},
 
 PolylineElement: {"": "GraphicsElement;points=", "%": "SVGPolylineElement"},
+
+RadialGradientElement: {"": "_GradientElement;r=", "%": "SVGRadialGradientElement"},
 
 RectElement: {"": "GraphicsElement;x=,y=", "%": "SVGRectElement"},
 
@@ -11184,7 +11337,7 @@ SvgElement: {"": "Element;",
     J.addAll$1$ax(t1.get$children(container), J.get$children$x(cloned));
     return t1.get$innerHtml(container);
   },
-  "%": "SVGAltGlyphDefElement|SVGAltGlyphItemElement|SVGAnimateColorElement|SVGAnimateElement|SVGAnimateMotionElement|SVGAnimateTransformElement|SVGAnimationElement|SVGComponentTransferFunctionElement|SVGCursorElement|SVGDescElement|SVGFEDistantLightElement|SVGFEDropShadowElement|SVGFEFuncAElement|SVGFEFuncBElement|SVGFEFuncGElement|SVGFEFuncRElement|SVGFEMergeNodeElement|SVGFontElement|SVGFontFaceElement|SVGFontFaceFormatElement|SVGFontFaceNameElement|SVGFontFaceSrcElement|SVGFontFaceUriElement|SVGGlyphElement|SVGGlyphRefElement|SVGGradientElement|SVGHKernElement|SVGLinearGradientElement|SVGMPathElement|SVGMarkerElement|SVGMetadataElement|SVGMissingGlyphElement|SVGRadialGradientElement|SVGScriptElement|SVGSetElement|SVGStopElement|SVGStyleElement|SVGSymbolElement|SVGTitleElement|SVGVKernElement|SVGViewElement;SVGElement"
+  "%": "SVGAltGlyphDefElement|SVGAltGlyphItemElement|SVGAnimateColorElement|SVGAnimateElement|SVGAnimateMotionElement|SVGAnimateTransformElement|SVGAnimationElement|SVGComponentTransferFunctionElement|SVGCursorElement|SVGDescElement|SVGFEDistantLightElement|SVGFEDropShadowElement|SVGFEFuncAElement|SVGFEFuncBElement|SVGFEFuncGElement|SVGFEFuncRElement|SVGFEMergeNodeElement|SVGFontElement|SVGFontFaceElement|SVGFontFaceFormatElement|SVGFontFaceNameElement|SVGFontFaceSrcElement|SVGFontFaceUriElement|SVGGlyphElement|SVGGlyphRefElement|SVGHKernElement|SVGMPathElement|SVGMarkerElement|SVGMetadataElement|SVGMissingGlyphElement|SVGScriptElement|SVGSetElement|SVGStopElement|SVGStyleElement|SVGSymbolElement|SVGTitleElement|SVGVKernElement|SVGViewElement;SVGElement"
 },
 
 SvgSvgElement: {"": "GraphicsElement;x=,y=", "%": "SVGSVGElement"},
@@ -11194,6 +11347,8 @@ TextContentElement: {"": "GraphicsElement;", "%": "SVGTextPathElement;SVGTextCon
 TextPositioningElement: {"": "TextContentElement;x=,y=", "%": "SVGAltGlyphElement|SVGTSpanElement|SVGTextElement|SVGTextPositioningElement"},
 
 UseElement: {"": "GraphicsElement;x=,y=", "%": "SVGUseElement"},
+
+_GradientElement: {"": "SvgElement;", "%": "SVGLinearGradientElement;SVGGradientElement"},
 
 _AttributeClassSet: {"": "CssClassSetImpl;_svg$_element",
   readClasses$0: function() {
@@ -11560,6 +11715,42 @@ _JenkinsSmiHash_finish0: function(hash) {
   return 536870911 & hash + ((16383 & hash) << 15 >>> 0);
 },
 
+min: function(a, b) {
+  if (typeof b !== "number")
+    throw H.wrapException(new P.ArgumentError(b));
+  if (a > b)
+    return b;
+  if (a < b)
+    return a;
+  if (typeof b === "number") {
+    if (typeof a === "number")
+      if (a === 0)
+        return (a + b) * a * b;
+    if (a === 0 && C.JSDouble_methods.get$isNegative(b) || C.JSDouble_methods.get$isNaN(b))
+      return b;
+    return a;
+  }
+  return a;
+},
+
+max: function(a, b) {
+  if (a > b)
+    return a;
+  if (a < b)
+    return b;
+  if (typeof b === "number") {
+    if (typeof a === "number")
+      if (a === 0)
+        return a + b;
+    if (C.JSNumber_methods.get$isNaN(b))
+      return b;
+    return a;
+  }
+  if (b === 0 && C.JSInt_methods.get$isNegative(a))
+    return b;
+  return a;
+},
+
 Point0: {"": "Object;x>,y>",
   toString$0: function(_) {
     return "Point(" + H.S(this.x) + ", " + H.S(this.y) + ")";
@@ -11613,12 +11804,12 @@ Point0: {"": "Object;x>,y>",
     t2 = C.JSInt_methods.get$x(other);
     if (typeof t1 !== "number")
       throw t1.$sub();
-    t2 = C.JSInt_methods.$sub(t1, t2);
+    t2 = C.JSNumber_methods.$sub(t1, t2);
     t1 = this.y;
     t3 = C.JSInt_methods.get$y(other);
     if (typeof t1 !== "number")
       throw t1.$sub();
-    t3 = C.JSInt_methods.$sub(t1, t3);
+    t3 = C.JSNumber_methods.$sub(t1, t3);
     t3 = new P.Point0(t2, t3);
     H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(this, "Point0", 0)]);
     return t3;
@@ -12710,6 +12901,11 @@ J.$lt$n = function(receiver, a0) {
     return receiver < a0;
   return J.getInterceptor$n(receiver).$lt(receiver, a0);
 };
+J.$mul$n = function(receiver, a0) {
+  if (typeof receiver == "number" && typeof a0 == "number")
+    return receiver * a0;
+  return J.getInterceptor$n(receiver).$mul(receiver, a0);
+};
 J.$shl$n = function(receiver, a0) {
   return J.getInterceptor$n(receiver).$shl(receiver, a0);
 };
@@ -12811,20 +13007,17 @@ J.get$onClick$x = function(receiver) {
 J.get$outerHtml$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$outerHtml(receiver);
 };
-J.get$page$x = function(receiver) {
-  return J.getInterceptor$x(receiver).get$page(receiver);
-};
 J.get$parent$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$parent(receiver);
 };
 J.get$points$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$points(receiver);
 };
+J.get$r$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$r(receiver);
+};
 J.get$responseText$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$responseText(receiver);
-};
-J.get$touches$x = function(receiver) {
-  return J.getInterceptor$x(receiver).get$touches(receiver);
 };
 J.get$value$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$value(receiver);
@@ -12891,6 +13084,9 @@ J.set$width$x = function(receiver, value) {
 };
 J.startsWith$1$s = function(receiver, a0) {
   return J.getInterceptor$s(receiver).startsWith$1(receiver, a0);
+};
+J.substring$1$s = function(receiver, a0) {
+  return J.getInterceptor$s(receiver).substring$1(receiver, a0);
 };
 J.toInt$0$n = function(receiver) {
   return J.getInterceptor$n(receiver).toInt$0(receiver);
@@ -15125,6 +15321,9 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   CircleElement.prototype = $desc;
+  CircleElement.prototype.get$r = function(receiver) {
+    return receiver.r;
+  };
   function ClipPathElement() {
   }
   ClipPathElement.builtin$cls = "ClipPathElement";
@@ -15665,6 +15864,9 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   RadialGradientElement.prototype = $desc;
+  RadialGradientElement.prototype.get$r = function(receiver) {
+    return receiver.r;
+  };
   function RectElement() {
   }
   RectElement.builtin$cls = "RectElement";
@@ -16166,7 +16368,7 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Uint8List.prototype = $desc;
-  function DrawingTool(mandalaId, _sides, _isMirrored, _allowEditingPoints, _scale, _isDragging, _blurAmount, _blurOpacity, _canvas, _ctx, _offscreenBuffer, _bgGradient, _bgGradientSvg, _gradientStart, _gradientEnd, _canvasRect, _winScroll, _rafId, actionQueue) {
+  function DrawingTool(mandalaId, _sides, _isMirrored, _allowEditingPoints, _scale, _isDragging, _blurAmount, _blurOpacity, _canvas, _ctx, _offscreenBuffer, _bgGradient, _bgGradientSvg, _gradientStart, _gradientEnd, _arcColor, _canvasRect, _winScroll, _rafId, actionQueue) {
     this.mandalaId = mandalaId;
     this._sides = _sides;
     this._isMirrored = _isMirrored;
@@ -16182,6 +16384,7 @@ function dart_precompiled($collectedClasses) {
     this._bgGradientSvg = _bgGradientSvg;
     this._gradientStart = _gradientStart;
     this._gradientEnd = _gradientEnd;
+    this._arcColor = _arcColor;
     this._canvasRect = _canvasRect;
     this._winScroll = _winScroll;
     this._rafId = _rafId;
@@ -16326,6 +16529,16 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   DrawingTool__updateOffscreenBuffer_closure.prototype = $desc;
+  function DrawingTool__changeLineColor_closure(this_0) {
+    this.this_0 = this_0;
+  }
+  DrawingTool__changeLineColor_closure.builtin$cls = "DrawingTool__changeLineColor_closure";
+  if (!"name" in DrawingTool__changeLineColor_closure)
+    DrawingTool__changeLineColor_closure.name = "DrawingTool__changeLineColor_closure";
+  $desc = $collectedClasses.DrawingTool__changeLineColor_closure;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  DrawingTool__changeLineColor_closure.prototype = $desc;
   function DrawingTool_saveSvg_closure(this_0, svgCtx_1) {
     this.this_0 = this_0;
     this.svgCtx_1 = svgCtx_1;
@@ -16337,11 +16550,13 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   DrawingTool_saveSvg_closure.prototype = $desc;
-  function ActionSettings(lineWidth, opacity, strokeStyle, fillStyle) {
+  function ActionSettings(lineWidth, opacity, strokeStyle, fillStyle, strokeColor, fillColor) {
     this.lineWidth = lineWidth;
     this.opacity = opacity;
     this.strokeStyle = strokeStyle;
     this.fillStyle = fillStyle;
+    this.strokeColor = strokeColor;
+    this.fillColor = fillColor;
   }
   ActionSettings.builtin$cls = "ActionSettings";
   if (!"name" in ActionSettings)
@@ -16350,6 +16565,27 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   ActionSettings.prototype = $desc;
+  function ColorValue(r, g, b) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+  }
+  ColorValue.builtin$cls = "ColorValue";
+  if (!"name" in ColorValue)
+    ColorValue.name = "ColorValue";
+  $desc = $collectedClasses.ColorValue;
+  if ($desc instanceof Array)
+    $desc = $desc[1];
+  ColorValue.prototype = $desc;
+  ColorValue.prototype.get$r = function(receiver) {
+    return this.r;
+  };
+  ColorValue.prototype.get$g = function() {
+    return this.g;
+  };
+  ColorValue.prototype.get$b = function() {
+    return this.b;
+  };
   function BaseAction(points, name, settings) {
     this.points = points;
     this.name = name;
@@ -20161,5 +20397,5 @@ function dart_precompiled($collectedClasses) {
   if ($desc instanceof Array)
     $desc = $desc[1];
   Closure$4.prototype = $desc;
-  return [HtmlElement, AnchorElement, AnimationEvent, AreaElement, AudioElement, AutocompleteErrorEvent, BRElement, BaseElement, BeforeLoadEvent, BeforeUnloadEvent, Blob, BodyElement, ButtonElement, CDataSection, CanvasElement, CanvasGradient, CanvasPattern, CanvasRenderingContext, CanvasRenderingContext2D, CharacterData, CloseEvent, Comment, CompositionEvent, ContentElement, CssFontFaceLoadEvent, CssStyleDeclaration, CustomEvent, DListElement, DataListElement, DetailsElement, DeviceMotionEvent, DeviceOrientationEvent, DialogElement, DivElement, Document, DocumentFragment, DocumentType, DomError, DomException, Element, EmbedElement, ErrorEvent, Event, EventTarget, FieldSetElement, File, FileError, FocusEvent, FormElement, HRElement, HashChangeEvent, HeadElement, HeadingElement, HtmlCollection, HtmlDocument, HtmlFormControlsCollection, HtmlHtmlElement, HtmlOptionsCollection, HttpRequest, HttpRequestEventTarget, IFrameElement, ImageData, ImageElement, InputElement, KeyboardEvent, KeygenElement, LIElement, LabelElement, LegendElement, LinkElement, Location, MapElement, MediaElement, MediaError, MediaKeyError, MediaKeyEvent, MediaKeyMessageEvent, MediaKeyNeededEvent, MediaStream, MediaStreamEvent, MediaStreamTrackEvent, MenuElement, MessageEvent, MetaElement, MeterElement, MidiConnectionEvent, MidiMessageEvent, ModElement, MouseEvent, Navigator, NavigatorUserMediaError, Node, NodeList, OListElement, ObjectElement, OptGroupElement, OptionElement, OutputElement, OverflowEvent, PageTransitionEvent, ParagraphElement, ParamElement, PopStateEvent, PositionError, PreElement, ProcessingInstruction, ProgressElement, ProgressEvent, QuoteElement, ResourceProgressEvent, RtcDataChannelEvent, RtcDtmfToneChangeEvent, RtcIceCandidateEvent, ScriptElement, SecurityPolicyViolationEvent, SelectElement, ShadowElement, ShadowRoot, SourceElement, SpanElement, SpeechInputEvent, SpeechRecognitionError, SpeechRecognitionEvent, SpeechSynthesisEvent, StorageEvent, StyleElement, TableCaptionElement, TableCellElement, TableColElement, TableElement, TableRowElement, TableSectionElement, TemplateElement, Text, TextAreaElement, TextEvent, TitleElement, Touch, TouchEvent, TouchList, TrackElement, TrackEvent, TransitionEvent, UIEvent, UListElement, UnknownElement, VideoElement, WheelEvent, Window, _Attr, _ClientRect, _Entity, _HTMLAppletElement, _HTMLBaseFontElement, _HTMLDirectoryElement, _HTMLFontElement, _HTMLFrameElement, _HTMLFrameSetElement, _HTMLMarqueeElement, _MutationEvent, _NamedNodeMap, _Notation, _XMLHttpRequestProgressEvent, KeyRange, VersionChangeEvent, AElement, AltGlyphElement, AnimateElement, AnimateMotionElement, AnimateTransformElement, AnimatedLength, AnimatedLengthList, AnimatedNumber, AnimatedNumberList, AnimationElement, CircleElement, ClipPathElement, DefsElement, DescElement, EllipseElement, FEBlendElement, FEColorMatrixElement, FEComponentTransferElement, FECompositeElement, FEConvolveMatrixElement, FEDiffuseLightingElement, FEDisplacementMapElement, FEDistantLightElement, FEFloodElement, FEFuncAElement, FEFuncBElement, FEFuncGElement, FEFuncRElement, FEGaussianBlurElement, FEImageElement, FEMergeElement, FEMergeNodeElement, FEMorphologyElement, FEOffsetElement, FEPointLightElement, FESpecularLightingElement, FESpotLightElement, FETileElement, FETurbulenceElement, FilterElement, ForeignObjectElement, GElement, GraphicsElement, ImageElement0, LineElement, LinearGradientElement, MarkerElement, MaskElement, MetadataElement, PathElement, PatternElement, PointList, PolygonElement, PolylineElement, RadialGradientElement, RectElement, ScriptElement0, SetElement, StopElement, StyleElement0, SvgDocument, SvgElement, SvgSvgElement, SwitchElement, SymbolElement, TSpanElement, TextContentElement, TextElement, TextPathElement, TextPositioningElement, TitleElement0, UseElement, ViewElement, ZoomEvent, _GradientElement, _SVGAltGlyphDefElement, _SVGAltGlyphItemElement, _SVGAnimateColorElement, _SVGComponentTransferFunctionElement, _SVGCursorElement, _SVGFEDropShadowElement, _SVGFontElement, _SVGFontFaceElement, _SVGFontFaceFormatElement, _SVGFontFaceNameElement, _SVGFontFaceSrcElement, _SVGFontFaceUriElement, _SVGGlyphElement, _SVGGlyphRefElement, _SVGHKernElement, _SVGMPathElement, _SVGMissingGlyphElement, _SVGVKernElement, AudioProcessingEvent, OfflineAudioCompletionEvent, ContextEvent, SqlError, TypedData, ByteData, Float32List, Float64List, Int16List, Int32List, Int8List, Uint16List, Uint32List, Uint8ClampedList, Uint8List, DrawingTool, BoundClosure$1, DrawingTool__setupListeners_closure, DrawingTool__setupListeners_closure0, DrawingTool__setupListeners_closure1, DrawingTool__setupListeners_closure2, DrawingTool__setupListeners_closure3, DrawingTool__setupListeners_closure4, DrawingTool__setupListeners_closure5, DrawingTool__setupListeners_closure6, DrawingTool__setupListeners_closure7, DrawingTool__setupListeners_closure8, DrawingTool__setupListeners_closure9, DrawingTool__updateOffscreenBuffer_closure, DrawingTool_saveSvg_closure, ActionSettings, BaseAction, PolygonalFillAction, PolygonalStrokeAction, RegularFillAction, RegularStrokeAction, SmoothFillAction, SmoothStrokeAction, DrawingToolInterface, DrawingToolInterface__setupOutgoingEvents_closure, DrawingToolInterface__setupOutgoingEvents__closure0, DrawingToolInterface__setupOutgoingEvents_closure0, DrawingToolInterface__setupOutgoingEvents__closure, DrawingToolInterface__setupOutgoingEvents_closure1, DrawingToolInterface__setupOutgoingEvents_closure2, DrawingToolInterface__setupOutgoingEvents_closure3, DrawingToolInterface__setupOutgoingEvents_closure4, DrawingToolInterface__setupOutgoingEvents_closure5, DrawingToolInterface__setupOutgoingEvents_closure6, DrawingToolInterface__setupOutgoingEvents_closure7, DrawingToolInterface__setupOutgoingEvents_closure8, DrawingToolInterface__setupOutgoingEvents_closure9, DrawingToolInterface__setupOutgoingEvents_closure10, DrawingToolInterface_onActionChanged_closure, SvgRenderer, SiteApp, SiteApp__onPublishRequested_closure, SiteApp__onPublishRequested__closure, TopMenuController, TopMenuController__setupDropdown_closure, JS_CONST, Interceptor, JSBool, JSNull, JavaScriptObject, PlainJavaScriptObject, UnknownJavaScriptObject, JSArray, JSMutableArray, JSFixedArray, JSExtendableArray, JSNumber, JSInt, JSDouble, JSString, startRootIsolate_closure, startRootIsolate_closure0, _Manager, _IsolateContext, _EventLoop, _EventLoop__runHelper_next, _IsolateEvent, _MainManagerStub, IsolateNatives__processWorkerMessage_closure, _BaseSendPort, _NativeJsSendPort, _NativeJsSendPort_send_closure, _NativeJsSendPort_send__closure, _WorkerSendPort, _WorkerSendPort_send_closure, ReceivePortImpl, BoundClosure$i0, _waitForPendingPorts_closure, _PendingSendPortFinder, _JsSerializer, _JsCopier, _JsDeserializer, _JsVisitedMap, _MessageTraverserVisitedMap, _MessageTraverser, _Copier, _Copier_visitMap_closure, _Serializer, _Deserializer, TimerImpl, TimerImpl_internalCallback, TimerImpl_internalCallback0, JSInvocationMirror, Primitives_applyFunction_closure, Primitives_applyFunction_closure0, Primitives_applyFunction_closure1, TypeErrorDecoder, NullError, JsNoSuchMethodError, UnknownJsTypeError, unwrapException_saveStackTrace, _StackTrace, invokeClosure_closure, invokeClosure_closure0, invokeClosure_closure1, invokeClosure_closure2, invokeClosure_closure3, Closure, BoundClosure, CastErrorImplementation, TypeImpl, initHooks_closure, initHooks_closure0, initHooks_closure1, StringMatch, ListIterable, SubListIterable, ListIterator, MappedIterable, EfficientLengthMappedIterable, MappedIterator, MappedListIterable, WhereIterable, WhereIterator, FixedLengthListMixin, Symbol0, _AsyncError, _BroadcastStream, _BroadcastSubscription, BoundClosure$0, _BroadcastStreamController, BoundClosure$i1, BoundClosure$2, _SyncBroadcastStreamController, _SyncBroadcastStreamController__sendData_closure, _SyncBroadcastStreamController__sendError_closure, _SyncBroadcastStreamController__sendDone_closure, _AsyncBroadcastStreamController, Future, Future_Future$delayed_closure, Future_Future$delayed_closure0, Future_wait_handleError, Future_wait_closure, _Completer, _AsyncCompleter, _SyncCompleter, _Future, _Future__addListener_closure, _Future__chainFutures_closure, _Future__chainFutures_closure0, _Future__asyncComplete_closure, _Future__asyncCompleteError_closure, _Future__propagateToListeners_closure, _Future__propagateToListeners_closure0, _Future__propagateToListeners__closure, _Future__propagateToListeners__closure0, Stream, Stream_contains_closure, Stream_contains__closure, Stream_contains__closure0, Stream_contains_closure0, Stream_forEach_closure, Stream_forEach__closure, Stream_forEach__closure0, Stream_forEach_closure0, Stream_length_closure, Stream_length_closure0, StreamSubscription, _StreamController, _StreamController__subscribe_closure, _StreamController__recordCancel_complete, _SyncStreamControllerDispatch, _AsyncStreamControllerDispatch, _AsyncStreamController, _StreamController__AsyncStreamControllerDispatch, _SyncStreamController, _StreamController__SyncStreamControllerDispatch, _ControllerStream, _ControllerSubscription, _EventSink, _BufferingStreamSubscription, _BufferingStreamSubscription__sendError_sendError, _BufferingStreamSubscription__sendDone_sendDone, _StreamImpl, _DelayedEvent, _DelayedData, _DelayedError, _DelayedDone, _PendingEvents, _PendingEvents_schedule_closure, _StreamImplEvents, _cancelAndError_closure, _cancelAndErrorClosure_closure, _cancelAndValue_closure, _ForwardingStream, _ForwardingStreamSubscription, BoundClosure$20, _MapStream, _BaseZone, _BaseZone_bindCallback_closure, _BaseZone_bindCallback_closure0, _BaseZone_bindUnaryCallback_closure, _BaseZone_bindUnaryCallback_closure0, _rootHandleUncaughtError_closure, _rootHandleUncaughtError__closure, _RootZone, _HashMap, _HashMap_values_closure, _IdentityHashMap, HashMapKeyIterable, HashMapKeyIterator, _LinkedHashMap, _LinkedHashMap_values_closure, LinkedHashMapCell, LinkedHashMapKeyIterable, LinkedHashMapKeyIterator, _HashSet, _IdentityHashSet, HashSetIterator, _LinkedHashSet, LinkedHashSetCell, LinkedHashSetIterator, _HashSetBase, IterableBase, ListBase, ListMixin, Maps_mapToString_closure, ListQueue, _ListQueueIterator, _convertJsonToDart_closure, _convertJsonToDart_walk, Codec, Converter, Encoding, JsonCodec, JsonDecoder, Utf8Codec, Utf8Encoder, _Utf8Encoder, Function__toMangledNames_closure, NoSuchMethodError_toString_closure, DateTime, DateTime_toString_fourDigits, DateTime_toString_threeDigits, DateTime_toString_twoDigits, Duration, Duration_toString_sixDigits, Duration_toString_twoDigits, Error, NullThrownError, ArgumentError, RangeError, NoSuchMethodError, UnsupportedError, UnimplementedError, StateError, ConcurrentModificationError, StackOverflowError, CyclicInitializationError, _ExceptionImplementation, FormatException, Expando, Function, Iterator, Null, Object, Match, StackTrace, StringBuffer, Symbol, Uri__uriEncode_byteToHex, Interceptor_CssStyleDeclarationBase, CssStyleDeclarationBase, _ChildrenElementList, _FrozenElementList, _FrozenElementList$_wrap_closure, Interceptor_ListMixin, Interceptor_ListMixin_ImmutableListMixin, HttpRequest_postFormData_closure, HttpRequest_postFormData_closure0, HttpRequest_request_closure, HttpRequest_request_closure0, _ChildNodeListLazy, Interceptor_ListMixin0, Interceptor_ListMixin_ImmutableListMixin0, Interceptor_ListMixin1, Interceptor_ListMixin_ImmutableListMixin1, Interceptor_ListMixin2, Interceptor_ListMixin_ImmutableListMixin2, _AttributeMap, _ElementAttributeMap, _DataAttributeMap, _DataAttributeMap_forEach_closure, _DataAttributeMap_keys_closure, _DataAttributeMap_values_closure, _MultiElementCssClassSet, _MultiElementCssClassSet_closure, _MultiElementCssClassSet_readClasses_closure, _MultiElementCssClassSet_modify_closure, _MultiElementCssClassSet_remove_closure, _MultiElementCssClassSet__modifyWithReturnValue_closure, _ElementCssClassSet, EventStreamProvider, _EventStream, _ElementEventStreamImpl, _ElementListEventStreamImpl, _EventStreamSubscription, _StreamPool, _StreamPool_add_closure, ImmutableListMixin, FixedSizeListIterator, _DOMWindowCrossFrame, _LocationWrapper, _AttributeClassSet, ReceivePort, JsObject, JsObject__convertDataTree__convert, JsFunction, JsArray, JsObject_ListMixin, _convertToJS_closure, _convertToJS_closure0, _wrapToDart_closure, _wrapToDart_closure0, _wrapToDart_closure1, Point0, TypedData_ListMixin, TypedData_ListMixin_FixedLengthListMixin, TypedData_ListMixin0, TypedData_ListMixin_FixedLengthListMixin0, TypedData_ListMixin1, TypedData_ListMixin_FixedLengthListMixin1, TypedData_ListMixin2, TypedData_ListMixin_FixedLengthListMixin2, TypedData_ListMixin3, TypedData_ListMixin_FixedLengthListMixin3, TypedData_ListMixin4, TypedData_ListMixin_FixedLengthListMixin4, TypedData_ListMixin5, TypedData_ListMixin_FixedLengthListMixin5, TypedData_ListMixin6, TypedData_ListMixin_FixedLengthListMixin6, TypedData_ListMixin7, TypedData_ListMixin_FixedLengthListMixin7, Int64List, Uint64List, EventEmitter, EventEmitter_on_closure, EventEmitter_emit_closure, CssClassSetImpl, CssClassSetImpl_add_closure, FilteredElementList, FilteredElementList__filtered_closure, FilteredElementList_removeRange_closure, Point, Closure$2, Closure$1, Closure$0, Closure$7, Closure$20, Closure$4];
+  return [HtmlElement, AnchorElement, AnimationEvent, AreaElement, AudioElement, AutocompleteErrorEvent, BRElement, BaseElement, BeforeLoadEvent, BeforeUnloadEvent, Blob, BodyElement, ButtonElement, CDataSection, CanvasElement, CanvasGradient, CanvasPattern, CanvasRenderingContext, CanvasRenderingContext2D, CharacterData, CloseEvent, Comment, CompositionEvent, ContentElement, CssFontFaceLoadEvent, CssStyleDeclaration, CustomEvent, DListElement, DataListElement, DetailsElement, DeviceMotionEvent, DeviceOrientationEvent, DialogElement, DivElement, Document, DocumentFragment, DocumentType, DomError, DomException, Element, EmbedElement, ErrorEvent, Event, EventTarget, FieldSetElement, File, FileError, FocusEvent, FormElement, HRElement, HashChangeEvent, HeadElement, HeadingElement, HtmlCollection, HtmlDocument, HtmlFormControlsCollection, HtmlHtmlElement, HtmlOptionsCollection, HttpRequest, HttpRequestEventTarget, IFrameElement, ImageData, ImageElement, InputElement, KeyboardEvent, KeygenElement, LIElement, LabelElement, LegendElement, LinkElement, Location, MapElement, MediaElement, MediaError, MediaKeyError, MediaKeyEvent, MediaKeyMessageEvent, MediaKeyNeededEvent, MediaStream, MediaStreamEvent, MediaStreamTrackEvent, MenuElement, MessageEvent, MetaElement, MeterElement, MidiConnectionEvent, MidiMessageEvent, ModElement, MouseEvent, Navigator, NavigatorUserMediaError, Node, NodeList, OListElement, ObjectElement, OptGroupElement, OptionElement, OutputElement, OverflowEvent, PageTransitionEvent, ParagraphElement, ParamElement, PopStateEvent, PositionError, PreElement, ProcessingInstruction, ProgressElement, ProgressEvent, QuoteElement, ResourceProgressEvent, RtcDataChannelEvent, RtcDtmfToneChangeEvent, RtcIceCandidateEvent, ScriptElement, SecurityPolicyViolationEvent, SelectElement, ShadowElement, ShadowRoot, SourceElement, SpanElement, SpeechInputEvent, SpeechRecognitionError, SpeechRecognitionEvent, SpeechSynthesisEvent, StorageEvent, StyleElement, TableCaptionElement, TableCellElement, TableColElement, TableElement, TableRowElement, TableSectionElement, TemplateElement, Text, TextAreaElement, TextEvent, TitleElement, Touch, TouchEvent, TouchList, TrackElement, TrackEvent, TransitionEvent, UIEvent, UListElement, UnknownElement, VideoElement, WheelEvent, Window, _Attr, _ClientRect, _Entity, _HTMLAppletElement, _HTMLBaseFontElement, _HTMLDirectoryElement, _HTMLFontElement, _HTMLFrameElement, _HTMLFrameSetElement, _HTMLMarqueeElement, _MutationEvent, _NamedNodeMap, _Notation, _XMLHttpRequestProgressEvent, KeyRange, VersionChangeEvent, AElement, AltGlyphElement, AnimateElement, AnimateMotionElement, AnimateTransformElement, AnimatedLength, AnimatedLengthList, AnimatedNumber, AnimatedNumberList, AnimationElement, CircleElement, ClipPathElement, DefsElement, DescElement, EllipseElement, FEBlendElement, FEColorMatrixElement, FEComponentTransferElement, FECompositeElement, FEConvolveMatrixElement, FEDiffuseLightingElement, FEDisplacementMapElement, FEDistantLightElement, FEFloodElement, FEFuncAElement, FEFuncBElement, FEFuncGElement, FEFuncRElement, FEGaussianBlurElement, FEImageElement, FEMergeElement, FEMergeNodeElement, FEMorphologyElement, FEOffsetElement, FEPointLightElement, FESpecularLightingElement, FESpotLightElement, FETileElement, FETurbulenceElement, FilterElement, ForeignObjectElement, GElement, GraphicsElement, ImageElement0, LineElement, LinearGradientElement, MarkerElement, MaskElement, MetadataElement, PathElement, PatternElement, PointList, PolygonElement, PolylineElement, RadialGradientElement, RectElement, ScriptElement0, SetElement, StopElement, StyleElement0, SvgDocument, SvgElement, SvgSvgElement, SwitchElement, SymbolElement, TSpanElement, TextContentElement, TextElement, TextPathElement, TextPositioningElement, TitleElement0, UseElement, ViewElement, ZoomEvent, _GradientElement, _SVGAltGlyphDefElement, _SVGAltGlyphItemElement, _SVGAnimateColorElement, _SVGComponentTransferFunctionElement, _SVGCursorElement, _SVGFEDropShadowElement, _SVGFontElement, _SVGFontFaceElement, _SVGFontFaceFormatElement, _SVGFontFaceNameElement, _SVGFontFaceSrcElement, _SVGFontFaceUriElement, _SVGGlyphElement, _SVGGlyphRefElement, _SVGHKernElement, _SVGMPathElement, _SVGMissingGlyphElement, _SVGVKernElement, AudioProcessingEvent, OfflineAudioCompletionEvent, ContextEvent, SqlError, TypedData, ByteData, Float32List, Float64List, Int16List, Int32List, Int8List, Uint16List, Uint32List, Uint8ClampedList, Uint8List, DrawingTool, BoundClosure$1, DrawingTool__setupListeners_closure, DrawingTool__setupListeners_closure0, DrawingTool__setupListeners_closure1, DrawingTool__setupListeners_closure2, DrawingTool__setupListeners_closure3, DrawingTool__setupListeners_closure4, DrawingTool__setupListeners_closure5, DrawingTool__setupListeners_closure6, DrawingTool__setupListeners_closure7, DrawingTool__setupListeners_closure8, DrawingTool__setupListeners_closure9, DrawingTool__updateOffscreenBuffer_closure, DrawingTool__changeLineColor_closure, DrawingTool_saveSvg_closure, ActionSettings, ColorValue, BaseAction, PolygonalFillAction, PolygonalStrokeAction, RegularFillAction, RegularStrokeAction, SmoothFillAction, SmoothStrokeAction, DrawingToolInterface, DrawingToolInterface__setupOutgoingEvents_closure, DrawingToolInterface__setupOutgoingEvents__closure0, DrawingToolInterface__setupOutgoingEvents_closure0, DrawingToolInterface__setupOutgoingEvents__closure, DrawingToolInterface__setupOutgoingEvents_closure1, DrawingToolInterface__setupOutgoingEvents_closure2, DrawingToolInterface__setupOutgoingEvents_closure3, DrawingToolInterface__setupOutgoingEvents_closure4, DrawingToolInterface__setupOutgoingEvents_closure5, DrawingToolInterface__setupOutgoingEvents_closure6, DrawingToolInterface__setupOutgoingEvents_closure7, DrawingToolInterface__setupOutgoingEvents_closure8, DrawingToolInterface__setupOutgoingEvents_closure9, DrawingToolInterface__setupOutgoingEvents_closure10, DrawingToolInterface_onActionChanged_closure, SvgRenderer, SiteApp, SiteApp__onPublishRequested_closure, SiteApp__onPublishRequested__closure, TopMenuController, TopMenuController__setupDropdown_closure, JS_CONST, Interceptor, JSBool, JSNull, JavaScriptObject, PlainJavaScriptObject, UnknownJavaScriptObject, JSArray, JSMutableArray, JSFixedArray, JSExtendableArray, JSNumber, JSInt, JSDouble, JSString, startRootIsolate_closure, startRootIsolate_closure0, _Manager, _IsolateContext, _EventLoop, _EventLoop__runHelper_next, _IsolateEvent, _MainManagerStub, IsolateNatives__processWorkerMessage_closure, _BaseSendPort, _NativeJsSendPort, _NativeJsSendPort_send_closure, _NativeJsSendPort_send__closure, _WorkerSendPort, _WorkerSendPort_send_closure, ReceivePortImpl, BoundClosure$i0, _waitForPendingPorts_closure, _PendingSendPortFinder, _JsSerializer, _JsCopier, _JsDeserializer, _JsVisitedMap, _MessageTraverserVisitedMap, _MessageTraverser, _Copier, _Copier_visitMap_closure, _Serializer, _Deserializer, TimerImpl, TimerImpl_internalCallback, TimerImpl_internalCallback0, JSInvocationMirror, Primitives_applyFunction_closure, Primitives_applyFunction_closure0, Primitives_applyFunction_closure1, TypeErrorDecoder, NullError, JsNoSuchMethodError, UnknownJsTypeError, unwrapException_saveStackTrace, _StackTrace, invokeClosure_closure, invokeClosure_closure0, invokeClosure_closure1, invokeClosure_closure2, invokeClosure_closure3, Closure, BoundClosure, CastErrorImplementation, TypeImpl, initHooks_closure, initHooks_closure0, initHooks_closure1, StringMatch, ListIterable, SubListIterable, ListIterator, MappedIterable, EfficientLengthMappedIterable, MappedIterator, MappedListIterable, WhereIterable, WhereIterator, FixedLengthListMixin, Symbol0, _AsyncError, _BroadcastStream, _BroadcastSubscription, BoundClosure$0, _BroadcastStreamController, BoundClosure$i1, BoundClosure$2, _SyncBroadcastStreamController, _SyncBroadcastStreamController__sendData_closure, _SyncBroadcastStreamController__sendError_closure, _SyncBroadcastStreamController__sendDone_closure, _AsyncBroadcastStreamController, Future, Future_Future$delayed_closure, Future_Future$delayed_closure0, Future_wait_handleError, Future_wait_closure, _Completer, _AsyncCompleter, _SyncCompleter, _Future, _Future__addListener_closure, _Future__chainFutures_closure, _Future__chainFutures_closure0, _Future__asyncComplete_closure, _Future__asyncCompleteError_closure, _Future__propagateToListeners_closure, _Future__propagateToListeners_closure0, _Future__propagateToListeners__closure, _Future__propagateToListeners__closure0, Stream, Stream_contains_closure, Stream_contains__closure, Stream_contains__closure0, Stream_contains_closure0, Stream_forEach_closure, Stream_forEach__closure, Stream_forEach__closure0, Stream_forEach_closure0, Stream_length_closure, Stream_length_closure0, StreamSubscription, _StreamController, _StreamController__subscribe_closure, _StreamController__recordCancel_complete, _SyncStreamControllerDispatch, _AsyncStreamControllerDispatch, _AsyncStreamController, _StreamController__AsyncStreamControllerDispatch, _SyncStreamController, _StreamController__SyncStreamControllerDispatch, _ControllerStream, _ControllerSubscription, _EventSink, _BufferingStreamSubscription, _BufferingStreamSubscription__sendError_sendError, _BufferingStreamSubscription__sendDone_sendDone, _StreamImpl, _DelayedEvent, _DelayedData, _DelayedError, _DelayedDone, _PendingEvents, _PendingEvents_schedule_closure, _StreamImplEvents, _cancelAndError_closure, _cancelAndErrorClosure_closure, _cancelAndValue_closure, _ForwardingStream, _ForwardingStreamSubscription, BoundClosure$20, _MapStream, _BaseZone, _BaseZone_bindCallback_closure, _BaseZone_bindCallback_closure0, _BaseZone_bindUnaryCallback_closure, _BaseZone_bindUnaryCallback_closure0, _rootHandleUncaughtError_closure, _rootHandleUncaughtError__closure, _RootZone, _HashMap, _HashMap_values_closure, _IdentityHashMap, HashMapKeyIterable, HashMapKeyIterator, _LinkedHashMap, _LinkedHashMap_values_closure, LinkedHashMapCell, LinkedHashMapKeyIterable, LinkedHashMapKeyIterator, _HashSet, _IdentityHashSet, HashSetIterator, _LinkedHashSet, LinkedHashSetCell, LinkedHashSetIterator, _HashSetBase, IterableBase, ListBase, ListMixin, Maps_mapToString_closure, ListQueue, _ListQueueIterator, _convertJsonToDart_closure, _convertJsonToDart_walk, Codec, Converter, Encoding, JsonCodec, JsonDecoder, Utf8Codec, Utf8Encoder, _Utf8Encoder, Function__toMangledNames_closure, NoSuchMethodError_toString_closure, DateTime, DateTime_toString_fourDigits, DateTime_toString_threeDigits, DateTime_toString_twoDigits, Duration, Duration_toString_sixDigits, Duration_toString_twoDigits, Error, NullThrownError, ArgumentError, RangeError, NoSuchMethodError, UnsupportedError, UnimplementedError, StateError, ConcurrentModificationError, StackOverflowError, CyclicInitializationError, _ExceptionImplementation, FormatException, Expando, Function, Iterator, Null, Object, Match, StackTrace, StringBuffer, Symbol, Uri__uriEncode_byteToHex, Interceptor_CssStyleDeclarationBase, CssStyleDeclarationBase, _ChildrenElementList, _FrozenElementList, _FrozenElementList$_wrap_closure, Interceptor_ListMixin, Interceptor_ListMixin_ImmutableListMixin, HttpRequest_postFormData_closure, HttpRequest_postFormData_closure0, HttpRequest_request_closure, HttpRequest_request_closure0, _ChildNodeListLazy, Interceptor_ListMixin0, Interceptor_ListMixin_ImmutableListMixin0, Interceptor_ListMixin1, Interceptor_ListMixin_ImmutableListMixin1, Interceptor_ListMixin2, Interceptor_ListMixin_ImmutableListMixin2, _AttributeMap, _ElementAttributeMap, _DataAttributeMap, _DataAttributeMap_forEach_closure, _DataAttributeMap_keys_closure, _DataAttributeMap_values_closure, _MultiElementCssClassSet, _MultiElementCssClassSet_closure, _MultiElementCssClassSet_readClasses_closure, _MultiElementCssClassSet_modify_closure, _MultiElementCssClassSet_remove_closure, _MultiElementCssClassSet__modifyWithReturnValue_closure, _ElementCssClassSet, EventStreamProvider, _EventStream, _ElementEventStreamImpl, _ElementListEventStreamImpl, _EventStreamSubscription, _StreamPool, _StreamPool_add_closure, ImmutableListMixin, FixedSizeListIterator, _DOMWindowCrossFrame, _LocationWrapper, _AttributeClassSet, ReceivePort, JsObject, JsObject__convertDataTree__convert, JsFunction, JsArray, JsObject_ListMixin, _convertToJS_closure, _convertToJS_closure0, _wrapToDart_closure, _wrapToDart_closure0, _wrapToDart_closure1, Point0, TypedData_ListMixin, TypedData_ListMixin_FixedLengthListMixin, TypedData_ListMixin0, TypedData_ListMixin_FixedLengthListMixin0, TypedData_ListMixin1, TypedData_ListMixin_FixedLengthListMixin1, TypedData_ListMixin2, TypedData_ListMixin_FixedLengthListMixin2, TypedData_ListMixin3, TypedData_ListMixin_FixedLengthListMixin3, TypedData_ListMixin4, TypedData_ListMixin_FixedLengthListMixin4, TypedData_ListMixin5, TypedData_ListMixin_FixedLengthListMixin5, TypedData_ListMixin6, TypedData_ListMixin_FixedLengthListMixin6, TypedData_ListMixin7, TypedData_ListMixin_FixedLengthListMixin7, Int64List, Uint64List, EventEmitter, EventEmitter_on_closure, EventEmitter_emit_closure, CssClassSetImpl, CssClassSetImpl_add_closure, FilteredElementList, FilteredElementList__filtered_closure, FilteredElementList_removeRange_closure, Point, Closure$2, Closure$1, Closure$0, Closure$7, Closure$20, Closure$4];
 }

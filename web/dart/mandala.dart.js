@@ -214,7 +214,7 @@ $$.Closure$4 = [P, {"": "Closure;call$4,$name"}];
   }
 })([
 ["DrawingToolLib", "drawingtool/DrawingToolLib.dart", , R, {
-DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scale,_isDragging,_blurAmount,_blurOpacity,_canvas,_ctx,_offscreenBuffer,_bgGradient,_bgGradientSvg,_gradientStart,_gradientEnd,_canvasRect,_winScroll,_rafId,actionQueue",
+DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scale,_isDragging,_blurAmount,_blurOpacity,_canvas,_ctx,_offscreenBuffer,_bgGradient,_bgGradientSvg,_gradientStart,_gradientEnd,_arcColor,_canvasRect,_winScroll,_rafId,actionQueue",
   _setupBackgroundGradients$0: function() {
     var colors, t1, t2, t3, t4, t5, temp;
     colors = [this._gradientStart, this._gradientEnd];
@@ -228,7 +228,8 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     t2 = t3.get$height(t2);
     if (typeof t2 !== "number")
       throw t2.$mul();
-    this._bgGradient = t1.createRadialGradient(t5, t2 * 0.5, 0, t5, t2 * 0.65, t4 * 0.65);
+    t2 *= 0.5;
+    this._bgGradient = t1.createRadialGradient(t5, t2, 0, t5, t2, t4 * 0.65);
     this._bgGradient.addColorStop(0, colors[0]);
     this._bgGradient.addColorStop(1, colors[1]);
     this._bgGradientSvg = document.createElementNS("http://www.w3.org/2000/svg", "radialGradient");
@@ -309,6 +310,8 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     t1 = new W._EventStreamSubscription(0, t3._target, t3._eventType, W._wrapZone(new R.DrawingTool__setupListeners_closure9(this)), t3._useCapture);
     H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
     t1._tryResume$0();
+    t1 = $.get$SharedDispatcher_emitter();
+    t1.on$2(t1, "ActionEvent.ON_DRAWING_INTERACTION_FINISHED", this.get$onActionComplete());
   },
   start$0: function(_) {
     var t1, t2;
@@ -501,7 +504,11 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     }
     hiddenCtx.beginPath();
     hiddenCtx.lineWidth = 1;
-    hiddenCtx.strokeStyle = "rgba(255, 255, 255, 0.75)";
+    t1 = this._arcColor;
+    t2 = t1.r;
+    t3 = t1.g;
+    t1 = t1.b;
+    hiddenCtx.strokeStyle = "rgba(" + H.S(t2) + ", " + H.S(t3) + ", " + H.S(t1) + ", 0.75)";
     t1 = J.get$width$x(this._canvasRect);
     if (typeof t1 !== "number")
       throw t1.$mul();
@@ -509,30 +516,30 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     hiddenCtx.stroke();
     hiddenCtx.closePath();
   },
-  changeAction$1: function(actionName) {
-    var t1, nextAction;
+  changeAction$2: function(actionName, $dispatchEvent) {
+    var t1, nextAction, t2;
     switch (actionName) {
       case "RegularStroke":
         t1 = P.List_List(null, Z.Point);
         H.setRuntimeTypeInfo(t1, [Z.Point]);
-        nextAction = new R.RegularStrokeAction(null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)"));
+        nextAction = new R.RegularStrokeAction(null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
         break;
       case "SmoothStroke":
         t1 = P.List_List(null, Z.Point);
         H.setRuntimeTypeInfo(t1, [Z.Point]);
-        nextAction = new R.SmoothStrokeAction(null, null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)"));
+        nextAction = new R.SmoothStrokeAction(null, null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
         nextAction.name = "SmoothStroke";
         break;
       case "PolygonalFill":
         t1 = P.List_List(null, Z.Point);
         H.setRuntimeTypeInfo(t1, [Z.Point]);
-        nextAction = new R.PolygonalFillAction(null, null, null, t1, "PolygonalStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)"));
+        nextAction = new R.PolygonalFillAction(null, null, null, t1, "PolygonalStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
         nextAction.name = "PolygonalFill";
         break;
       case "PolygonalStroke":
         t1 = P.List_List(null, Z.Point);
         H.setRuntimeTypeInfo(t1, [Z.Point]);
-        nextAction = new R.PolygonalStrokeAction(null, null, null, t1, "PolygonalStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)"));
+        nextAction = new R.PolygonalStrokeAction(null, null, null, t1, "PolygonalStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
         break;
       case "SmoothFill":
         nextAction = R.SmoothFillAction$();
@@ -544,12 +551,20 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
         nextAction = null;
     }
     t1 = this.actionQueue;
-    if (!t1.get$isEmpty(t1))
-      nextAction.settings.opacity = t1.get$last(t1).get$settings().opacity;
+    if (!t1.get$isEmpty(t1)) {
+      t2 = nextAction.settings;
+      t2.opacity = t1.get$last(t1).get$settings().opacity;
+      t2.strokeColor.copyFrom$1(t1.get$last(t1).get$settings().strokeColor);
+      t2.fillColor.copyFrom$1(t1.get$last(t1).get$settings().fillColor);
+    }
     this._updateOffscreenBuffer$0();
     t1._add$1(nextAction);
-    this._dispatchActionChangedEvent$0();
+    if ($dispatchEvent)
+      this._dispatchActionChangedEvent$0();
     return true;
+  },
+  changeAction$1: function(actionName) {
+    return this.changeAction$2(actionName, true);
   },
   performEditAction$2: function(actionName, value) {
     var t1;
@@ -566,7 +581,7 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
         this._dispatchOpacityChangedEvent$0();
         break;
       case "lineColor":
-        J.toString$0(H.interceptedTypeCast(value, "$isJsObject"));
+        this._changeLineColor$1(J.toString$0(H.interceptedTypeCast(value, "$isJsObject")));
         break;
       case "gradientStartColor":
         break;
@@ -597,10 +612,25 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
         break;
       default:
     }
-    P.print("No action for " + actionName);
   },
   performEditAction$1: function(actionName) {
     return this.performEditAction$2(actionName, null);
+  },
+  onActionComplete$1: function(action) {
+    this.changeAction$2(J.get$name$x(action), false);
+  },
+  get$onActionComplete: function() {
+    return new R.BoundClosure$1(this, R.DrawingTool.prototype.onActionComplete$1, null, "onActionComplete$1");
+  },
+  _changeLineColor$1: function(value) {
+    var t1 = this.actionQueue;
+    t1.get$last(t1).get$settings().fillColor.parseRgb$1(value);
+    t1.get$last(t1).get$settings().strokeColor.parseRgb$1(value);
+    t1.forEach$1(t1, new R.DrawingTool__changeLineColor_closure(this));
+    this._arcColor.copyFrom$1(t1.get$last(t1).get$settings().fillColor);
+    t1 = this._arcColor;
+    this._arcColor = t1.$mul(t1, 2);
+    this._updateOffscreenBuffer$0();
   },
   _performUndo$0: function() {
     var t1 = this.actionQueue;
@@ -622,7 +652,7 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     t1 = this.actionQueue;
     lastActionName = J.get$name$x(t1.get$last(t1));
     t1.clear$0(t1);
-    this.changeAction$1(lastActionName);
+    this.changeAction$2(lastActionName, true);
   },
   _drawBackground$1: function(ctx) {
     var t1, t2;
@@ -719,7 +749,8 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     svgCtx.groupStart$0();
     svgCtx._lineWidth = 2;
     svgCtx.beginPath$0(svgCtx);
-    svgCtx.setStrokeColorRgb$4(svgCtx, 255, 255, 255, 0.75);
+    t1 = this._arcColor;
+    svgCtx.setStrokeColorRgb$4(svgCtx, t1.r, t1.g, t1.b, 0.75);
     t1 = this._canvasRect;
     t2 = J.getInterceptor$x(t1);
     t3 = t2.get$width(t1);
@@ -770,12 +801,12 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     this._offscreenBuffer = W.CanvasElement_CanvasElement(t1.height, t2);
     this._setupBackgroundGradients$0();
     this._setupListeners$0();
-    this.changeAction$1("RegularStroke");
+    this.changeAction$2("RegularStroke", true);
     this.start$0(this);
   },
   static: {
 DrawingTool$: function(_canvas) {
-  var t1 = new R.DrawingTool(null, 7, true, true, 1, false, 10, 0.5, _canvas, null, null, null, null, "#383245", "#1B1821", null, null, 0, P.ListQueue$(null, R.BaseAction));
+  var t1 = new R.DrawingTool(null, 7, true, true, 1, false, 10, 0.5, _canvas, null, null, null, null, "#383245", "#1B1821", new R.ColorValue(255, 255, 255), null, null, 0, P.ListQueue$(null, R.BaseAction));
   t1.DrawingTool$1(_canvas);
   return t1;
 }}
@@ -784,7 +815,9 @@ DrawingTool$: function(_canvas) {
 
 DrawingTool__setupListeners_closure: {"": "Closure;this_0",
   call$1: function(e) {
-    this.this_0._inputDown$1(J.get$page$x(e));
+    var t1 = J.getInterceptor$x(e);
+    t1.preventDefault$0(e);
+    this.this_0._inputDown$1(t1.get$page(e));
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -793,7 +826,9 @@ DrawingTool__setupListeners_closure: {"": "Closure;this_0",
 
 DrawingTool__setupListeners_closure0: {"": "Closure;this_1",
   call$1: function(e) {
-    var t1 = J.get$touches$x(e);
+    var t1 = J.getInterceptor$x(e);
+    t1.preventDefault$0(e);
+    t1 = t1.get$touches(e);
     if (0 >= t1.length)
       throw H.ioore(t1, 0);
     t1 = t1[0];
@@ -809,10 +844,12 @@ DrawingTool__setupListeners_closure0: {"": "Closure;this_1",
 DrawingTool__setupListeners_closure1: {"": "Closure;this_2",
   call$1: function(e) {
     var t1, t2, t3;
-    t1 = this.this_2;
-    t2 = J.get$page$x(e);
-    t3 = t1.actionQueue;
-    t3.get$last(t3).inputMove$3(t1._ctx, t1._alignedPoint$1(t2), t1._isDragging);
+    t1 = J.getInterceptor$x(e);
+    t1.preventDefault$0(e);
+    t2 = this.this_2;
+    t1 = t1.get$page(e);
+    t3 = t2.actionQueue;
+    t3.get$last(t3).inputMove$3(t2._ctx, t2._alignedPoint$1(t1), t2._isDragging);
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -822,15 +859,17 @@ DrawingTool__setupListeners_closure1: {"": "Closure;this_2",
 DrawingTool__setupListeners_closure2: {"": "Closure;this_3",
   call$1: function(e) {
     var t1, t2, t3;
-    t1 = this.this_3;
-    t2 = J.get$touches$x(e);
-    if (0 >= t2.length)
-      throw H.ioore(t2, 0);
-    t2 = t2[0];
-    t2 = new P.Point0(t2.pageX, t2.pageY);
-    H.setRuntimeTypeInfo(t2, [null]);
-    t3 = t1.actionQueue;
-    t3.get$last(t3).inputMove$3(t1._ctx, t1._alignedPoint$1(t2), t1._isDragging);
+    t1 = J.getInterceptor$x(e);
+    t1.preventDefault$0(e);
+    t2 = this.this_3;
+    t1 = t1.get$touches(e);
+    if (0 >= t1.length)
+      throw H.ioore(t1, 0);
+    t1 = t1[0];
+    t1 = new P.Point0(t1.pageX, t1.pageY);
+    H.setRuntimeTypeInfo(t1, [null]);
+    t3 = t2.actionQueue;
+    t3.get$last(t3).inputMove$3(t2._ctx, t2._alignedPoint$1(t1), t2._isDragging);
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -839,7 +878,9 @@ DrawingTool__setupListeners_closure2: {"": "Closure;this_3",
 
 DrawingTool__setupListeners_closure3: {"": "Closure;this_4",
   call$1: function(e) {
-    this.this_4._inputUp$1(J.get$page$x(e));
+    var t1 = J.getInterceptor$x(e);
+    t1.preventDefault$0(e);
+    this.this_4._inputUp$1(t1.get$page(e));
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -848,7 +889,9 @@ DrawingTool__setupListeners_closure3: {"": "Closure;this_4",
 
 DrawingTool__setupListeners_closure4: {"": "Closure;this_5",
   call$1: function(e) {
-    var t1 = J.get$touches$x(e);
+    var t1 = J.getInterceptor$x(e);
+    t1.preventDefault$0(e);
+    t1 = t1.get$touches(e);
     if (0 >= t1.length)
       throw H.ioore(t1, 0);
     t1 = t1[0];
@@ -929,6 +972,17 @@ DrawingTool__updateOffscreenBuffer_closure: {"": "Closure;this_0,hiddenCtx_1",
   $is_args1: true
 },
 
+DrawingTool__changeLineColor_closure: {"": "Closure;this_0",
+  call$1: function(action) {
+    var t1 = this.this_0.actionQueue;
+    action.get$settings().fillColor.copyFrom$1(t1.get$last(t1).get$settings().fillColor);
+    action.get$settings().strokeColor.copyFrom$1(t1.get$last(t1).get$settings().strokeColor);
+  },
+  "+call:1:0": 0,
+  $isFunction: true,
+  $is_args1: true
+},
+
 DrawingTool_saveSvg_closure: {"": "Closure;this_0,svgCtx_1",
   call$1: function(action) {
     var t1, t2;
@@ -941,19 +995,83 @@ DrawingTool_saveSvg_closure: {"": "Closure;this_0,svgCtx_1",
   $is_args1: true
 },
 
-ActionSettings: {"": "Object;lineWidth,opacity,strokeStyle,fillStyle",
+ActionSettings: {"": "Object;lineWidth,opacity,strokeStyle,fillStyle,strokeColor,fillColor",
   execute$1: function(ctx) {
+    var t1, t2, t3, t4;
     ctx.lineWidth = this.lineWidth;
-    ctx.strokeStyle = "rgba(255, 255, 255, " + H.S(this.opacity) + ")";
-    ctx.fillStyle = "rgba(255, 255, 255, " + H.S(this.opacity) + ")";
+    t1 = this.strokeColor;
+    t2 = t1.r;
+    t3 = t1.g;
+    t1 = t1.b;
+    t4 = this.opacity;
+    ctx.strokeStyle = "rgba(" + H.S(t2) + ", " + H.S(t3) + ", " + H.S(t1) + ", " + H.S(t4) + ")";
+    t4 = this.fillColor;
+    t1 = t4.r;
+    t3 = t4.g;
+    t4 = t4.b;
+    t2 = this.opacity;
+    ctx.fillStyle = "rgba(" + H.S(t1) + ", " + H.S(t3) + ", " + H.S(t4) + ", " + H.S(t2) + ")";
   },
   executeForSvg$1: function(ctx) {
+    var t1;
     ctx._lineWidth = this.lineWidth;
     if (this.strokeStyle == null)
       ctx._strokeStyle = "none";
-    else
-      ctx.setStrokeColorRgb$4(ctx, 255, 255, 255, this.opacity);
-    ctx.setFillColorRgb$4(ctx, 255, 255, 255, this.opacity);
+    else {
+      t1 = this.strokeColor;
+      ctx.setStrokeColorRgb$4(ctx, t1.r, t1.g, t1.b, this.opacity);
+    }
+    t1 = this.fillColor;
+    ctx.setFillColorRgb$4(ctx, t1.r, t1.g, t1.b, this.opacity);
+  }
+},
+
+ColorValue: {"": "Object;r>,g<,b<",
+  copyFrom$1: function(other) {
+    this.r = other.get$r(other);
+    this.g = other.get$g();
+    this.b = other.get$b();
+  },
+  parseRgb$1: function(value) {
+    var tokens, t1, t2;
+    tokens = value.split(",");
+    if (tokens.length < 3)
+      throw H.wrapException(P.Exception_Exception("Invalid color value format"));
+    t1 = J.substring$1$s(tokens[0], 4);
+    t2 = tokens.length;
+    if (0 >= t2)
+      throw H.ioore(tokens, 0);
+    tokens[0] = t1;
+    if (2 >= t2)
+      throw H.ioore(tokens, 2);
+    t2 = tokens[2];
+    t1 = J.getInterceptor$asx(t2);
+    t2 = t1.substring$2(t2, 0, J.$sub$n(t1.get$length(t2), 1));
+    if (2 >= tokens.length)
+      throw H.ioore(tokens, 2);
+    tokens[2] = t2;
+    this.r = H.Primitives_parseInt(tokens[0], null, null);
+    if (1 >= tokens.length)
+      throw H.ioore(tokens, 1);
+    this.g = H.Primitives_parseInt(tokens[1], null, null);
+    if (2 >= tokens.length)
+      throw H.ioore(tokens, 2);
+    this.b = H.Primitives_parseInt(tokens[2], null, null);
+    this.r = P.max(0, P.min(255, this.r));
+    this.g = P.max(0, P.min(255, this.g));
+    this.b = P.max(0, P.min(255, this.b));
+  },
+  $mul: function(_, value) {
+    return new R.ColorValue(J.toInt$0$n(J.$mul$n(this.r, value)), J.toInt$0$n(J.$mul$n(this.g, value)), J.toInt$0$n(J.$mul$n(this.b, value)));
+  },
+  $add: function(_, other) {
+    return new R.ColorValue(J.$add$ns(this.r, J.get$r$x(other)), J.$add$ns(this.g, other.get$g()), J.$add$ns(this.b, other.get$b()));
+  },
+  $sub: function(_, other) {
+    return new R.ColorValue(J.$sub$n(this.r, C.JSInt_methods.get$r(other)), J.$sub$n(this.g, other.get$g()), J.$sub$n(this.b, other.get$b()));
+  },
+  toString$0: function(_) {
+    return "rgba(" + H.S(this.r) + ", " + H.S(this.g) + ", " + H.S(this.b) + ", 1.0)";
   }
 },
 
@@ -1173,7 +1291,7 @@ RegularFillAction: {"": "RegularStrokeAction;_activePoints,points,name,settings"
 RegularFillAction$: function() {
   var t1 = P.List_List(null, Z.Point);
   H.setRuntimeTypeInfo(t1, [Z.Point]);
-  t1 = new R.RegularFillAction(null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)"));
+  t1 = new R.RegularFillAction(null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
   t1.RegularFillAction$0();
   return t1;
 }}
@@ -1295,7 +1413,7 @@ SmoothFillAction: {"": "SmoothStrokeAction;_draggedPoint,_activePoints,points,na
 SmoothFillAction$: function() {
   var t1 = P.List_List(null, Z.Point);
   H.setRuntimeTypeInfo(t1, [Z.Point]);
-  t1 = new R.SmoothFillAction(null, null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)"));
+  t1 = new R.SmoothFillAction(null, null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
   t1.name = "SmoothStroke";
   t1.SmoothFillAction$0();
   return t1;
@@ -1488,7 +1606,7 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
     H.setRuntimeTypeInfo(t2, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
     t2._tryResume$0();
     this._DrawingToolLib$_$advancedToggleButton = t1;
-    $.get$context().callMethod$2("jQuery", ["#interface-color-line-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure7(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    $.get$context().callMethod$2("jQuery", ["#interface-color-line-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["showPalette", true, "showPaletteOnly", true, "palette", ["#FFFFFF", "#00ecfc", "#ffdf34", "#ef43ff"], "change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure7(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
     $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-start-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure8(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
     $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-end-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure9(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
     P.Future_Future$delayed(P.Duration$(0, 0, 0, 0, 0, 1), new R.DrawingToolInterface__setupOutgoingEvents_closure10(this), null);
@@ -1850,11 +1968,31 @@ SvgRenderer: {"": "Object;_svg,defs,_lineWidth,_strokeStyle,_fillStyle,_opacity,
     new W._ElementAttributeMap(t1)._element.setAttribute("fill", this._fillStyle);
   },
   setStrokeColorRgb$4: function(_, r, g, b, a) {
-    this._strokeStyle = "#" + C.JSString_methods.substring$2(C.JSInt_methods.toRadixString$1(16777216 + (r << 16 >>> 0) + (g << 8 >>> 0) + b, 16), 1, 7);
+    var t1, t2;
+    t1 = J.getInterceptor$n(r);
+    t1.$shl(r, 16);
+    t2 = J.getInterceptor$n(g);
+    t2.$shl(g, 8);
+    J.$shl$n(b, 0);
+    t1 = t1.$shl(r, 16);
+    t2 = t2.$shl(g, 8);
+    if (typeof b !== "number")
+      throw H.iae(b);
+    this._strokeStyle = "#" + C.JSString_methods.substring$2(C.JSNumber_methods.toRadixString$1(16777216 + t1 + t2 + b, 16), 1, 7);
     this._opacity = a;
   },
   setFillColorRgb$4: function(_, r, g, b, a) {
-    this._fillStyle = "#" + C.JSString_methods.substring$2(C.JSInt_methods.toRadixString$1(16777216 + (r << 16 >>> 0) + (g << 8 >>> 0) + b, 16), 1, 7);
+    var t1, t2;
+    t1 = J.getInterceptor$n(r);
+    t1.$shl(r, 16);
+    t2 = J.getInterceptor$n(g);
+    t2.$shl(g, 8);
+    J.$shl$n(b, 0);
+    t1 = t1.$shl(r, 16);
+    t2 = t2.$shl(g, 8);
+    if (typeof b !== "number")
+      throw H.iae(b);
+    this._fillStyle = "#" + C.JSString_methods.substring$2(C.JSNumber_methods.toRadixString$1(16777216 + t1 + t2 + b, 16), 1, 7);
     this._opacity = a;
   },
   SvgRenderer$2: function(width, height) {
@@ -2271,6 +2409,8 @@ JSArray: {"": "List/Interceptor;",
     return receiver[index];
   },
   sublist$2: function(receiver, start, end) {
+    if (start == null)
+      H.throwExpression(new P.ArgumentError(null));
     if (typeof start !== "number" || Math.floor(start) !== start)
       throw H.wrapException(new P.ArgumentError(start));
     if (start < 0 || start > receiver.length)
@@ -2381,6 +2521,9 @@ JSExtendableArray: {"": "JSMutableArray;", $isJSExtendableArray: true},
 JSNumber: {"": "num/Interceptor;",
   get$isNegative: function(receiver) {
     return receiver === 0 ? 1 / receiver < 0 : receiver < 0;
+  },
+  get$isNaN: function(receiver) {
+    return isNaN(receiver);
   },
   remainder$1: function(receiver, b) {
     return receiver % b;
@@ -2500,9 +2643,9 @@ JSNumber: {"": "num/Interceptor;",
 
 },
 
-JSInt: {"": "int/JSNumber;", $isnum: true, $isint: true},
+JSInt: {"": "int/JSNumber;", $isdouble: true, $isnum: true, $isint: true},
 
-JSDouble: {"": "double/JSNumber;", $isnum: true},
+JSDouble: {"": "double/JSNumber;", $isdouble: true, $isnum: true},
 
 JSString: {"": "String/Interceptor;",
   codeUnitAt$1: function(receiver, index) {
@@ -9964,7 +10107,13 @@ EmbedElement: {"": "HtmlElement;height},name=,src},width}", "%": "HTMLEmbedEleme
 
 ErrorEvent: {"": "Event;error=", "%": "ErrorEvent"},
 
-Event: {"": "Interceptor;", $isEvent: true, "%": "AudioProcessingEvent|AutocompleteErrorEvent|BeforeLoadEvent|BeforeUnloadEvent|CSSFontFaceLoadEvent|CloseEvent|CustomEvent|DeviceMotionEvent|DeviceOrientationEvent|HashChangeEvent|IDBVersionChangeEvent|MIDIConnectionEvent|MIDIMessageEvent|MediaKeyEvent|MediaKeyMessageEvent|MediaKeyNeededEvent|MediaStreamEvent|MediaStreamTrackEvent|MessageEvent|MutationEvent|OfflineAudioCompletionEvent|OverflowEvent|PageTransitionEvent|PopStateEvent|RTCDTMFToneChangeEvent|RTCDataChannelEvent|RTCIceCandidateEvent|SecurityPolicyViolationEvent|SpeechInputEvent|SpeechRecognitionEvent|StorageEvent|TrackEvent|TransitionEvent|WebGLContextEvent|WebKitAnimationEvent|WebKitTransitionEvent;Event"},
+Event: {"": "Interceptor;",
+  preventDefault$0: function(receiver) {
+    return receiver.preventDefault();
+  },
+  $isEvent: true,
+  "%": "AudioProcessingEvent|AutocompleteErrorEvent|BeforeLoadEvent|BeforeUnloadEvent|CSSFontFaceLoadEvent|CloseEvent|CustomEvent|DeviceMotionEvent|DeviceOrientationEvent|HashChangeEvent|IDBVersionChangeEvent|MIDIConnectionEvent|MIDIMessageEvent|MediaKeyEvent|MediaKeyMessageEvent|MediaKeyNeededEvent|MediaStreamEvent|MediaStreamTrackEvent|MessageEvent|MutationEvent|OfflineAudioCompletionEvent|OverflowEvent|PageTransitionEvent|PopStateEvent|RTCDTMFToneChangeEvent|RTCDataChannelEvent|RTCIceCandidateEvent|SecurityPolicyViolationEvent|SpeechInputEvent|SpeechRecognitionEvent|StorageEvent|TrackEvent|TransitionEvent|WebGLContextEvent|WebKitAnimationEvent|WebKitTransitionEvent;Event"
+},
 
 EventTarget: {"": "Interceptor;",
   addEventListener$3: function(receiver, type, listener, useCapture) {
@@ -11101,6 +11250,8 @@ _LocationWrapper: {"": "Object;_ptr",
 ["dart.dom.indexed_db", "dart:indexed_db", , P, {
 KeyRange: {"": "Interceptor;", $isKeyRange: true, "%": "IDBKeyRange"}}],
 ["dart.dom.svg", "dart:svg", , P, {
+CircleElement: {"": "GraphicsElement;r=", "%": "SVGCircleElement"},
+
 FEBlendElement: {"": "SvgElement;x=,y=", "%": "SVGFEBlendElement"},
 
 FEColorMatrixElement: {"": "SvgElement;x=,y=", "%": "SVGFEColorMatrixElement"},
@@ -11143,7 +11294,7 @@ ForeignObjectElement: {"": "GraphicsElement;x=,y=", "%": "SVGForeignObjectElemen
 
 GElement: {"": "GraphicsElement;", $isGElement: true, "%": "SVGGElement"},
 
-GraphicsElement: {"": "SvgElement;", "%": "SVGAElement|SVGCircleElement|SVGClipPathElement|SVGDefsElement|SVGEllipseElement|SVGLineElement|SVGPathElement|SVGSwitchElement;SVGGraphicsElement"},
+GraphicsElement: {"": "SvgElement;", "%": "SVGAElement|SVGClipPathElement|SVGDefsElement|SVGEllipseElement|SVGLineElement|SVGPathElement|SVGSwitchElement;SVGGraphicsElement"},
 
 ImageElement0: {"": "GraphicsElement;x=,y=", "%": "SVGImageElement"},
 
@@ -11154,6 +11305,8 @@ PatternElement: {"": "SvgElement;x=,y=", "%": "SVGPatternElement"},
 PolygonElement: {"": "GraphicsElement;points=", "%": "SVGPolygonElement"},
 
 PolylineElement: {"": "GraphicsElement;points=", "%": "SVGPolylineElement"},
+
+RadialGradientElement: {"": "_GradientElement;r=", "%": "SVGRadialGradientElement"},
 
 RectElement: {"": "GraphicsElement;x=,y=", "%": "SVGRectElement"},
 
@@ -11184,7 +11337,7 @@ SvgElement: {"": "Element;",
     J.addAll$1$ax(t1.get$children(container), J.get$children$x(cloned));
     return t1.get$innerHtml(container);
   },
-  "%": "SVGAltGlyphDefElement|SVGAltGlyphItemElement|SVGAnimateColorElement|SVGAnimateElement|SVGAnimateMotionElement|SVGAnimateTransformElement|SVGAnimationElement|SVGComponentTransferFunctionElement|SVGCursorElement|SVGDescElement|SVGFEDistantLightElement|SVGFEDropShadowElement|SVGFEFuncAElement|SVGFEFuncBElement|SVGFEFuncGElement|SVGFEFuncRElement|SVGFEMergeNodeElement|SVGFontElement|SVGFontFaceElement|SVGFontFaceFormatElement|SVGFontFaceNameElement|SVGFontFaceSrcElement|SVGFontFaceUriElement|SVGGlyphElement|SVGGlyphRefElement|SVGGradientElement|SVGHKernElement|SVGLinearGradientElement|SVGMPathElement|SVGMarkerElement|SVGMetadataElement|SVGMissingGlyphElement|SVGRadialGradientElement|SVGScriptElement|SVGSetElement|SVGStopElement|SVGStyleElement|SVGSymbolElement|SVGTitleElement|SVGVKernElement|SVGViewElement;SVGElement"
+  "%": "SVGAltGlyphDefElement|SVGAltGlyphItemElement|SVGAnimateColorElement|SVGAnimateElement|SVGAnimateMotionElement|SVGAnimateTransformElement|SVGAnimationElement|SVGComponentTransferFunctionElement|SVGCursorElement|SVGDescElement|SVGFEDistantLightElement|SVGFEDropShadowElement|SVGFEFuncAElement|SVGFEFuncBElement|SVGFEFuncGElement|SVGFEFuncRElement|SVGFEMergeNodeElement|SVGFontElement|SVGFontFaceElement|SVGFontFaceFormatElement|SVGFontFaceNameElement|SVGFontFaceSrcElement|SVGFontFaceUriElement|SVGGlyphElement|SVGGlyphRefElement|SVGHKernElement|SVGMPathElement|SVGMarkerElement|SVGMetadataElement|SVGMissingGlyphElement|SVGScriptElement|SVGSetElement|SVGStopElement|SVGStyleElement|SVGSymbolElement|SVGTitleElement|SVGVKernElement|SVGViewElement;SVGElement"
 },
 
 SvgSvgElement: {"": "GraphicsElement;x=,y=", "%": "SVGSVGElement"},
@@ -11194,6 +11347,8 @@ TextContentElement: {"": "GraphicsElement;", "%": "SVGTextPathElement;SVGTextCon
 TextPositioningElement: {"": "TextContentElement;x=,y=", "%": "SVGAltGlyphElement|SVGTSpanElement|SVGTextElement|SVGTextPositioningElement"},
 
 UseElement: {"": "GraphicsElement;x=,y=", "%": "SVGUseElement"},
+
+_GradientElement: {"": "SvgElement;", "%": "SVGLinearGradientElement;SVGGradientElement"},
 
 _AttributeClassSet: {"": "CssClassSetImpl;_svg$_element",
   readClasses$0: function() {
@@ -11560,6 +11715,42 @@ _JenkinsSmiHash_finish0: function(hash) {
   return 536870911 & hash + ((16383 & hash) << 15 >>> 0);
 },
 
+min: function(a, b) {
+  if (typeof b !== "number")
+    throw H.wrapException(new P.ArgumentError(b));
+  if (a > b)
+    return b;
+  if (a < b)
+    return a;
+  if (typeof b === "number") {
+    if (typeof a === "number")
+      if (a === 0)
+        return (a + b) * a * b;
+    if (a === 0 && C.JSDouble_methods.get$isNegative(b) || C.JSDouble_methods.get$isNaN(b))
+      return b;
+    return a;
+  }
+  return a;
+},
+
+max: function(a, b) {
+  if (a > b)
+    return a;
+  if (a < b)
+    return b;
+  if (typeof b === "number") {
+    if (typeof a === "number")
+      if (a === 0)
+        return a + b;
+    if (C.JSNumber_methods.get$isNaN(b))
+      return b;
+    return a;
+  }
+  if (b === 0 && C.JSInt_methods.get$isNegative(a))
+    return b;
+  return a;
+},
+
 Point0: {"": "Object;x>,y>",
   toString$0: function(_) {
     return "Point(" + H.S(this.x) + ", " + H.S(this.y) + ")";
@@ -11613,12 +11804,12 @@ Point0: {"": "Object;x>,y>",
     t2 = C.JSInt_methods.get$x(other);
     if (typeof t1 !== "number")
       throw t1.$sub();
-    t2 = C.JSInt_methods.$sub(t1, t2);
+    t2 = C.JSNumber_methods.$sub(t1, t2);
     t1 = this.y;
     t3 = C.JSInt_methods.get$y(other);
     if (typeof t1 !== "number")
       throw t1.$sub();
-    t3 = C.JSInt_methods.$sub(t1, t3);
+    t3 = C.JSNumber_methods.$sub(t1, t3);
     t3 = new P.Point0(t2, t3);
     H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(this, "Point0", 0)]);
     return t3;
@@ -12710,6 +12901,11 @@ J.$lt$n = function(receiver, a0) {
     return receiver < a0;
   return J.getInterceptor$n(receiver).$lt(receiver, a0);
 };
+J.$mul$n = function(receiver, a0) {
+  if (typeof receiver == "number" && typeof a0 == "number")
+    return receiver * a0;
+  return J.getInterceptor$n(receiver).$mul(receiver, a0);
+};
 J.$shl$n = function(receiver, a0) {
   return J.getInterceptor$n(receiver).$shl(receiver, a0);
 };
@@ -12811,20 +13007,17 @@ J.get$onClick$x = function(receiver) {
 J.get$outerHtml$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$outerHtml(receiver);
 };
-J.get$page$x = function(receiver) {
-  return J.getInterceptor$x(receiver).get$page(receiver);
-};
 J.get$parent$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$parent(receiver);
 };
 J.get$points$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$points(receiver);
 };
+J.get$r$x = function(receiver) {
+  return J.getInterceptor$x(receiver).get$r(receiver);
+};
 J.get$responseText$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$responseText(receiver);
-};
-J.get$touches$x = function(receiver) {
-  return J.getInterceptor$x(receiver).get$touches(receiver);
 };
 J.get$value$x = function(receiver) {
   return J.getInterceptor$x(receiver).get$value(receiver);
@@ -12891,6 +13084,9 @@ J.set$width$x = function(receiver, value) {
 };
 J.startsWith$1$s = function(receiver, a0) {
   return J.getInterceptor$s(receiver).startsWith$1(receiver, a0);
+};
+J.substring$1$s = function(receiver, a0) {
+  return J.getInterceptor$s(receiver).substring$1(receiver, a0);
 };
 J.toInt$0$n = function(receiver) {
   return J.getInterceptor$n(receiver).toInt$0(receiver);
