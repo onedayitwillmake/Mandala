@@ -125,10 +125,10 @@ class DrawingToolInterface {
 
     // Fade in
     context['TweenMax'].callMethod("killDelayedCallsTo",[_helperText]);
-    context['TweenMax'].callMethod("to",[_helperText, 0.25, new JsObject.jsify({ 'alpha' : 1, 'display': 'block' })]);
+    context['TweenMax'].callMethod("to",[_helperText, 0.25, new JsObject.jsify({ 'alpha' : 0.75, 'display': 'block' })]);
     // Fade out
     context['TweenMax'].callMethod("to",[_helperText, 0.5, new JsObject.jsify({
-        'delay' : 4.0,
+        'delay' : 6.0,
         'alpha' : 0,
         'display': 'none'
     })]);

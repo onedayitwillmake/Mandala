@@ -65,6 +65,18 @@ var $$ = {};
 
 // Native classes
 // Method closures
+$$.BoundClosure$2 = [R, {"": "BoundClosure;_self,__js_helper$_target,_receiver,__js_helper$_name",
+  call$2: function(p0, p1) {
+    return this.__js_helper$_target.call(this._self, p0, p1);
+  },
+  call$1: function(p0) {
+    return this.call$2(p0, true);
+  },
+  "+call:1:0": 0,
+  $is_args2: true,
+  $is_args1: true
+}];
+
 $$.BoundClosure$1 = [R, {"": "BoundClosure;_self,__js_helper$_target,_receiver,__js_helper$_name",
   call$1: function(p0) {
     return this.__js_helper$_target.call(this._self, p0);
@@ -91,7 +103,7 @@ $$.BoundClosure$i1 = [P, {"": "BoundClosure;_self,__js_helper$_target,_receiver,
   $is_args1: true
 }];
 
-$$.BoundClosure$2 = [P, {"": "BoundClosure;_self,__js_helper$_target,_receiver,__js_helper$_name",
+$$.BoundClosure$20 = [P, {"": "BoundClosure;_self,__js_helper$_target,_receiver,__js_helper$_name",
   call$2: function(p0, p1) {
     return this.__js_helper$_target.call(this._self, p0, p1);
   },
@@ -103,7 +115,7 @@ $$.BoundClosure$2 = [P, {"": "BoundClosure;_self,__js_helper$_target,_receiver,_
   $is_args1: true
 }];
 
-$$.BoundClosure$20 = [P, {"": "BoundClosure;_self,__js_helper$_target,_receiver,__js_helper$_name",
+$$.BoundClosure$21 = [P, {"": "BoundClosure;_self,__js_helper$_target,_receiver,__js_helper$_name",
   call$2: function(p0, p1) {
     return this.__js_helper$_target.call(this._self, p0, p1);
   },
@@ -366,7 +378,7 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
       throw H.iae(t4);
     return new Z.Point((t2 - t5 - t6 * 0.5) / t4, (t1 - t7 - t3 * 0.5) / t4);
   },
-  _update$1: function(time) {
+  _update$2: function(time, raf) {
     var t1, t2, t3, j, xOffset, i, t4, t5, t6, t7;
     this._ctx.setTransform(1, 0, 0, 1, 0, 0);
     t1 = this._ctx;
@@ -447,13 +459,15 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
       }
       ++j;
     }
-    t1 = window;
-    t2 = this.get$_update();
-    C.Window_methods._ensureRequestAnimationFrame$0(t1);
-    this._rafId = C.Window_methods._requestAnimationFrame$1(t1, W._wrapZone(t2));
+    if (raf === true) {
+      t1 = window;
+      t2 = this.get$_update();
+      C.Window_methods._ensureRequestAnimationFrame$0(t1);
+      this._rafId = C.Window_methods._requestAnimationFrame$1(t1, W._wrapZone(t2));
+    }
   },
   get$_update: function() {
-    return new R.BoundClosure$1(this, R.DrawingTool.prototype._update$1, null, "_update$1");
+    return new R.BoundClosure$2(this, R.DrawingTool.prototype._update$2, null, "_update$2");
   },
   _updateOffscreenBuffer$0: function() {
     var hiddenCtx, t1, t2, j, xOffset, i, t3, t4, t5;
@@ -688,7 +702,9 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     t1.closePath$0(ctx);
   },
   saveSvg$0: function() {
-    var svgCtx, t1, t2, j, xOffset, i, t3, t4, t5;
+    var allowEditingPoints, svgCtx, t1, t2, j, xOffset, i, t3, t4, t5;
+    allowEditingPoints = this._allowEditingPoints;
+    this._allowEditingPoints = false;
     svgCtx = R.SvgRenderer$(J.toInt$0$n(J.get$width$x(this._canvasRect)), J.toInt$0$n(J.get$height$x(this._canvasRect)));
     t1 = svgCtx.defs;
     t1.toString;
@@ -767,7 +783,17 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     t3.toString;
     new W._ElementAttributeMap(t3)._element.setAttribute("d", J.toString$0(svgCtx._currentPathString));
     svgCtx.groupEnd$0();
+    this._allowEditingPoints = allowEditingPoints;
     return svgCtx._svg;
+  },
+  getDataUrl$0: function() {
+    var allowEditingPoints, imageData;
+    allowEditingPoints = this._allowEditingPoints;
+    this._allowEditingPoints = false;
+    this._update$2(0, false);
+    imageData = this._canvas.toDataURL("image/png", null);
+    this._allowEditingPoints = allowEditingPoints;
+    return imageData;
   },
   _dispatchAllStateEvents$0: function() {
     this._dispatchActionChangedEvent$0();
@@ -806,7 +832,7 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
   },
   static: {
 DrawingTool$: function(_canvas) {
-  var t1 = new R.DrawingTool(null, 7, true, true, 1, false, 10, 0.5, _canvas, null, null, null, null, "#383245", "#1B1821", new R.ColorValue(255, 255, 255), null, null, 0, P.ListQueue$(null, R.BaseAction));
+  var t1 = new R.DrawingTool(null, 7, true, false, 1, false, 10, 0.5, _canvas, null, null, null, null, "#383245", "#1B1821", new R.ColorValue(255, 255, 255), null, null, 0, P.ListQueue$(null, R.BaseAction));
   t1.DrawingTool$1(_canvas);
   return t1;
 }}
@@ -1647,8 +1673,8 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
     }
     this._helperText.textContent = instructions;
     J.$index$asx($.get$context(), "TweenMax").callMethod$2("killDelayedCallsTo", [this._helperText]);
-    J.$index$asx($.get$context(), "TweenMax").callMethod$2("to", [this._helperText, 0.25, P.JsObject_JsObject$jsify(H.fillLiteralMap(["alpha", 1, "display", "block"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
-    J.$index$asx($.get$context(), "TweenMax").callMethod$2("to", [this._helperText, 0.5, P.JsObject_JsObject$jsify(H.fillLiteralMap(["delay", 4, "alpha", 0, "display", "none"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    J.$index$asx($.get$context(), "TweenMax").callMethod$2("to", [this._helperText, 0.25, P.JsObject_JsObject$jsify(H.fillLiteralMap(["alpha", 0.75, "display", "block"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    J.$index$asx($.get$context(), "TweenMax").callMethod$2("to", [this._helperText, 0.5, P.JsObject_JsObject$jsify(H.fillLiteralMap(["delay", 6, "alpha", 0, "display", "none"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
     this._drawingModule.changeAction$1(modeName);
   },
   _toggleAdvancedMenus$1: function(e) {
@@ -2187,7 +2213,7 @@ SiteApp: {"": "Object;_topMenu,_SiteLib$_drawingModule",
     var img, t1;
     P.print("ImageSave");
     img = W.ImageElement_ImageElement(null, null, null);
-    J.set$src$x(img, this._SiteLib$_drawingModule._canvas.toDataURL("image/png", null));
+    J.set$src$x(img, this._SiteLib$_drawingModule.getDataUrl$0());
     t1 = J.get$body$x(J.get$document$x(C.Window_methods.open$2(window, "", "")));
     t1.toString;
     new W._ChildNodeListLazy(t1)._this.appendChild(img);
@@ -2223,14 +2249,12 @@ SiteApp: {"": "Object;_topMenu,_SiteLib$_drawingModule",
     return new R.BoundClosure$1(this, S.SiteApp.prototype._displaySubmissionForm$1, null, "_displaySubmissionForm$1");
   },
   _onPublishRequested$1: function(e) {
-    var t1, imageData, t2;
+    var imageData, t1;
     J.set$pointerEvents$x(document.querySelector("#submission-form .submit").style, "none");
     J.set$opacity$x(document.querySelector("#submission-form .submit").style, "0.25");
-    t1 = this._SiteLib$_drawingModule;
-    imageData = t1._canvas.toDataURL("image/png", null);
-    t2 = H.interceptedTypeCast(document.querySelector("#submission-form-title"), "$isInputElement").value;
-    t1.mandalaId;
-    W.HttpRequest_postFormData("/mandalas/create_from_tool", H.fillLiteralMap(["image_data", imageData, "title", t2, "id", ""], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)), null, null, null, null).then$1(new S.SiteApp__onPublishRequested_closure());
+    imageData = this._SiteLib$_drawingModule.getDataUrl$0();
+    t1 = H.interceptedTypeCast(document.querySelector("#submission-form-title"), "$isInputElement").value;
+    W.HttpRequest_postFormData("/mandalas/create_from_tool", H.fillLiteralMap(["image_data", imageData, "title", t1, "id", ""], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)), null, null, null, null).then$1(new S.SiteApp__onPublishRequested_closure());
   },
   get$_onPublishRequested: function() {
     return new R.BoundClosure$1(this, S.SiteApp.prototype._onPublishRequested$1, null, "_onPublishRequested$1");
@@ -5702,7 +5726,7 @@ _BroadcastStreamController: {"": "Object;_async$_next@,_async$_previous@",
     this._sendError$2(error, stackTrace);
   },
   get$addError: function() {
-    return new P.BoundClosure$2(this, P._BroadcastStreamController.prototype.addError$2, null, "addError$2");
+    return new P.BoundClosure$20(this, P._BroadcastStreamController.prototype.addError$2, null, "addError$2");
   },
   close$0: function(_) {
     var t1, doneFuture;
@@ -5914,7 +5938,7 @@ _AsyncCompleter: {"": "_Completer;future",
     return this.completeError$2(error, null);
   },
   get$completeError: function() {
-    return new P.BoundClosure$2(this, P._AsyncCompleter.prototype.completeError$2, null, "completeError$2");
+    return new P.BoundClosure$20(this, P._AsyncCompleter.prototype.completeError$2, null, "completeError$2");
   },
   $as_Completer: null
 },
@@ -6023,7 +6047,7 @@ _Future: {"": "Object;_state,_zone<,_resultOrListeners,_nextListener@,_onValueCa
     P._Future__propagateToListeners(this, listeners);
   },
   get$_completeError: function() {
-    return new P.BoundClosure$2(this, P._Future.prototype._completeError$2, null, "_completeError$2");
+    return new P.BoundClosure$20(this, P._Future.prototype._completeError$2, null, "_completeError$2");
   },
   _asyncComplete$1: function(value) {
     if (this._state !== 0)
@@ -7164,7 +7188,7 @@ _ForwardingStreamSubscription: {"": "_BufferingStreamSubscription;_stream,_subsc
     this._addError$2(error, stackTrace);
   },
   get$_handleError: function() {
-    return new P.BoundClosure$20(this, P._ForwardingStreamSubscription.prototype._handleError$2, null, "_handleError$2");
+    return new P.BoundClosure$21(this, P._ForwardingStreamSubscription.prototype._handleError$2, null, "_handleError$2");
   },
   _handleDone$0: function() {
     this._close$0();

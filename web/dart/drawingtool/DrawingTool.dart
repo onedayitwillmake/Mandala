@@ -9,7 +9,7 @@ class DrawingTool {
   bool                      _isMirrored = true;
 
   /// If true - draggable points are drawn for the current tool
-  bool                      _allowEditingPoints = true;
+  bool                      _allowEditingPoints = false;
 
   /// Scale the canvas area by this value, 1.0 is unscaled
   num                       _scale = 1.0;
@@ -155,7 +155,7 @@ class DrawingTool {
   }
 
   /// Updates the current active tool
-  void _update( num time ) {
+  void _update( num time, [bool raf = true] ) {
     // Clear the area
     _ctx.setTransform(1, 0, 0, 1, 0, 0);
     _ctx.clearRect(0,0,_canvasRect.width, _canvasRect.height);
@@ -191,7 +191,7 @@ class DrawingTool {
       }
     }
 
-    _rafId = window.requestAnimationFrame(_update);
+    if( raf ) _rafId = window.requestAnimationFrame(_update);
   }
   
   void _updateOffscreenBuffer(){
@@ -403,7 +403,8 @@ class DrawingTool {
   
   /// Creates an SVG Representation of the mandala
   Svg.SvgElement saveSvg( ) {
-    
+    var allowEditingPoints = _allowEditingPoints;
+    _allowEditingPoints = false;
     SvgRenderer svgCtx = new SvgRenderer(_canvasRect.width.toInt(), _canvasRect.height.toInt() );
     
     svgCtx.defs.nodes.add( _bgGradientSvg );
@@ -445,12 +446,21 @@ class DrawingTool {
     svgCtx.closePath();
     svgCtx.groupEnd();
 
+    _allowEditingPoints = allowEditingPoints;
     return svgCtx.svg;
   }
 
   /// Returns the canvas as an image
   String getDataUrl() {
-    return _canvas.toDataUrl();
+    // Disable guide points and redraw
+    bool allowEditingPoints = _allowEditingPoints;
+    _allowEditingPoints = false;
+
+    _update( 0, false );
+    String imageData = _canvas.toDataUrl();
+
+    _allowEditingPoints = allowEditingPoints;
+    return imageData;
   }
 
   /////////////////////////////////////////////////
