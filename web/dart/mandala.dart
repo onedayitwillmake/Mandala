@@ -10,8 +10,11 @@ DrawingTool tool = null;
 DrawingToolInterface toolInterface = null;
 
 void main() {
-  tool = new DrawingTool( (querySelector("#canvas") as CanvasElement) );
-  toolInterface = new DrawingToolInterface( tool );
+  if( querySelector("#canvas") != null ) {
+    print("NO NULL");
+    tool = new DrawingTool( (querySelector("#canvas") as CanvasElement) );
+    toolInterface = new DrawingToolInterface( tool );
+  }
 
   var site = new SiteApp(tool);
 }

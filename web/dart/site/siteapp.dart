@@ -1,5 +1,7 @@
 part of SiteLib;
 
+// ALL OF THIS CODE IS HORRIBLE - I DIDNT CARE TOO MUCH ABOUT THE INTERFACE STUFF IN THIS PROJECT
+// INSTEAD I FOCUSED ON THE FUN DRAWING STUFF - LOOK AT THAT INSTEAD!
 class SiteApp {
   TopMenuController _topMenu;
   DrawingTool _drawingModule;
@@ -12,6 +14,8 @@ class SiteApp {
   }
 
   void _setupToolbar(){
+    if( this._drawingModule == null ) return;
+
     querySelector("#nu-interface-save-svg").onClick.listen( _onSvgSave );
     querySelector("#nu-interface-save-image").onClick.listen( _onSaveImage );
     querySelector("#nu-interface-publish").onClick.listen( _displaySubmissionForm);
@@ -57,6 +61,18 @@ class SiteApp {
 
   void _displaySubmissionForm( e ) {
     HtmlElement form = querySelector("#submission-form");
+    if( querySelector("body").dataset["isLoggedIn"] == "false" ) {
+      if( form.style.display == "flex" ) {
+        form.style.display = "none";
+        return;
+      }
+      form.style.display = "flex";
+      querySelector("#submission-form .ui.form .info.message .header").text = "You must be signed in to publish";
+      querySelector("#submission-form .ui.form .info.message").style.display = "block";
+      querySelector("#submission-form .submit").style.display = "none";
+      querySelector("#submission-form .field").style.display = "none";
+      return;
+    }
 
     // Renable the submit button - hide the info box
     querySelector("#submission-form .ui.form .info.message").style.display = "none";
@@ -71,10 +87,12 @@ class SiteApp {
     querySelector("#submission-form .submit").style.pointerEvents = "none";
     querySelector("#submission-form .submit").style.opacity = "0.25";
 
+    //submission-form-title
     String imageData = _drawingModule.getDataUrl();
     HttpRequest.postFormData("/mandalas/create_from_tool", {
-      "image_data": imageData,
-      "id"       : _drawingModule.mandalaId == null ? "" : _drawingModule.mandalaId
+        "image_data": imageData,
+        "title"     : (querySelector("#submission-form-title") as InputElement).value,
+        "id"        : _drawingModule.mandalaId == null ? "" : _drawingModule.mandalaId
     }).then( (HttpRequest req ) {
       var responseJson = JSON.decode( req.responseText );
       querySelector("#submission-form .ui.form .info.message").style.display = "block";
