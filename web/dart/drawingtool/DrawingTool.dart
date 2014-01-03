@@ -202,11 +202,10 @@ class DrawingTool {
 
     hiddenCtx.shadowBlur = 0;
     hiddenCtx.shadowColor = 'rgba(0, 0, 0, 0)';
+    hiddenCtx.setTransform(1, 0, 0, 1, 0, 0);
     _drawBackground( hiddenCtx );
     hiddenCtx.shadowBlur = _blurAmount;
     hiddenCtx.shadowColor = 'rgba(255, 255, 255, ${_blurOpacity.toStringAsPrecision(2)} )';
-
-
     hiddenCtx.globalCompositeOperation = 'screen';
 
     // Draw everything twice if mirroring is turned on
@@ -311,6 +310,7 @@ class DrawingTool {
       break;
       case "scale":
         _scale = value;
+        _updateOffscreenBuffer();
         _dispatchScaleChangedEvent();
       break;
       case "setEditablePoints":
@@ -382,7 +382,11 @@ class DrawingTool {
   /// Draws the background gradient
   void _drawBackground( dynamic ctx ) {
     ctx.fillStyle = _bgGradient;
-    _fillRoundedRect(ctx, 0,0,_canvasRect.width,_canvasRect.height, 4);
+//    int x = _canvasRect.width - ( _canvasRect.width * (_scale / 1.0) );
+//    int y = _canvasRect.height - ( _canvasRect.height * (_scale / 1.0) );
+//    _fillRoundedRect(ctx, x, y, _canvasRect.width*_scale,_canvasRect.height*_scale, 4);
+    _fillRoundedRect(ctx, 0,0, _canvasRect.width,_canvasRect.height, 4);
+
   }
 
   /// Draws a rounded rectangle with [x],[y],[w],[h] extents
@@ -403,8 +407,11 @@ class DrawingTool {
   
   /// Creates an SVG Representation of the mandala
   Svg.SvgElement saveSvg( ) {
-    var allowEditingPoints = _allowEditingPoints;
+    bool oldAllowEditingPoints = _allowEditingPoints;
     _allowEditingPoints = false;
+    num oldScale = _scale;
+    _scale = 1.0;
+    
     SvgRenderer svgCtx = new SvgRenderer(_canvasRect.width.toInt(), _canvasRect.height.toInt() );
     
     svgCtx.defs.nodes.add( _bgGradientSvg );
@@ -446,20 +453,25 @@ class DrawingTool {
     svgCtx.closePath();
     svgCtx.groupEnd();
 
-    _allowEditingPoints = allowEditingPoints;
+    _allowEditingPoints = oldAllowEditingPoints;
+    performEditAction("scale", oldScale);
     return svgCtx.svg;
   }
 
   /// Returns the canvas as an image
   String getDataUrl() {
     // Disable guide points and redraw
-    bool allowEditingPoints = _allowEditingPoints;
+    bool oldAllowEditingPoints = _allowEditingPoints;
     _allowEditingPoints = false;
+    num oldScale = _scale;
+    _scale = 1.0;
 
+    _updateOffscreenBuffer();
     _update( 0, false );
     String imageData = _canvas.toDataUrl();
 
-    _allowEditingPoints = allowEditingPoints;
+    _allowEditingPoints = oldAllowEditingPoints;
+    performEditAction("scale", oldScale);
     return imageData;
   }
 

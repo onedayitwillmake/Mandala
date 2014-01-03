@@ -608,6 +608,7 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
         break;
       case "scale":
         this._scale = value;
+        this._updateOffscreenBuffer$0();
         $.get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_SCALE_CHANGED", this._scale);
         break;
       case "setEditablePoints":
@@ -702,9 +703,11 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     t1.closePath$0(ctx);
   },
   saveSvg$0: function() {
-    var allowEditingPoints, svgCtx, t1, t2, j, xOffset, i, t3, t4, t5;
-    allowEditingPoints = this._allowEditingPoints;
+    var oldAllowEditingPoints, oldScale, svgCtx, t1, t2, j, xOffset, i, t3, t4, t5;
+    oldAllowEditingPoints = this._allowEditingPoints;
     this._allowEditingPoints = false;
+    oldScale = this._scale;
+    this._scale = 1;
     svgCtx = R.SvgRenderer$(J.toInt$0$n(J.get$width$x(this._canvasRect)), J.toInt$0$n(J.get$height$x(this._canvasRect)));
     t1 = svgCtx.defs;
     t1.toString;
@@ -783,16 +786,21 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     t3.toString;
     new W._ElementAttributeMap(t3)._element.setAttribute("d", J.toString$0(svgCtx._currentPathString));
     svgCtx.groupEnd$0();
-    this._allowEditingPoints = allowEditingPoints;
+    this._allowEditingPoints = oldAllowEditingPoints;
+    this.performEditAction$2("scale", oldScale);
     return svgCtx._svg;
   },
   getDataUrl$0: function() {
-    var allowEditingPoints, imageData;
-    allowEditingPoints = this._allowEditingPoints;
+    var oldAllowEditingPoints, oldScale, imageData;
+    oldAllowEditingPoints = this._allowEditingPoints;
     this._allowEditingPoints = false;
+    oldScale = this._scale;
+    this._scale = 1;
+    this._updateOffscreenBuffer$0();
     this._update$2(0, false);
     imageData = this._canvas.toDataURL("image/png", null);
-    this._allowEditingPoints = allowEditingPoints;
+    this._allowEditingPoints = oldAllowEditingPoints;
+    this.performEditAction$2("scale", oldScale);
     return imageData;
   },
   _dispatchAllStateEvents$0: function() {
@@ -1244,10 +1252,9 @@ PolygonalStrokeAction: {"": "BaseAction;_activePoints,_potentialNextPoint,_dragg
       return;
     }
     this._activePoints.push(pos);
-    t1 = this._activePoints;
-    if (t1.length < 3)
+    if (this._activePoints.length < 3)
       return;
-    if (pos.distanceTo$1(J.get$first$ax(t1)) < 10 || forceClose) {
+    if (forceClose) {
       t1 = this.points;
       t1.push($.get$BaseAction_LINE_BREAK());
       C.JSArray_methods.addAll$1(t1, this._activePoints);
@@ -1635,7 +1642,6 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
     $.get$context().callMethod$2("jQuery", ["#interface-color-line-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["showPalette", true, "showPaletteOnly", true, "palette", ["#FFFFFF", "#00ecfc", "#ffdf34", "#ef43ff"], "change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure7(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
     $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-start-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure8(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
     $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-end-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure9(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
-    P.Future_Future$delayed(P.Duration$(0, 0, 0, 0, 0, 1), new R.DrawingToolInterface__setupOutgoingEvents_closure10(this), null);
   },
   _setupIncommingEvents$0: function() {
     var t1 = $.get$SharedDispatcher_emitter();
@@ -1885,14 +1891,6 @@ DrawingToolInterface__setupOutgoingEvents_closure9: {"": "Closure;this_14",
   "+call:2:0": 0,
   $isFunction: true,
   $is_args2: true
-},
-
-DrawingToolInterface__setupOutgoingEvents_closure10: {"": "Closure;this_15",
-  call$0: function() {
-    return this.this_15._toggleAdvancedMenus$1(null);
-  },
-  "+call:0:0": 0,
-  $isFunction: true
 },
 
 DrawingToolInterface_onActionChanged_closure: {"": "Closure;actionName_0",
@@ -12515,17 +12513,17 @@ W.MouseEvent.$isObject = true;
 W.HttpRequest.$isHttpRequest = true;
 W.HttpRequest.$isObject = true;
 W.ProgressEvent.$isObject = true;
-P.Symbol.$isSymbol = true;
-P.Symbol.$isObject = true;
 P.Function.$isFunction = true;
 P.Function.$isObject = true;
+Z.Point.$isPoint = true;
+Z.Point.$isObject = true;
 P.Match.$isObject = true;
+P.Symbol.$isSymbol = true;
+P.Symbol.$isObject = true;
 J.JSBool.$isbool = true;
 J.JSBool.$isObject = true;
 W.TouchEvent.$isObject = true;
 W.Event.$isObject = true;
-Z.Point.$isPoint = true;
-Z.Point.$isObject = true;
 P.Stream.$isStream = true;
 P.Stream.$isObject = true;
 P.StreamSubscription.$isStreamSubscription = true;
