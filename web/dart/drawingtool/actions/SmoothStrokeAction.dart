@@ -7,6 +7,7 @@ class SmoothStrokeAction extends RegularStrokeAction {
 
   SmoothStrokeAction() : super() {
     this.name = ACTION_NAME;
+    SharedDispatcher.emitter.emit( ActionEvent.ON_BECAME_UNCONFIRMED, this.name );
   }
 
   void execute(dynamic ctx, width, height) {
@@ -73,7 +74,7 @@ class SmoothStrokeAction extends RegularStrokeAction {
     }
   }
 
-  void inputDown(dynamic ctx, Geom.Point pos, bool canEditPoints) {
+  void inputDown( Geom.Point pos, bool canEditPoints) {
     if( canEditPoints ) {
       for(var i = 0; i < points.length; i++) {
         if( points[i] == BaseAction.LINE_BREAK ) continue;
@@ -83,10 +84,11 @@ class SmoothStrokeAction extends RegularStrokeAction {
         }
       }
     }
-    super.inputDown( ctx, pos, canEditPoints );
+
+    super.inputDown( pos, canEditPoints );
   }
 
-  void inputMove(dynamic ctx, Geom.Point pos, bool isDrag) {
+  void inputMove(Geom.Point pos, bool isDrag) {
 
     // Drag the control point instead
     if( _draggedPoint != null ) {
@@ -94,10 +96,10 @@ class SmoothStrokeAction extends RegularStrokeAction {
       return;
     }
 
-    super.inputMove( ctx, pos, isDrag );
+    super.inputMove( pos, isDrag );
   }
 
-  void inputUp(dynamic ctx, Geom.Point pos) {
+  void inputUp(Geom.Point pos) {
     // User was dragging, meaning they're not drawing - so return early
     if( _draggedPoint != null ) {
       _draggedPoint = null;
@@ -107,12 +109,17 @@ class SmoothStrokeAction extends RegularStrokeAction {
     int oldLen = _activePoints.length;
     var simplifiedSmoothedPoints =  LineGeneralization.simplifyLang(10, 2, _activePoints) ;//LineGeneralization.smoothMcMaster( LineGeneralization.smoothMcMaster( LineGeneralization.simplifyLang(4, 1, _activePoints) ) );
 
-    print("Removed previously had ${oldLen}, now have ${simplifiedSmoothedPoints.length}, Removed ${oldLen - simplifiedSmoothedPoints.length} points");
+//    print("Removed previously had ${oldLen}, now have ${simplifiedSmoothedPoints.length}, Removed ${oldLen - simplifiedSmoothedPoints.length} points");
     
     points.add(BaseAction.LINE_BREAK);
     points.addAll(simplifiedSmoothedPoints);
 
     _activePoints = null;
-    
+    SharedDispatcher.emitter.emit( ActionEvent.ON_BECAME_CONFIRMABLE, "Confirm" );
+  }
+
+  // On confirmation, just call complete so we can get cloned
+  void onConfirmed(){
+    onComplete();
   }
 }

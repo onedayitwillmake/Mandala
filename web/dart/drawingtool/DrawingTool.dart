@@ -9,7 +9,7 @@ class DrawingTool {
   bool                      _isMirrored = true;
 
   /// If true - draggable points are drawn for the current tool
-  bool                      _allowEditingPoints = false;
+  bool                      _allowEditingPoints = true;
 
   /// Scale the canvas area by this value, 1.0 is unscaled
   num                       _scale = 1.0;
@@ -116,10 +116,11 @@ class DrawingTool {
       start();
     });
     // Keyboard
-    window.onKeyDown.listen( (e) => actionQueue.last.keyPressed( _ctx, e) );
+    window.onKeyDown.listen( (e) => actionQueue.last.keyPressed(e) );
 
     //
     SharedDispatcher.emitter.on( ActionEvent.ON_DRAWING_INTERACTION_FINISHED, onActionComplete );
+    SharedDispatcher.emitter.on( InterfaceEvent.ON_CONFIRMED, onConfirmed );
   }
 
   void start(){
@@ -135,16 +136,16 @@ class DrawingTool {
 
   void _inputDown( Point pos ) {
     _isDragging = true;
-    actionQueue.last.inputDown( _ctx, _alignedPoint( pos ), _allowEditingPoints );
+    actionQueue.last.inputDown( _alignedPoint( pos ), _allowEditingPoints );
   }
 
   void _inputMove( Point pos ) {
-    actionQueue.last.inputMove( _ctx, _alignedPoint( pos ), _isDragging );
+    actionQueue.last.inputMove( _alignedPoint( pos ), _isDragging );
   }
 
   void _inputUp( Point pos ) {
     _isDragging = false;
-    actionQueue.last.inputUp( _ctx, _alignedPoint( pos ) );
+    actionQueue.last.inputUp(  _alignedPoint( pos ) );
   }
 
   /// Returns a new [Geom.Point] such that (0,0) is the TL of the canvas, taking the element's offsets into account
@@ -169,8 +170,8 @@ class DrawingTool {
     
     // Renable blending / shadow
     _ctx.globalCompositeOperation = 'screen';
-    _ctx.shadowBlur = _blurAmount;
-    _ctx.shadowColor = 'rgba(255, 255, 255, ${_blurOpacity.toStringAsPrecision(2)} )';
+//    _ctx.shadowBlur = _blurAmount;
+//    _ctx.shadowColor = 'rgba(255, 255, 255, ${_blurOpacity.toStringAsPrecision(2)} )';
 
 
     // Draw everything twice if mirroring is turned on
@@ -185,6 +186,7 @@ class DrawingTool {
         _ctx.rotate(i/_sides * PI * 2);
         
         actionQueue.last.execute( _ctx, _canvasRect.width, _canvasRect.height );
+        // First draw, and not the mirrored version
         if( xOffset == 1 && i == 0 ) {
           actionQueue.last.activeDraw( _ctx, _canvasRect.width, _canvasRect.height, _allowEditingPoints );
         }
@@ -195,7 +197,7 @@ class DrawingTool {
   }
   
   void _updateOffscreenBuffer(){
-
+    print("_updateOffscreenBuffer");
     CanvasRenderingContext2D hiddenCtx  = _offscreenBuffer.context2D;
     hiddenCtx.setTransform(1, 0, 0, 1, 0, 0);
     hiddenCtx.clearRect(0,0,_canvasRect.width, _canvasRect.height);
@@ -221,6 +223,8 @@ class DrawingTool {
         hiddenCtx.rotate(i/_sides * PI * 2);
 
         actionQueue.forEach((BaseAction action){
+          if( action == actionQueue.last ) return;
+
           action.execute( hiddenCtx, _canvasRect.width, _canvasRect.height );
         });
       }
@@ -267,8 +271,8 @@ class DrawingTool {
       nextAction.settings.fillColor.copyFrom( actionQueue.last.settings.fillColor );
     }
 
-    _updateOffscreenBuffer();
     actionQueue.add( nextAction );
+    _updateOffscreenBuffer();
 
     if( dispatchEvent )
       _dispatchActionChangedEvent();
@@ -288,6 +292,10 @@ class DrawingTool {
         break;
       case "alpha":
         actionQueue.last.settings.opacity = value;
+        // If the topmost action has no points - the user probably means to change the action of the line they just drew
+        if( actionQueue.last.points.length == 0 && actionQueue.length >= 2 ) {
+          actionQueue.elementAt( actionQueue.length - 2 ).settings.opacity = value;
+        }
         _dispatchOpacityChangedEvent();
       break;
       case "lineColor":
@@ -330,8 +338,14 @@ class DrawingTool {
 //    print("No action for ${actionName}");
   }
 
+  /// Action is done, create a copy of it and update the offscreen buffer
   void onActionComplete( BaseAction action ) {
     changeAction( action.name, false );
+  }
+
+  /// Called when the confirm button in the interface is clicked
+  void onConfirmed( dynamic noop ) {
+    actionQueue.last.onConfirmed();
   }
 
   /// Modifies the line color used for drawing
@@ -353,23 +367,15 @@ class DrawingTool {
 
   /// Performs an undo operation, will pop the last state if there are not points in that state
   void _performUndo() {
-    // Current action has no points and user wants to undo - remove that action
-    if( actionQueue.last.points.length == 0 ) {
-      if( actionQueue.length == 1 ) {
-        _updateOffscreenBuffer();
-        return; // dont remove the last action
-      }
-      
-      
+    // Except for the backmost action, remove all actions which have no points
+    while( actionQueue.length > 1 && actionQueue.last.points.length == 0 ) {
       actionQueue.removeLast();
-      _updateOffscreenBuffer();
-      _dispatchActionChangedEvent();
     }
 
-    // Nothing to undo again!
-    if( actionQueue.length == 0 ) return;
+    actionQueue.last.undo( );
 
-    actionQueue.last.undo( _ctx );
+    _updateOffscreenBuffer();
+    _dispatchActionChangedEvent();
   }
 
   /// Wipes the entire drawing canvas

@@ -9,7 +9,9 @@ class PolygonalStrokeAction extends BaseAction {
   Geom.Point       _draggedPoint;
 
   /// Constructor
-  PolygonalStrokeAction() : super(ACTION_NAME);
+  PolygonalStrokeAction() : super(ACTION_NAME) {
+    SharedDispatcher.emitter.emit( ActionEvent.ON_BECAME_UNCONFIRMED, this.name );
+  }
 
   void execute(dynamic ctx, width, height) {
     settings.execute(ctx);
@@ -71,7 +73,7 @@ class PolygonalStrokeAction extends BaseAction {
     }
   }
 
-  void inputDown(dynamic ctx, Geom.Point pos, bool canEditPoints) {
+  void inputDown( Geom.Point pos, bool canEditPoints) {
 
     if( canEditPoints ) {
       for(var i = 0; i < points.length; i++) {
@@ -89,7 +91,7 @@ class PolygonalStrokeAction extends BaseAction {
     }
   }
 
-  void inputMove(dynamic ctx, Geom.Point pos, bool isDrag) {
+  void inputMove(Geom.Point pos, bool isDrag) {
     // Drag the control point instead
     if( _draggedPoint != null ) {
       _draggedPoint.copyFrom( pos );
@@ -99,7 +101,7 @@ class PolygonalStrokeAction extends BaseAction {
     _potentialNextPoint = pos;
   }
 
-  void inputUp(dynamic ctx, Geom.Point pos, [bool forceClose = false] ) {
+  void inputUp(Geom.Point pos, [bool forceClose = false] ) {
     // User was dragging - abort!
     if( _draggedPoint != null ) {
       _draggedPoint = null;
@@ -109,6 +111,14 @@ class PolygonalStrokeAction extends BaseAction {
     _activePoints.add(pos);
 
     if( _activePoints.length < 3 ) return;
+
+    // Has the minimum amount of points to be confirmable
+    if( _activePoints.length == 3 ) {
+      SharedDispatcher.emitter.emit( ActionEvent.ON_BECAME_CONFIRMABLE, "Confirm" );
+    }
+    print(_activePoints.length);
+
+
     if( forceClose ) {
       points.add(BaseAction.LINE_BREAK);
       points.addAll(_activePoints);
@@ -117,19 +127,16 @@ class PolygonalStrokeAction extends BaseAction {
       onComplete();
     }
   }
-  
-  /// If enter is pressed - close the path
-  void keyPressed(dynamic ctx, KeyboardEvent e ){
-    if( e.keyCode == KeyCode.ENTER ) {
-      // Don't bother making a path if there are less than 3 points
-      if( _activePoints == null || _activePoints.length < 3 ) {
-        _activePoints = null;
-        onComplete();
-        return; 
-      }
-      
-      inputUp( ctx, _activePoints.last, true );
+
+  void onConfirmed(){
+    // Don't bother making a path if there are less than 3 points
+    if( _activePoints == null || _activePoints.length < 3 ) {
+      _activePoints = null;
+      onComplete();
+      return;
     }
+
+    inputUp( _activePoints.last, true );
   }
 
   List<Geom.Point> _getPointsToDraw() {
@@ -150,7 +157,7 @@ class PolygonalStrokeAction extends BaseAction {
     }
   }
 
-  void undo( dynamic ctx ) {
+  void undo() {
     int lastBreak = points.lastIndexOf( BaseAction.LINE_BREAK );
     if( lastBreak == -1 ) return;
     points.removeRange(lastBreak, points.length );

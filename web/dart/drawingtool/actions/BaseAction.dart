@@ -27,15 +27,21 @@ class BaseAction {
   
   BaseAction( this.name );
   
-  void inputDown(dynamic ctx, Geom.Point pos, bool canEditPoints ){}
-  void inputMove(dynamic ctx, Geom.Point pos, bool isDragging ){}
-  void inputUp(dynamic ctx, Geom.Point pos){}
-  void keyPressed(dynamic ctx, KeyboardEvent e ){}
+  void inputDown(Geom.Point pos, bool canEditPoints ){}
+  void inputMove(Geom.Point pos, bool isDragging ){}
+  void inputUp(Geom.Point pos){}
+  void keyPressed(KeyboardEvent e ){}
   void execute(dynamic ctx, width, height){}
   void executeForSvg(dynamic ctx, width, height){}
   void activeDraw(dynamic ctx, width, height, bool canEditPoints){}
-  void undo(dynamic ctx ){}
+  void undo(){}
   void onComplete() {
     SharedDispatcher.emitter.emit(ActionEvent.ON_DRAWING_INTERACTION_FINISHED, this);
+  }
+  /// Action has been confirmed in the interface - do something to finalize it (close path, clone action, etc)
+  void onConfirmed(){}
+  /// Action has decided it can now be confirmed, for example the polyline has > 2 points drawn
+  void onBecameConfirmable() {
+    SharedDispatcher.emitter.emit(ActionEvent.ON_BECAME_CONFIRMABLE, this);
   }
 }

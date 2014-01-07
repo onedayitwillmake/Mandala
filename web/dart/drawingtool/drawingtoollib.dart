@@ -25,6 +25,7 @@ part 'svgrender/SvgRenderer.dart';
 
 part 'events/drawing_tool_event.dart';
 part 'events/action_event.dart';
+part 'events/interface_event.dart';
 part 'events/SharedDispatcher.dart';
 part 'DrawingTool.dart';
 part 'interface/DrawingToolInterface.dart';

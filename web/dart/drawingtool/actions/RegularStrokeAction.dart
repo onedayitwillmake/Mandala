@@ -54,17 +54,17 @@ class RegularStrokeAction extends BaseAction {
 
 
 
-  void inputDown(dynamic ctx, Geom.Point pos, bool canEditPoints) {
+  void inputDown(Geom.Point pos, bool canEditPoints) {
     _activePoints = new List<Geom.Point>();
     _activePoints.add(pos);
   }
 
-  void inputMove(dynamic ctx, Geom.Point pos, bool isDrag) {
+  void inputMove(Geom.Point pos, bool isDrag) {
     if (!isDrag) return;
     _activePoints.add(pos);
   }
 
-  void inputUp(dynamic ctx, Geom.Point pos) {
+  void inputUp(Geom.Point pos) {
     int oldLen = _activePoints.length;
     var simplifiedPoints = LineGeneralization.simplifyLang(4, 0.5, _activePoints);
 
@@ -88,7 +88,7 @@ class RegularStrokeAction extends BaseAction {
     }
   }
 
-  void undo(dynamic ctx) {
+  void undo() {
     int lastBreak = points.lastIndexOf(BaseAction.LINE_BREAK);
     if (lastBreak == -1) return;
     points.removeRange(lastBreak, points.length);

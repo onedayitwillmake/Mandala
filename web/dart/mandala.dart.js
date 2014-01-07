@@ -324,6 +324,8 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     t1._tryResume$0();
     t1 = $.get$SharedDispatcher_emitter();
     t1.on$2(t1, "ActionEvent.ON_DRAWING_INTERACTION_FINISHED", this.get$onActionComplete());
+    t1 = $.get$SharedDispatcher_emitter();
+    t1.on$2(t1, "InterfaceEvent.ON_CONFIRMED", this.get$onConfirmed());
   },
   start$0: function(_) {
     var t1, t2;
@@ -342,13 +344,7 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     var t1;
     this._isDragging = true;
     t1 = this.actionQueue;
-    t1.get$last(t1).inputDown$3(this._ctx, this._alignedPoint$1(pos), this._allowEditingPoints);
-  },
-  _inputUp$1: function(pos) {
-    var t1;
-    this._isDragging = false;
-    t1 = this.actionQueue;
-    t1.get$last(t1).inputUp$2(this._ctx, this._alignedPoint$1(pos));
+    t1.get$last(t1).inputDown$2(this._alignedPoint$1(pos), this._allowEditingPoints);
   },
   _alignedPoint$1: function(pos) {
     var t1, t2, t3, t4, t5, t6, t7;
@@ -391,8 +387,6 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     this._ctx.shadowColor = "rgba(0, 0, 0, 0)";
     this._ctx.drawImage(this._offscreenBuffer, 0, 0);
     this._ctx.globalCompositeOperation = "screen";
-    this._ctx.shadowBlur = this._blurAmount;
-    this._ctx.shadowColor = "rgba(255, 255, 255, " + C.JSDouble_methods.toStringAsPrecision$1(this._blurOpacity, 2) + " )";
     t1 = this.actionQueue;
     j = 0;
     while (true) {
@@ -471,6 +465,7 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
   },
   _updateOffscreenBuffer$0: function() {
     var hiddenCtx, t1, t2, j, xOffset, i, t3, t4, t5;
+    P.print("_updateOffscreenBuffer");
     hiddenCtx = J.get$context2D$x(this._offscreenBuffer);
     hiddenCtx.setTransform(1, 0, 0, 1, 0, 0);
     t1 = this._canvasRect;
@@ -478,6 +473,7 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     hiddenCtx.clearRect(0, 0, t2.get$width(t1), t2.get$height(t1));
     hiddenCtx.shadowBlur = 0;
     hiddenCtx.shadowColor = "rgba(0, 0, 0, 0)";
+    hiddenCtx.setTransform(1, 0, 0, 1, 0, 0);
     this._drawBackground$1(hiddenCtx);
     hiddenCtx.shadowBlur = this._blurAmount;
     hiddenCtx.shadowColor = "rgba(255, 255, 255, " + C.JSDouble_methods.toStringAsPrecision$1(this._blurOpacity, 2) + " )";
@@ -539,21 +535,17 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
         nextAction = new R.RegularStrokeAction(null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
         break;
       case "SmoothStroke":
-        t1 = P.List_List(null, Z.Point);
-        H.setRuntimeTypeInfo(t1, [Z.Point]);
-        nextAction = new R.SmoothStrokeAction(null, null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
-        nextAction.name = "SmoothStroke";
+        nextAction = R.SmoothStrokeAction$();
         break;
       case "PolygonalFill":
         t1 = P.List_List(null, Z.Point);
         H.setRuntimeTypeInfo(t1, [Z.Point]);
         nextAction = new R.PolygonalFillAction(null, null, null, t1, "PolygonalStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
+        nextAction.PolygonalStrokeAction$0();
         nextAction.name = "PolygonalFill";
         break;
       case "PolygonalStroke":
-        t1 = P.List_List(null, Z.Point);
-        H.setRuntimeTypeInfo(t1, [Z.Point]);
-        nextAction = new R.PolygonalStrokeAction(null, null, null, t1, "PolygonalStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
+        nextAction = R.PolygonalStrokeAction$();
         break;
       case "SmoothFill":
         nextAction = R.SmoothFillAction$();
@@ -571,8 +563,8 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
       t2.strokeColor.copyFrom$1(t1.get$last(t1).get$settings().strokeColor);
       t2.fillColor.copyFrom$1(t1.get$last(t1).get$settings().fillColor);
     }
-    this._updateOffscreenBuffer$0();
     t1._add$1(nextAction);
+    this._updateOffscreenBuffer$0();
     if ($dispatchEvent)
       this._dispatchActionChangedEvent$0();
     return true;
@@ -592,6 +584,8 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
       case "alpha":
         t1 = this.actionQueue;
         t1.get$last(t1).get$settings().opacity = value;
+        if (J.get$length$asx(J.get$points$x(t1.get$last(t1))) === 0 && t1.get$length(t1) >= 2)
+          t1.elementAt$1(t1, t1.get$length(t1) - 2).get$settings().opacity = value;
         this._dispatchOpacityChangedEvent$0();
         break;
       case "lineColor":
@@ -637,6 +631,13 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
   get$onActionComplete: function() {
     return new R.BoundClosure$1(this, R.DrawingTool.prototype.onActionComplete$1, null, "onActionComplete$1");
   },
+  onConfirmed$1: function(noop) {
+    var t1 = this.actionQueue;
+    t1.get$last(t1).onConfirmed$0();
+  },
+  get$onConfirmed: function() {
+    return new R.BoundClosure$1(this, R.DrawingTool.prototype.onConfirmed$1, null, "onConfirmed$1");
+  },
   _changeLineColor$1: function(value) {
     var t1 = this.actionQueue;
     t1.get$last(t1).get$settings().fillColor.parseRgb$1(value);
@@ -648,19 +649,30 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
     this._updateOffscreenBuffer$0();
   },
   _performUndo$0: function() {
-    var t1 = this.actionQueue;
-    if (J.get$length$asx(J.get$points$x(t1.get$last(t1))) === 0) {
-      if (t1.get$length(t1) === 1) {
-        this._updateOffscreenBuffer$0();
-        return;
-      }
+    var t1, t2, t3, t4, t5, t6;
+    t1 = this.actionQueue;
+    while (true) {
+      t2 = t1._tail;
+      t3 = t1._head;
+      t4 = t1._table;
+      t5 = t4.length;
+      t6 = t5 - 1;
+      if ((t2 - t3 & t6) >>> 0 > 1) {
+        if (t3 === t2)
+          H.throwExpression(P.StateError$("No elements"));
+        t2 = (t2 - 1 & t6) >>> 0;
+        if (t2 < 0 || t2 >= t5)
+          throw H.ioore(t4, t2);
+        t2 = J.get$length$asx(J.get$points$x(t4[t2])) === 0;
+      } else
+        t2 = false;
+      if (!t2)
+        break;
       t1.removeLast$0(t1);
-      this._updateOffscreenBuffer$0();
-      this._dispatchActionChangedEvent$0();
     }
-    if (t1.get$length(t1) === 0)
-      return;
-    t1.get$last(t1).undo$1(this._ctx);
+    t1.get$last(t1).undo$0();
+    this._updateOffscreenBuffer$0();
+    this._dispatchActionChangedEvent$0();
   },
   _performClear$0: function() {
     var t1, lastActionName;
@@ -840,7 +852,7 @@ DrawingTool: {"": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scal
   },
   static: {
 DrawingTool$: function(_canvas) {
-  var t1 = new R.DrawingTool(null, 7, true, false, 1, false, 10, 0.5, _canvas, null, null, null, null, "#383245", "#1B1821", new R.ColorValue(255, 255, 255), null, null, 0, P.ListQueue$(null, R.BaseAction));
+  var t1 = new R.DrawingTool(null, 7, true, true, 1, false, 10, 0.5, _canvas, null, null, null, null, "#383245", "#1B1821", new R.ColorValue(255, 255, 255), null, null, 0, P.ListQueue$(null, R.BaseAction));
   t1.DrawingTool$1(_canvas);
   return t1;
 }}
@@ -883,7 +895,7 @@ DrawingTool__setupListeners_closure1: {"": "Closure;this_2",
     t2 = this.this_2;
     t1 = t1.get$page(e);
     t3 = t2.actionQueue;
-    t3.get$last(t3).inputMove$3(t2._ctx, t2._alignedPoint$1(t1), t2._isDragging);
+    t3.get$last(t3).inputMove$2(t2._alignedPoint$1(t1), t2._isDragging);
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -903,7 +915,7 @@ DrawingTool__setupListeners_closure2: {"": "Closure;this_3",
     t1 = new P.Point0(t1.pageX, t1.pageY);
     H.setRuntimeTypeInfo(t1, [null]);
     t3 = t2.actionQueue;
-    t3.get$last(t3).inputMove$3(t2._ctx, t2._alignedPoint$1(t1), t2._isDragging);
+    t3.get$last(t3).inputMove$2(t2._alignedPoint$1(t1), t2._isDragging);
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -912,9 +924,14 @@ DrawingTool__setupListeners_closure2: {"": "Closure;this_3",
 
 DrawingTool__setupListeners_closure3: {"": "Closure;this_4",
   call$1: function(e) {
-    var t1 = J.getInterceptor$x(e);
+    var t1, t2, t3;
+    t1 = J.getInterceptor$x(e);
     t1.preventDefault$0(e);
-    this.this_4._inputUp$1(t1.get$page(e));
+    t2 = this.this_4;
+    t1 = t1.get$page(e);
+    t2._isDragging = false;
+    t3 = t2.actionQueue;
+    t3.get$last(t3).inputUp$1(t2._alignedPoint$1(t1));
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -923,15 +940,19 @@ DrawingTool__setupListeners_closure3: {"": "Closure;this_4",
 
 DrawingTool__setupListeners_closure4: {"": "Closure;this_5",
   call$1: function(e) {
-    var t1 = J.getInterceptor$x(e);
+    var t1, t2, t3;
+    t1 = J.getInterceptor$x(e);
     t1.preventDefault$0(e);
+    t2 = this.this_5;
     t1 = t1.get$touches(e);
     if (0 >= t1.length)
       throw H.ioore(t1, 0);
     t1 = t1[0];
     t1 = new P.Point0(t1.pageX, t1.pageY);
     H.setRuntimeTypeInfo(t1, [null]);
-    this.this_5._inputUp$1(t1);
+    t2._isDragging = false;
+    t3 = t2.actionQueue;
+    t3.get$last(t3).inputUp$1(t2._alignedPoint$1(t1));
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -984,10 +1005,8 @@ DrawingTool__setupListeners_closure8: {"": "Closure;this_9",
 
 DrawingTool__setupListeners_closure9: {"": "Closure;this_10",
   call$1: function(e) {
-    var t1, t2;
-    t1 = this.this_10;
-    t2 = t1.actionQueue;
-    return t2.get$last(t2).keyPressed$2(t1._ctx, e);
+    var t1 = this.this_10.actionQueue;
+    return t1.get$last(t1).keyPressed$1(e);
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -997,7 +1016,11 @@ DrawingTool__setupListeners_closure9: {"": "Closure;this_10",
 DrawingTool__updateOffscreenBuffer_closure: {"": "Closure;this_0,hiddenCtx_1",
   call$1: function(action) {
     var t1, t2;
-    t1 = this.this_0._canvasRect;
+    t1 = this.this_0;
+    t2 = t1.actionQueue;
+    if (J.$eq(action, t2.get$last(t2)))
+      return;
+    t1 = t1._canvasRect;
     t2 = J.getInterceptor$x(t1);
     action.execute$3(this.hiddenCtx_1, t2.get$width(t1), t2.get$height(t1));
   },
@@ -1110,13 +1133,13 @@ ColorValue: {"": "Object;r>,g<,b<",
 },
 
 BaseAction: {"": "Object;points>,name>,settings<",
-  inputDown$3: function(ctx, pos, canEditPoints) {
+  inputDown$2: function(pos, canEditPoints) {
   },
-  inputMove$3: function(ctx, pos, isDragging) {
+  inputMove$2: function(pos, isDragging) {
   },
-  inputUp$2: function(ctx, pos) {
+  inputUp$1: function(pos) {
   },
-  keyPressed$2: function(ctx, e) {
+  keyPressed$1: function(e) {
   },
   execute$3: function(ctx, width, height) {
   },
@@ -1124,7 +1147,9 @@ BaseAction: {"": "Object;points>,name>,settings<",
   },
   activeDraw$4: function(ctx, width, height, canEditPoints) {
   },
-  undo$1: function(ctx) {
+  undo$0: function() {
+  },
+  onConfirmed$0: function() {
   }
 },
 
@@ -1215,7 +1240,7 @@ PolygonalStrokeAction: {"": "BaseAction;_activePoints,_potentialNextPoint,_dragg
         ctx.closePath();
       }
   },
-  inputDown$3: function(ctx, pos, canEditPoints) {
+  inputDown$2: function(pos, canEditPoints) {
     var t1, i;
     if (canEditPoints === true)
       for (t1 = this.points, i = 0; i < t1.length; ++i) {
@@ -1237,7 +1262,7 @@ PolygonalStrokeAction: {"": "BaseAction;_activePoints,_potentialNextPoint,_dragg
       this._activePoints.push(pos);
     }
   },
-  inputMove$3: function(ctx, pos, isDrag) {
+  inputMove$2: function(pos, isDrag) {
     var t1 = this._draggedPoint;
     if (t1 != null) {
       t1.copyFrom$1(pos);
@@ -1245,15 +1270,19 @@ PolygonalStrokeAction: {"": "BaseAction;_activePoints,_potentialNextPoint,_dragg
     }
     this._potentialNextPoint = pos;
   },
-  inputUp$3: function(ctx, pos, forceClose) {
+  inputUp$2: function(pos, forceClose) {
     var t1;
     if (this._draggedPoint != null) {
       this._draggedPoint = null;
       return;
     }
     this._activePoints.push(pos);
-    if (this._activePoints.length < 3)
+    t1 = this._activePoints.length;
+    if (t1 < 3)
       return;
+    if (t1 === 3)
+      $.get$SharedDispatcher_emitter().emit$2("ActionEvent.ON_BECAME_CONFIRMABLE", "Confirm");
+    P.print(this._activePoints.length);
     if (forceClose) {
       t1 = this.points;
       t1.push($.get$BaseAction_LINE_BREAK());
@@ -1262,20 +1291,17 @@ PolygonalStrokeAction: {"": "BaseAction;_activePoints,_potentialNextPoint,_dragg
       $.get$SharedDispatcher_emitter().emit$2("ActionEvent.ON_DRAWING_INTERACTION_FINISHED", this);
     }
   },
-  inputUp$2: function(ctx, pos) {
-    return this.inputUp$3(ctx, pos, false);
+  inputUp$1: function(pos) {
+    return this.inputUp$2(pos, false);
   },
-  keyPressed$2: function(ctx, e) {
-    var t1;
-    if (J.get$keyCode$x(e) === 13) {
-      t1 = this._activePoints;
-      if (t1 == null || t1.length < 3) {
-        this._activePoints = null;
-        $.get$SharedDispatcher_emitter().emit$2("ActionEvent.ON_DRAWING_INTERACTION_FINISHED", this);
-        return;
-      }
-      this.inputUp$3(ctx, J.get$last$ax(t1), true);
+  onConfirmed$0: function() {
+    var t1 = this._activePoints;
+    if (t1 == null || t1.length < 3) {
+      this._activePoints = null;
+      $.get$SharedDispatcher_emitter().emit$2("ActionEvent.ON_DRAWING_INTERACTION_FINISHED", this);
+      return;
     }
+    this.inputUp$2(J.get$last$ax(t1), true);
   },
   _getPointsToDraw$0: function() {
     var t1, pointsToDraw;
@@ -1291,7 +1317,7 @@ PolygonalStrokeAction: {"": "BaseAction;_activePoints,_potentialNextPoint,_dragg
     } else
       return t1;
   },
-  undo$1: function(ctx) {
+  undo$0: function() {
     var t1, lastBreak;
     t1 = this.points;
     lastBreak = H.IterableMixinWorkaround_lastIndexOfList(t1, $.get$BaseAction_LINE_BREAK(), null);
@@ -1299,9 +1325,18 @@ PolygonalStrokeAction: {"": "BaseAction;_activePoints,_potentialNextPoint,_dragg
       return;
     C.JSArray_methods.removeRange$2(t1, lastBreak, t1.length);
   },
+  PolygonalStrokeAction$0: function() {
+    $.get$SharedDispatcher_emitter().emit$2("ActionEvent.ON_BECAME_UNCONFIRMED", this.name);
+  },
   static: {
 "": "PolygonalStrokeAction_ACTION_NAME,PolygonalStrokeAction_MIN_DISTANCE_BEFORE_CLOSING",
-}
+PolygonalStrokeAction$: function() {
+  var t1 = P.List_List(null, Z.Point);
+  H.setRuntimeTypeInfo(t1, [Z.Point]);
+  t1 = new R.PolygonalStrokeAction(null, null, null, t1, "PolygonalStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
+  t1.PolygonalStrokeAction$0();
+  return t1;
+}}
 
 },
 
@@ -1379,18 +1414,18 @@ RegularStrokeAction: {"": "BaseAction;_activePoints,points,name,settings",
       t1.stroke$0(ctx);
     t1.closePath$0(ctx);
   },
-  inputDown$3: function(ctx, pos, canEditPoints) {
+  inputDown$2: function(pos, canEditPoints) {
     var t1 = P.List_List(null, Z.Point);
     H.setRuntimeTypeInfo(t1, [Z.Point]);
     this._activePoints = t1;
     this._activePoints.push(pos);
   },
-  inputMove$3: function(ctx, pos, isDrag) {
+  inputMove$2: function(pos, isDrag) {
     if (!isDrag)
       return;
     this._activePoints.push(pos);
   },
-  inputUp$2: function(ctx, pos) {
+  inputUp$1: function(pos) {
     var t1, oldLen, simplifiedPoints;
     t1 = this._activePoints;
     oldLen = t1.length;
@@ -1413,7 +1448,7 @@ RegularStrokeAction: {"": "BaseAction;_activePoints,points,name,settings",
     } else
       return t1;
   },
-  undo$1: function(ctx) {
+  undo$0: function() {
     var t1, lastBreak;
     t1 = this.points;
     lastBreak = H.IterableMixinWorkaround_lastIndexOfList(t1, $.get$BaseAction_LINE_BREAK(), null);
@@ -1447,7 +1482,7 @@ SmoothFillAction$: function() {
   var t1 = P.List_List(null, Z.Point);
   H.setRuntimeTypeInfo(t1, [Z.Point]);
   t1 = new R.SmoothFillAction(null, null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
-  t1.name = "SmoothStroke";
+  t1.SmoothStrokeAction$0();
   t1.SmoothFillAction$0();
   return t1;
 }}
@@ -1533,7 +1568,7 @@ SmoothStrokeAction: {"": "RegularStrokeAction;_draggedPoint,_activePoints,points
       ctx.closePath();
     }
   },
-  inputDown$3: function(ctx, pos, canEditPoints) {
+  inputDown$2: function(pos, canEditPoints) {
     var t1, i;
     if (canEditPoints === true)
       for (t1 = this.points, i = 0; i < t1.length; ++i) {
@@ -1548,34 +1583,47 @@ SmoothStrokeAction: {"": "RegularStrokeAction;_draggedPoint,_activePoints,points
           return;
         }
       }
-    R.RegularStrokeAction.prototype.inputDown$3.call(this, ctx, pos, canEditPoints);
+    R.RegularStrokeAction.prototype.inputDown$2.call(this, pos, canEditPoints);
   },
-  inputMove$3: function(ctx, pos, isDrag) {
+  inputMove$2: function(pos, isDrag) {
     var t1 = this._draggedPoint;
     if (t1 != null) {
       t1.copyFrom$1(pos);
       return;
     }
-    R.RegularStrokeAction.prototype.inputMove$3.call(this, ctx, pos, isDrag);
+    R.RegularStrokeAction.prototype.inputMove$2.call(this, pos, isDrag);
   },
-  inputUp$2: function(ctx, pos) {
-    var t1, oldLen, simplifiedSmoothedPoints;
+  inputUp$1: function(pos) {
+    var t1, simplifiedSmoothedPoints;
     if (this._draggedPoint != null) {
       this._draggedPoint = null;
       return;
     }
     t1 = this._activePoints;
-    oldLen = t1.length;
+    t1.length;
     simplifiedSmoothedPoints = N.simplifyLang(10, 2, t1);
-    P.print("Removed previously had " + oldLen + ", now have " + simplifiedSmoothedPoints.length + ", Removed " + (oldLen - simplifiedSmoothedPoints.length) + " points");
     t1 = this.points;
     t1.push($.get$BaseAction_LINE_BREAK());
     C.JSArray_methods.addAll$1(t1, simplifiedSmoothedPoints);
     this._activePoints = null;
+    $.get$SharedDispatcher_emitter().emit$2("ActionEvent.ON_BECAME_CONFIRMABLE", "Confirm");
+  },
+  onConfirmed$0: function() {
+    $.get$SharedDispatcher_emitter().emit$2("ActionEvent.ON_DRAWING_INTERACTION_FINISHED", this);
+  },
+  SmoothStrokeAction$0: function() {
+    this.name = "SmoothStroke";
+    $.get$SharedDispatcher_emitter().emit$2("ActionEvent.ON_BECAME_UNCONFIRMED", this.name);
   },
   static: {
 "": "SmoothStrokeAction_ACTION_NAME",
-}
+SmoothStrokeAction$: function() {
+  var t1 = P.List_List(null, Z.Point);
+  H.setRuntimeTypeInfo(t1, [Z.Point]);
+  t1 = new R.SmoothStrokeAction(null, null, t1, "RegularStroke", new R.ActionSettings(0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
+  t1.SmoothStrokeAction$0();
+  return t1;
+}}
 
 },
 
@@ -1587,61 +1635,69 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
     this._helperText = document.querySelector("#help-flash");
     t1 = W._FrozenElementList$_wrap(document.querySelectorAll("[data-edit-action]"), null);
     t1.forEach$1(t1, new R.DrawingToolInterface__setupOutgoingEvents_closure0(this));
-    this._DrawingToolLib$_$mirrorCheckbox = H.interceptedTypeCast(document.querySelector("[name=toggle-mirroring]"), "$isCheckboxInputElement");
-    t1 = J.get$parent$x(this._DrawingToolLib$_$mirrorCheckbox);
+    t1 = this._helperText;
     t1.toString;
     t2 = C.EventStreamProvider_click._eventType;
     t1 = new W._ElementEventStreamImpl(t1, t2, false);
     H.setRuntimeTypeInfo(t1, [null]);
-    t3 = new W._EventStreamSubscription(0, t1._target, t1._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure1(this)), t1._useCapture);
+    t3 = new W._EventStreamSubscription(0, t1._target, t1._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure1()), t1._useCapture);
     H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
     t3._tryResume$0();
-    this._DrawingToolLib$_$drawPointsCheckbox = H.interceptedTypeCast(document.querySelector("[name=toggle-draw-points]"), "$isCheckboxInputElement");
-    t3 = J.get$parent$x(this._DrawingToolLib$_$drawPointsCheckbox);
+    this._DrawingToolLib$_$mirrorCheckbox = H.interceptedTypeCast(document.querySelector("[name=toggle-mirroring]"), "$isCheckboxInputElement");
+    t3 = J.get$parent$x(this._DrawingToolLib$_$mirrorCheckbox);
     t3.toString;
     t3 = new W._ElementEventStreamImpl(t3, t2, false);
     H.setRuntimeTypeInfo(t3, [null]);
     t1 = new W._EventStreamSubscription(0, t3._target, t3._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure2(this)), t3._useCapture);
     H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
     t1._tryResume$0();
-    this._DrawingToolLib$_$scaleSlider = H.interceptedTypeCast(document.querySelector("#interface-scale-slider"), "$isRangeInputElement");
-    t1 = J.get$onChange$x(this._DrawingToolLib$_$scaleSlider);
+    this._DrawingToolLib$_$drawPointsCheckbox = H.interceptedTypeCast(document.querySelector("[name=toggle-draw-points]"), "$isCheckboxInputElement");
+    t1 = J.get$parent$x(this._DrawingToolLib$_$drawPointsCheckbox);
+    t1.toString;
+    t1 = new W._ElementEventStreamImpl(t1, t2, false);
+    H.setRuntimeTypeInfo(t1, [null]);
     t3 = new W._EventStreamSubscription(0, t1._target, t1._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure3(this)), t1._useCapture);
     H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
     t3._tryResume$0();
-    this._DrawingToolLib$_$sideCountSlider = H.interceptedTypeCast(document.querySelector("#interface-sidecount-slider"), "$isRangeInputElement");
-    t3 = J.get$onChange$x(this._DrawingToolLib$_$sideCountSlider);
+    this._DrawingToolLib$_$scaleSlider = H.interceptedTypeCast(document.querySelector("#interface-scale-slider"), "$isRangeInputElement");
+    t3 = J.get$onChange$x(this._DrawingToolLib$_$scaleSlider);
     t1 = new W._EventStreamSubscription(0, t3._target, t3._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure4(this)), t3._useCapture);
     H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
     t1._tryResume$0();
-    this._DrawingToolLib$_$opacitySlider = H.interceptedTypeCast(document.querySelector("#interface-opacity-slider"), "$isRangeInputElement");
-    t1 = J.get$onChange$x(this._DrawingToolLib$_$opacitySlider);
+    this._DrawingToolLib$_$sideCountSlider = H.interceptedTypeCast(document.querySelector("#interface-sidecount-slider"), "$isRangeInputElement");
+    t1 = J.get$onChange$x(this._DrawingToolLib$_$sideCountSlider);
     t3 = new W._EventStreamSubscription(0, t1._target, t1._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure5(this)), t1._useCapture);
     H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
     t3._tryResume$0();
-    this._DrawingToolLib$_$lineWidthSlider = H.interceptedTypeCast(document.querySelector("#interface-line-width-slider"), "$isRangeInputElement");
-    t3 = J.get$onChange$x(this._DrawingToolLib$_$lineWidthSlider);
+    this._DrawingToolLib$_$opacitySlider = H.interceptedTypeCast(document.querySelector("#interface-opacity-slider"), "$isRangeInputElement");
+    t3 = J.get$onChange$x(this._DrawingToolLib$_$opacitySlider);
     t1 = new W._EventStreamSubscription(0, t3._target, t3._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure6(this)), t3._useCapture);
     H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
     t1._tryResume$0();
-    t1 = document.querySelector("#advanced-toggle");
-    t1.toString;
-    t2 = new W._ElementEventStreamImpl(t1, t2, false);
-    H.setRuntimeTypeInfo(t2, [null]);
-    t3 = this.get$_toggleAdvancedMenus();
-    t3 = new W._EventStreamSubscription(0, t2._target, t2._eventType, W._wrapZone(t3), t2._useCapture);
-    H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t2, "_EventStream", 0)]);
+    this._DrawingToolLib$_$lineWidthSlider = H.interceptedTypeCast(document.querySelector("#interface-line-width-slider"), "$isRangeInputElement");
+    t1 = J.get$onChange$x(this._DrawingToolLib$_$lineWidthSlider);
+    t3 = new W._EventStreamSubscription(0, t1._target, t1._eventType, W._wrapZone(new R.DrawingToolInterface__setupOutgoingEvents_closure7(this)), t1._useCapture);
+    H.setRuntimeTypeInfo(t3, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
     t3._tryResume$0();
-    t3 = new W._ElementEventStreamImpl(t1, C.EventStreamProvider_touchend._eventType, false);
-    H.setRuntimeTypeInfo(t3, [null]);
+    t3 = document.querySelector("#advanced-toggle");
+    t3.toString;
+    t2 = new W._ElementEventStreamImpl(t3, t2, false);
+    H.setRuntimeTypeInfo(t2, [null]);
+    t1 = this.get$_toggleAdvancedMenus();
+    t1 = new W._EventStreamSubscription(0, t2._target, t2._eventType, W._wrapZone(t1), t2._useCapture);
+    H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(t2, "_EventStream", 0)]);
+    t1._tryResume$0();
+    t1 = new W._ElementEventStreamImpl(t3, C.EventStreamProvider_touchend._eventType, false);
+    H.setRuntimeTypeInfo(t1, [null]);
     t2 = this.get$_toggleAdvancedMenus();
-    t2 = new W._EventStreamSubscription(0, t3._target, t3._eventType, W._wrapZone(t2), t3._useCapture);
-    H.setRuntimeTypeInfo(t2, [H.getRuntimeTypeArgument(t3, "_EventStream", 0)]);
+    t2 = new W._EventStreamSubscription(0, t1._target, t1._eventType, W._wrapZone(t2), t1._useCapture);
+    H.setRuntimeTypeInfo(t2, [H.getRuntimeTypeArgument(t1, "_EventStream", 0)]);
     t2._tryResume$0();
-    this._DrawingToolLib$_$advancedToggleButton = t1;
-    $.get$context().callMethod$2("jQuery", ["#interface-color-line-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["showPalette", true, "showPaletteOnly", true, "palette", ["#FFFFFF", "#00ecfc", "#ffdf34", "#ef43ff"], "change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure7(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
-    $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-start-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure8(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
-    $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-end-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure9(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    this._DrawingToolLib$_$advancedToggleButton = t3;
+    $.get$context().callMethod$2("jQuery", ["#interface-color-line-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["showPalette", true, "showPaletteOnly", true, "palette", ["#FFFFFF", "#00ecfc", "#ffdf34", "#ef43ff"], "change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure8(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-start-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure9(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    $.get$context().callMethod$2("jQuery", ["#interface-color-gradient-end-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(H.fillLiteralMap(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure10(this))], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+    P.Future_Future$delayed(P.Duration$(0, 0, 0, 0, 0, 1), new R.DrawingToolInterface__setupOutgoingEvents_closure11(this), null);
   },
   _setupIncommingEvents$0: function() {
     var t1 = $.get$SharedDispatcher_emitter();
@@ -1658,30 +1714,24 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
     t1.on$2(t1, "DrawingTool.ON_OPACITY_CHANGED", this.get$onOpacityChanged());
     t1 = $.get$SharedDispatcher_emitter();
     t1.on$2(t1, "DrawingTool.ON_LINEWIDTH_CHANGED", this.get$onLineWidthChanged());
+    t1 = $.get$SharedDispatcher_emitter();
+    t1.on$2(t1, "ActionEvent.ON_BECAME_UNCONFIRMED", this.get$onActionBecameUnconfirmed());
+    t1 = $.get$SharedDispatcher_emitter();
+    t1.on$2(t1, "ActionEvent.ON_BECAME_CONFIRMABLE", this.get$onActionBecameConfirmable());
   },
-  _changeDrawingMode$1: function(modeName) {
-    var instructions;
-    switch (modeName) {
-      case "RegularFill":
-      case "RegularStroke":
-        instructions = "";
-        break;
-      case "SmoothFill":
-      case "SmoothStroke":
-        instructions = "Turn on 'Draw Points' to enable dragging";
-        break;
-      case "PolygonalFill":
-      case "PolygonalStroke":
-        instructions = "Press ENTER to end the path";
-        break;
-      default:
-        instructions = null;
-    }
+  onActionBecameUnconfirmed$1: function(actionName) {
+    J.$index$asx($.get$context(), "TweenMax").callMethod$2("to", [this._helperText, 0.15, P.JsObject_JsObject$jsify(H.fillLiteralMap(["alpha", 0, "display", "none"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+  },
+  get$onActionBecameUnconfirmed: function() {
+    return new R.BoundClosure$1(this, R.DrawingToolInterface.prototype.onActionBecameUnconfirmed$1, null, "onActionBecameUnconfirmed$1");
+  },
+  onActionBecameConfirmable$1: function(instructions) {
     this._helperText.textContent = instructions;
     J.$index$asx($.get$context(), "TweenMax").callMethod$2("killDelayedCallsTo", [this._helperText]);
-    J.$index$asx($.get$context(), "TweenMax").callMethod$2("to", [this._helperText, 0.25, P.JsObject_JsObject$jsify(H.fillLiteralMap(["alpha", 0.75, "display", "block"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
-    J.$index$asx($.get$context(), "TweenMax").callMethod$2("to", [this._helperText, 0.5, P.JsObject_JsObject$jsify(H.fillLiteralMap(["delay", 6, "alpha", 0, "display", "none"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
-    this._drawingModule.changeAction$1(modeName);
+    J.$index$asx($.get$context(), "TweenMax").callMethod$2("fromTo", [this._helperText, 0.5, P.JsObject_JsObject$jsify(H.fillLiteralMap(["scale", "1.2", "alpha", 0.5, "display", "block"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null))), P.JsObject_JsObject$jsify(H.fillLiteralMap(["scale", "1", "alpha", 1, "display", "block"], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
+  },
+  get$onActionBecameConfirmable: function() {
+    return new R.BoundClosure$1(this, R.DrawingToolInterface.prototype.onActionBecameConfirmable$1, null, "onActionBecameConfirmable$1");
   },
   _toggleAdvancedMenus$1: function(e) {
     var t1, next, menusAreCurrentlyShowing, t2, t3, i, t4, t5;
@@ -1709,7 +1759,7 @@ DrawingToolInterface: {"": "Object;_drawingModule,_lastSelectedTool,_DrawingTool
       ++i;
     }
     t1 = J.$index$asx($.get$context(), "TweenMax");
-    t2 = t2 ? "0" : "180";
+    t2 = t2 ? "180" : "0";
     t1.callMethod$2("to", ["#advanced-toggle-chevron", 0.15, P.JsObject_JsObject$jsify(H.fillLiteralMap(["rotation", t2], P.LinkedHashMap_LinkedHashMap(null, null, null, null, null)))]);
   },
   get$_toggleAdvancedMenus: function() {
@@ -1781,7 +1831,13 @@ DrawingToolInterface__setupOutgoingEvents_closure: {"": "Closure;this_0",
 
 DrawingToolInterface__setupOutgoingEvents__closure0: {"": "Closure;this_1,el_2",
   call$1: function(e) {
-    return this.this_1._changeDrawingMode$1(J.get$attributes$x(this.el_2)._element.getAttribute("data-drawingmode"));
+    var t1, t2;
+    t1 = this.this_1;
+    t2 = J.get$attributes$x(this.el_2)._element.getAttribute("data-drawingmode");
+    P.print("CHANGEME");
+    t1._drawingModule.changeAction$1(t2);
+    t1.onActionBecameUnconfirmed$1(t2);
+    return;
   },
   "+call:1:0": 0,
   $isFunction: true,
@@ -1806,7 +1862,16 @@ DrawingToolInterface__setupOutgoingEvents__closure: {"": "Closure;this_4,el_5",
   $is_args1: true
 },
 
-DrawingToolInterface__setupOutgoingEvents_closure1: {"": "Closure;this_6",
+DrawingToolInterface__setupOutgoingEvents_closure1: {"": "Closure;",
+  call$1: function(e) {
+    return $.get$SharedDispatcher_emitter().emit$2("InterfaceEvent.ON_CONFIRMED", null);
+  },
+  "+call:1:0": 0,
+  $isFunction: true,
+  $is_args1: true
+},
+
+DrawingToolInterface__setupOutgoingEvents_closure2: {"": "Closure;this_6",
   call$1: function(e) {
     var t1 = this.this_6;
     return t1._drawingModule.performEditAction$2("setMirrorMode", J.get$checked$x(t1._DrawingToolLib$_$mirrorCheckbox) !== true);
@@ -1816,7 +1881,7 @@ DrawingToolInterface__setupOutgoingEvents_closure1: {"": "Closure;this_6",
   $is_args1: true
 },
 
-DrawingToolInterface__setupOutgoingEvents_closure2: {"": "Closure;this_7",
+DrawingToolInterface__setupOutgoingEvents_closure3: {"": "Closure;this_7",
   call$1: function(e) {
     var t1 = this.this_7;
     return t1._drawingModule.performEditAction$2("setEditablePoints", J.get$checked$x(t1._DrawingToolLib$_$drawPointsCheckbox) !== true);
@@ -1826,7 +1891,7 @@ DrawingToolInterface__setupOutgoingEvents_closure2: {"": "Closure;this_7",
   $is_args1: true
 },
 
-DrawingToolInterface__setupOutgoingEvents_closure3: {"": "Closure;this_8",
+DrawingToolInterface__setupOutgoingEvents_closure4: {"": "Closure;this_8",
   call$1: function(e) {
     var t1 = this.this_8;
     return t1._drawingModule.performEditAction$2("scale", J.$div$n(H.Primitives_parseDouble(J.get$value$x(t1._DrawingToolLib$_$scaleSlider), null), 100));
@@ -1836,7 +1901,7 @@ DrawingToolInterface__setupOutgoingEvents_closure3: {"": "Closure;this_8",
   $is_args1: true
 },
 
-DrawingToolInterface__setupOutgoingEvents_closure4: {"": "Closure;this_9",
+DrawingToolInterface__setupOutgoingEvents_closure5: {"": "Closure;this_9",
   call$1: function(e) {
     var t1 = this.this_9;
     return t1._drawingModule.performEditAction$2("sides", H.Primitives_parseInt(J.get$value$x(t1._DrawingToolLib$_$sideCountSlider), null, null));
@@ -1846,7 +1911,7 @@ DrawingToolInterface__setupOutgoingEvents_closure4: {"": "Closure;this_9",
   $is_args1: true
 },
 
-DrawingToolInterface__setupOutgoingEvents_closure5: {"": "Closure;this_10",
+DrawingToolInterface__setupOutgoingEvents_closure6: {"": "Closure;this_10",
   call$1: function(e) {
     var t1 = this.this_10;
     t1._drawingModule.performEditAction$2("alpha", J.$div$n(H.Primitives_parseDouble(J.get$value$x(t1._DrawingToolLib$_$opacitySlider), null), 100));
@@ -1856,7 +1921,7 @@ DrawingToolInterface__setupOutgoingEvents_closure5: {"": "Closure;this_10",
   $is_args1: true
 },
 
-DrawingToolInterface__setupOutgoingEvents_closure6: {"": "Closure;this_11",
+DrawingToolInterface__setupOutgoingEvents_closure7: {"": "Closure;this_11",
   call$1: function(e) {
     var t1 = this.this_11;
     t1._drawingModule.performEditAction$2("linewidth", H.Primitives_parseDouble(J.get$value$x(t1._DrawingToolLib$_$lineWidthSlider), null));
@@ -1866,7 +1931,7 @@ DrawingToolInterface__setupOutgoingEvents_closure6: {"": "Closure;this_11",
   $is_args1: true
 },
 
-DrawingToolInterface__setupOutgoingEvents_closure7: {"": "Closure;this_12",
+DrawingToolInterface__setupOutgoingEvents_closure8: {"": "Closure;this_12",
   call$2: function(element, color) {
     return this.this_12._drawingModule.performEditAction$2("lineColor", color);
   },
@@ -1875,7 +1940,7 @@ DrawingToolInterface__setupOutgoingEvents_closure7: {"": "Closure;this_12",
   $is_args2: true
 },
 
-DrawingToolInterface__setupOutgoingEvents_closure8: {"": "Closure;this_13",
+DrawingToolInterface__setupOutgoingEvents_closure9: {"": "Closure;this_13",
   call$2: function(element, color) {
     return this.this_13._drawingModule.performEditAction$2("gradientStartColor", color);
   },
@@ -1884,13 +1949,21 @@ DrawingToolInterface__setupOutgoingEvents_closure8: {"": "Closure;this_13",
   $is_args2: true
 },
 
-DrawingToolInterface__setupOutgoingEvents_closure9: {"": "Closure;this_14",
+DrawingToolInterface__setupOutgoingEvents_closure10: {"": "Closure;this_14",
   call$2: function(element, color) {
     return this.this_14._drawingModule.performEditAction$2("gradientEndColor", color);
   },
   "+call:2:0": 0,
   $isFunction: true,
   $is_args2: true
+},
+
+DrawingToolInterface__setupOutgoingEvents_closure11: {"": "Closure;this_15",
+  call$0: function() {
+    return this.this_15._toggleAdvancedMenus$1(null);
+  },
+  "+call:0:0": 0,
+  $isFunction: true
 },
 
 DrawingToolInterface_onActionChanged_closure: {"": "Closure;actionName_0",
@@ -8846,6 +8919,17 @@ ListQueue: {"": "IterableBase;_table,_head,_tail,_modificationCount",
       throw H.ioore(t1, t2);
     return t1[t2];
   },
+  elementAt$1: function(_, index) {
+    var t1, t2, t3;
+    if (index < 0 || index > this.get$length(this))
+      throw H.wrapException(P.RangeError$range(index, 0, this.get$length(this)));
+    t1 = this._table;
+    t2 = t1.length;
+    t3 = (this._head + index & t2 - 1) >>> 0;
+    if (t3 < 0 || t3 >= t2)
+      throw H.ioore(t1, t3);
+    return t1[t3];
+  },
   add$1: function(_, element) {
     this._add$1(element);
   },
@@ -10209,12 +10293,7 @@ ImageElement: {"": "HtmlElement;height},width}", "%": "HTMLImageElement"},
 
 InputElement: {"": "HtmlElement;checked%,height},name=,value%,width}", $isInputElement: true, $isElement: true, $isNode: true, $isCheckboxInputElement: true, $isRangeInputElement: true, "%": "HTMLInputElement"},
 
-KeyboardEvent: {"": "UIEvent;",
-  get$keyCode: function(receiver) {
-    return receiver.keyCode;
-  },
-  "%": "KeyboardEvent"
-},
+KeyboardEvent: {"": "UIEvent;", "%": "KeyboardEvent"},
 
 KeygenElement: {"": "HtmlElement;name=", "%": "HTMLKeygenElement"},
 
@@ -12985,9 +13064,6 @@ J.get$height$x = function(receiver) {
 };
 J.get$iterator$ax = function(receiver) {
   return J.getInterceptor$ax(receiver).get$iterator(receiver);
-};
-J.get$keyCode$x = function(receiver) {
-  return J.getInterceptor$x(receiver).get$keyCode(receiver);
 };
 J.get$last$ax = function(receiver) {
   return J.getInterceptor$ax(receiver).get$last(receiver);

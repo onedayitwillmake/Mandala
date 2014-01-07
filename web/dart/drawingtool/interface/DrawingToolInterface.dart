@@ -33,6 +33,7 @@ class DrawingToolInterface {
     querySelectorAll('[data-edit-action]').forEach((HtmlElement el) {
       el.onClick.listen((e) => _drawingModule.performEditAction( el.attributes['data-edit-action'] ) );
     });
+    _helperText.onClick.listen( (e) => SharedDispatcher.emitter.emit( InterfaceEvent.ON_CONFIRMED, null ) );
 
     // Mirroring toggle
     _$mirrorCheckbox = ( querySelector("[name=toggle-mirroring]") as CheckboxInputElement );
@@ -82,7 +83,7 @@ class DrawingToolInterface {
     })]);
 
     // close out on first call
-//    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
+    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
   }
 
   void onSignInDropDownSelected( dynamic thing ) {
@@ -98,41 +99,31 @@ class DrawingToolInterface {
     SharedDispatcher.emitter.on(DrawingToolEvent.ON_SCALE_CHANGED, onScaleChanged );
     SharedDispatcher.emitter.on(DrawingToolEvent.ON_OPACITY_CHANGED, onOpacityChanged );
     SharedDispatcher.emitter.on(DrawingToolEvent.ON_LINEWIDTH_CHANGED, onLineWidthChanged );
+    SharedDispatcher.emitter.on(ActionEvent.ON_BECAME_UNCONFIRMED, onActionBecameUnconfirmed );
+    SharedDispatcher.emitter.on(ActionEvent.ON_BECAME_CONFIRMABLE, onActionBecameConfirmable );
   }
 
   // Change the drawing mode and flash some helper text
 
-  void _changeDrawingMode( String modeName ) {
+  void _changeDrawingMode( String actionName ) {
+    print("CHANGEME");
+    _drawingModule.changeAction(  actionName );
+    onActionBecameUnconfirmed( actionName );
+  }
 
-    String instructions = null;
-    switch( modeName ) {
-      case RegularFillAction.ACTION_NAME:
-      case RegularStrokeAction.ACTION_NAME:
-        instructions = "";
-        break;
-      case SmoothFillAction.ACTION_NAME:
-      case SmoothStrokeAction.ACTION_NAME:
-        instructions = "Turn on 'Draw Points' to enable dragging";
-        break;
-      case PolygonalFillAction.ACTION_NAME:
-      case PolygonalStrokeAction.ACTION_NAME:
-        instructions = "Press ENTER to end the path";
-        break;
-    }
-
-    _helperText.text = instructions;
-
-
-    // Fade in
-    context['TweenMax'].callMethod("killDelayedCallsTo",[_helperText]);
-    context['TweenMax'].callMethod("to",[_helperText, 0.25, new JsObject.jsify({ 'alpha' : 0.75, 'display': 'block' })]);
+  void onActionBecameUnconfirmed( String actionName ) {
     // Fade out
-    context['TweenMax'].callMethod("to",[_helperText, 0.5, new JsObject.jsify({
-        'delay' : 6.0,
+    context['TweenMax'].callMethod("to",[_helperText, 0.15, new JsObject.jsify({
         'alpha' : 0,
         'display': 'none'
     })]);
-    _drawingModule.changeAction(  modeName );
+  }
+
+  void onActionBecameConfirmable( String instructions ) {
+    _helperText.text = instructions;
+    // Fade in
+    context['TweenMax'].callMethod("killDelayedCallsTo",[_helperText]);
+    context['TweenMax'].callMethod("fromTo",[_helperText, 0.5, new JsObject.jsify({ 'scale': '1.2', 'alpha' : 0.5, 'display': 'block' }), new JsObject.jsify({ 'scale': '1', 'alpha' : 1.0, 'display': 'block' })]);
   }
 
   /**
@@ -161,7 +152,7 @@ class DrawingToolInterface {
 
     // Rotate the chevron
     context['TweenMax'].callMethod("to",["#advanced-toggle-chevron", 0.15, new JsObject.jsify({
-        "rotation": (menusAreCurrentlyShowing) ? "0" : "180"
+        "rotation": (menusAreCurrentlyShowing) ? "180" : "0"
     })]);
   }
 
