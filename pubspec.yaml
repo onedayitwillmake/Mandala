@@ -6,3 +6,12 @@ dependencies:
   stagexl: 0.8.8
   vector_math:
     git: https://github.com/johnmccutchan/vector_math.git
+transformers:
+- $dart2js:
+    $include: []
+    checked: true
+    csp: true
+    minify: true
+    suppressHints: true
+    suppressWarnings: true
+    terse: false

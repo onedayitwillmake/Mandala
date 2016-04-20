@@ -1,5 +1,5 @@
 import 'dart:html';
-import 'drawingtool/DrawingToolLib.dart';
+import 'drawingtool/drawingtoollib.dart';
 import 'site/sitelib.dart';
 
 final CanvasRenderingContext2D ctx = (querySelector("#canvas") as CanvasElement).context2D;

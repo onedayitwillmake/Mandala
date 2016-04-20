@@ -5,8 +5,6 @@ part of DrawingToolLib;
  * Dart inspired by the classical
  * stuff used in JavaScript/ActionScript.
  */
-library dart_events;
-
 class EventEmitter {
   Map<String, List<Function>> _listeners = new Map<String, List<Function>>();
 
