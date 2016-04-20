@@ -92,6 +92,10 @@ input[type="range"]::-webkit-slider-thumb {
   width: 12px;
   height: 12px;
 }
+input[type="color"] {
+  width: 20px;
+  height: 20px;
+}
 #drawingtool-container {
   width: 880px !important;
   margin: 0 auto !important;

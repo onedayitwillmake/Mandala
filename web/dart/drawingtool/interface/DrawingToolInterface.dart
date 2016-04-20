@@ -67,7 +67,7 @@ class DrawingToolInterface {
     ..onClick.listen( _toggleAdvancedMenus )
     ..onTouchEnd.listen( _toggleAdvancedMenus );
     // close out on first call
-    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
+//    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
   }
   
   /// Setup events that originate from the drawingModule and effect the user interface
