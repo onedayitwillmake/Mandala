@@ -3,7 +3,7 @@ part of DrawingToolLib;
 class DrawingTool {
   String                    mandalaId;
   /// Number of sides in we draw (x2 if mirroring is on)
-  int                       _sides = 12;
+  int                       _sides = 14;
 
   /// If true, anything drawn on the left side of the canvas will be redraw on the right side
   bool                      _isMirrored = true;
