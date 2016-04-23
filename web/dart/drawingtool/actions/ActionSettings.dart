@@ -1,6 +1,8 @@
 part of DrawingToolLib;
 
 class ActionSettings {
+  num sides = 1;
+  bool isMirrored = true;
   num lineWidth = 0.5;
   num opacity = 0.5;
   String strokeStyle = "rgba(255,255,255,0.25)";

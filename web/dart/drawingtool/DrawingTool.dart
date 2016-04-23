@@ -170,21 +170,18 @@ class DrawingTool {
     
     // Renable blending / shadow
     _ctx.globalCompositeOperation = 'screen';
-//    _ctx.shadowBlur = _blurAmount;
-//    _ctx.shadowColor = 'rgba(255, 255, 255, ${_blurOpacity.toStringAsPrecision(2)} )';
-
 
     // Draw everything twice if mirroring is turned on
-    for( int j = 0; j < (_isMirrored ? 2 : 1); j++) {
+    for( int j = 0; j < (actionQueue.last.settings.isMirrored ? 2 : 1); j++) {
       int xOffset = j == 0 ? 1 : -1;
       // Call every action once, per side
-      for( int i = 0; i < _sides; i++) {
+      for( int i = 0; i < actionQueue.last.settings.sides; i++) {
         // Reset the transform
         _ctx.setTransform(xOffset*_scale, 0, 0, _scale, _canvasRect.width*0.5, _canvasRect.height*0.5);
         // Rotate clockwise, so that if i = (sides/2) - we're at 180 degrees
         // add PI*J - meaning 0 on first call, or 180 degrees on second call
-        _ctx.rotate(i/_sides * PI * 2);
-        
+        _ctx.rotate(i/actionQueue.last.settings.sides * PI * 2);
+
         actionQueue.last.execute( _ctx, _canvasRect.width, _canvasRect.height );
         // First draw, and not the mirrored version
         if( xOffset == 1 && i == 0 ) {
@@ -197,7 +194,6 @@ class DrawingTool {
   }
   
   void _updateOffscreenBuffer(){
-    print("_updateOffscreenBuffer");
     CanvasRenderingContext2D hiddenCtx  = _offscreenBuffer.context2D;
     hiddenCtx.setTransform(1, 0, 0, 1, 0, 0);
     hiddenCtx.clearRect(0,0,_canvasRect.width, _canvasRect.height);
@@ -210,27 +206,33 @@ class DrawingTool {
     hiddenCtx.shadowColor = 'rgba(255, 255, 255, ${_blurOpacity.toStringAsPrecision(2)} )';
     hiddenCtx.globalCompositeOperation = 'screen';
 
-    // Draw everything twice if mirroring is turned on
-    for( int j = 0; j < (_isMirrored ? 2 : 1); j++) {
-      int xOffset = j == 0 ? 1 : -1;
+    actionQueue.forEach((BaseAction action) {
+      hiddenCtx.setTransform(1, 0, 0, 1, 0, 0);
 
-      // Call every action once, per side
-      for( int i = 0; i < _sides; i++) {
-        // Reset the transform
-        hiddenCtx.setTransform(xOffset*_scale, 0, 0, _scale, _canvasRect.width*0.5, _canvasRect.height*0.5);
-        // Rotate clockwise, so that if i = (sides/2) - we're at 180 degrees
-        // add PI*J - meaning 0 on first call, or 180 degrees on second call
-        hiddenCtx.rotate(i/_sides * PI * 2);
+      // Skip last
+      if (action == actionQueue.last) return;
 
-        actionQueue.forEach((BaseAction action){
-          if( action == actionQueue.last ) return;
-
-          action.execute( hiddenCtx, _canvasRect.width, _canvasRect.height );
-        });
+      // Draw everything twice if mirroring is turned on
+      for (int j = 0; j < (action.settings.isMirrored ? 2 : 1); j++) {
+        int xOffset = j == 0 ? 1 : -1;
+        for (int i = 0; i < action.settings.sides; i++) {
+          // Reset the transform
+          hiddenCtx.setTransform(
+              xOffset * _scale, 0, 0, _scale, _canvasRect.width * 0.5,
+              _canvasRect.height * 0.5);
+          // Rotate clockwise, so that if i = (sides/2) - we're at 180 degrees
+          // add PI*J - meaning 0 on first call, or 180 degrees on second call
+          hiddenCtx.rotate(i / action.settings.sides * PI * 2);
+          action.execute(hiddenCtx, _canvasRect.width, _canvasRect.height);
+        }
       }
-    }
+    });
+
 
     // Draw the arc enveloping the image
+    hiddenCtx.setTransform(_scale, 0, 0, _scale, _canvasRect.width*0.5, _canvasRect.height*0.5);
+
+
     hiddenCtx.beginPath();
     hiddenCtx.lineWidth = 1;
     hiddenCtx.setStrokeColorRgb(_arcColor.r, _arcColor.g, _arcColor.b, 0.75);
@@ -270,6 +272,9 @@ class DrawingTool {
       nextAction.settings.strokeColor.copyFrom( actionQueue.last.settings.strokeColor );
       nextAction.settings.fillColor.copyFrom( actionQueue.last.settings.fillColor );
     }
+
+    nextAction.settings.sides = _sides;
+    nextAction.settings.isMirrored = _isMirrored;
 
     actionQueue.add( nextAction );
     _updateOffscreenBuffer();
@@ -312,7 +317,7 @@ class DrawingTool {
 //        _updateOffscreenBuffer();
         break;
       case "sides":
-        _sides = value;
+        actionQueue.last.settings.sides = _sides = value;
         _updateOffscreenBuffer();
         _dispatchOnSidesChangedEvent();
       break;
@@ -326,7 +331,7 @@ class DrawingTool {
         _dispatchOnDrawPointsChanged();
       break;
       case "setMirrorMode":
-        _isMirrored = value;
+        actionQueue.last.settings.isMirrored = _isMirrored = value;
         _updateOffscreenBuffer();
         _dispatchMirrorModeChangedEvent();
         break;

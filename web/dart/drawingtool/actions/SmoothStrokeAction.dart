@@ -107,9 +107,9 @@ class SmoothStrokeAction extends RegularStrokeAction {
     }
 
     int oldLen = _activePoints.length;
-    var simplifiedSmoothedPoints =  LineGeneralization.simplifyLang(10, 2, _activePoints) ;//LineGeneralization.smoothMcMaster( LineGeneralization.smoothMcMaster( LineGeneralization.simplifyLang(4, 1, _activePoints) ) );
+    var simplifiedSmoothedPoints =  LineGeneralization.simplifyLang(8, 15, _activePoints) ;//LineGeneralization.smoothMcMaster( LineGeneralization.smoothMcMaster( LineGeneralization.simplifyLang(4, 1, _activePoints) ) );
 
-//    print("Removed previously had ${oldLen}, now have ${simplifiedSmoothedPoints.length}, Removed ${oldLen - simplifiedSmoothedPoints.length} points");
+    print("Removed previously had ${oldLen}, now have ${simplifiedSmoothedPoints.length}, Removed ${oldLen - simplifiedSmoothedPoints.length} points");
     
     points.add(BaseAction.LINE_BREAK);
     points.addAll(simplifiedSmoothedPoints);
