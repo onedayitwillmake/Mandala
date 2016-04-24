@@ -3,8 +3,8 @@
 <html>
 <head>
     <title>Mandala Creator</title>
-    <!--<script src="//mandalacreator.com/assets/jquery.js?body=1"></script>-->
-    <!--<script src="//mandalacreator.com/assets/jquery_ujs.js?body=1"></script>-->
+    <!--<script src="//localdev.mandalacreator.com/assets/jquery.js?body=1"></script>-->
+    <!--<script src="//localdev.mandalacreator.com/assets/jquery_ujs.js?body=1"></script>-->
     <script src="//localdev.mandalacreator.com/assets/application.js?body=1"></script>
     <meta content="authenticity_token" name="csrf-param" />
     <meta content="Sc545P0VeptUX5e81FsJyICtQnwME2j5QagBSPDM1nk=" name="csrf-token" />
@@ -144,13 +144,13 @@
                             <!-- MIRROR MODE TOGGLE -->
                             <div class="item">
                                 <div class="ui toggle checkbox">
-                                    <input type="checkbox" name="toggle-mirroring">
+                                    <input type="checkbox" name="toggle-mirroring" checked>
                                     <label>Mirror Mode</label>
                                 </div>
                             </div>
                             <!-- SIDE SLIDER -->
                             <a class="item">
-                                <input id="interface-sidecount-slider" class="" type="range" min="1" max="28" step="1" value="1">
+                                <input id="interface-sidecount-slider" class="" type="range" min="1" max="28" step="1" value="14">
                                 <span class="slider-label" id="interface-sidecount-slider-text">Sides: 6</span>
                             </a>
                         </div>
@@ -167,12 +167,12 @@
                     <div class="sixteen wide column">
                         <div class="settings ui vertical small icon menu">
                             <a class="item">
-                                <input id="interface-line-width-slider" class="" type="range" min="0.25" max="5" step="0.25" value="0.5">
+                                <input id="interface-line-width-slider" class="" type="range" min="0.1" max="3" step="0.1" value="0.5">
                                 <span class="slider-label" id="interface-line-width-slider-text">Width: 1.0</span>
                             </a>
                             <!--OPACITY SLIDER-->
                             <a class="item">
-                                <input id="interface-opacity-slider" class="interface-opacity-slider" type="range" min="15" max="75" step="1" value="6">
+                                <input id="interface-opacity-slider" class="interface-opacity-slider" type="range" min="15" max="75" step="1" value="60">
                                 <span class="slider-label" id="interface-opacity-slider-text">Alpha: 0.25</span>
                             </a>
                         </div>
@@ -231,17 +231,17 @@
     </div>
 </div>
 
-<script src="//mandalacreator.com/js/TweenMax.min.js"></script>
-<script src="//mandalacreator.com/js/ColorPropsPlugin.min.js"></script>
-<script src="//mandalacreator.com/js/CSSRulePlugin.min.js"></script>
-<script src="//mandalacreator.com/js/ScrollToPlugin.min.js"></script>
+<script src="//localdev.mandalacreator.com/js/TweenMax.min.js"></script>
+<script src="//localdev.mandalacreator.com/js/ColorPropsPlugin.min.js"></script>
+<script src="//localdev.mandalacreator.com/js/CSSRulePlugin.min.js"></script>
+<script src="//localdev.mandalacreator.com/js/ScrollToPlugin.min.js"></script>
 <script src="//code.jquery.com/jquery-2.0.3.js"></script>
-<script src="//mandalacreator.com/js/semantic.js"></script>
-<script src="//mandalacreator.com/js/spectrum.js"></script>
+<script src="//localdev.mandalacreator.com/js/semantic.js"></script>
+<script src="//localdev.mandalacreator.com/js/spectrum.js"></script>
 
 <script type="application/dart" src="web/dart/mandala.dart"></script>
-<script src="packages/browser-0.9.0/lib/dart.js"></script>
-<script src="packages/browser-0.9.0/lib/interop.js"></script>
+<script src="/build/web/packages/browser/lib/dart.js"></script>
+<script src="/build/web/packages/browser/lib/interop.js"></script>
 
 <div id="fb-root"></div>
 <script>(function(d, s, id) {

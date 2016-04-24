@@ -5,6 +5,7 @@ class ActionSettings {
   bool isMirrored = true;
   num lineWidth = 0.5;
   num opacity = 0.5;
+  String lineCap = "round";
   String strokeStyle = "rgba(255,255,255,0.25)";
   String fillStyle = "rgba(255,255,255,0.25)";
 
@@ -14,6 +15,7 @@ class ActionSettings {
   ActionSettings();
 
   void execute(dynamic ctx) {
+    ctx.lineCap = lineCap;
     ctx.lineWidth = lineWidth;
     ctx.setStrokeColorRgb(strokeColor.r, strokeColor.g, strokeColor.b,opacity);
     ctx.setFillColorRgb(fillColor.r, fillColor.g, fillColor.b, opacity);

@@ -530,7 +530,7 @@
   var dart = [["DrawingToolLib", "drawingtool/drawingtoollib.dart",, R, {
     "^": "",
     DrawingTool: {
-      "^": "Object;mandalaId,_sides,_isMirrored,_allowEditingPoints,_scale,_isDragging,_blurAmount,_blurOpacity,_canvas,_ctx,_offscreenBuffer,_bgGradient,_bgGradientSvg,_gradientStart,_gradientEnd,_arcColor,_canvasRect,_winScroll,_rafId,actionQueue",
+      "^": "Object;mandalaId,_allowEditingPoints,_scale,_isDragging,_blurAmount,_blurOpacity,_canvas,_ctx,_offscreenBuffer,_bgGradient,_bgGradientSvg,_gradientStart,_gradientEnd,_settings,_cursorPosition,_arcColor,_canvasRect,_rafId,actionQueue",
       _setupBackgroundGradients$0: function() {
         var colors, t1, t2, t3, t4, t5, t6, temp;
         colors = [this._gradientStart, this._gradientEnd];
@@ -587,14 +587,12 @@
         H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingTool__setupListeners_closure4(this)), false), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
         t1 = H.setRuntimeTypeInfo(new W._EventStream(window, "resize", false), [null]);
         H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingTool__setupListeners_closure5(this)), false), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
-        t1 = H.setRuntimeTypeInfo(new W._EventStream(window, "scroll", false), [null]);
-        H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingTool__setupListeners_closure6(this)), false), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
         t1 = H.setRuntimeTypeInfo(new W._EventStream(window, "blur", false), [null]);
-        H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingTool__setupListeners_closure7(this)), false), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
+        H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingTool__setupListeners_closure6(this)), false), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
         t1 = H.setRuntimeTypeInfo(new W._EventStream(window, "focus", false), [null]);
-        H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingTool__setupListeners_closure8(this)), false), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
+        H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingTool__setupListeners_closure7(this)), false), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
         t1 = H.setRuntimeTypeInfo(new W._EventStream(window, "keydown", false), [null]);
-        H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingTool__setupListeners_closure9(this)), false), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
+        H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._html$_target, t1._eventType, W._wrapZone(new R.DrawingTool__setupListeners_closure8(this)), false), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
         $.$get$SharedDispatcher_emitter().on$2(0, "ActionEvent.ON_DRAWING_INTERACTION_FINISHED", this.get$onActionComplete());
         $.$get$SharedDispatcher_emitter().on$2(0, "InterfaceEvent.ON_CONFIRMED", this.get$onConfirmed());
       },
@@ -606,12 +604,12 @@
         t1.cancelAnimationFrame(t2);
         this._rafId = 0;
         this._dispatchActionChangedEvent$0();
-        $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_MIRROR_MODE_CHANGED", this._isMirrored);
+        $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_MIRROR_MODE_CHANGED", this._settings.isMirrored);
         $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_DRAW_POINTS_CHANGED", this._allowEditingPoints);
-        $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_SIDES_CHANGED", this._sides);
+        $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_SIDES_CHANGED", this._settings.sides);
         $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_SCALE_CHANGED", this._scale);
-        this._dispatchOpacityChangedEvent$0();
-        this._dispatchLineWidthChangedEvent$0();
+        $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_OPACITY_CHANGED", this._settings.opacity);
+        $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_LINEWIDTH_CHANGED", this._settings.lineWidth);
         t2 = window;
         t1 = this.get$_update();
         C.Window_methods._ensureRequestAnimationFrame$0(t2);
@@ -620,8 +618,22 @@
       _inputDown$1: function(pos) {
         var t1;
         this._isDragging = true;
+        this._cursorPosition = this._alignedPoint$1(pos);
         t1 = this.actionQueue;
-        t1.get$last(t1).inputDown$2(this._alignedPoint$1(pos), this._allowEditingPoints);
+        t1.get$last(t1).inputDown$2(this._cursorPosition, this._allowEditingPoints);
+      },
+      _inputMove$1: function(pos) {
+        var t1;
+        this._cursorPosition = this._alignedPoint$1(pos);
+        t1 = this.actionQueue;
+        t1.get$last(t1).inputMove$2(this._cursorPosition, this._isDragging);
+      },
+      _inputUp$1: function(pos) {
+        var t1;
+        this._isDragging = false;
+        this._cursorPosition = this._alignedPoint$1(pos);
+        t1 = this.actionQueue;
+        t1.get$last(t1).inputUp$1(this._cursorPosition);
       },
       _alignedPoint$1: function(pos) {
         var t1, t2, t3, t4, t5, t6, t7;
@@ -740,6 +752,24 @@
                 return H.ioore(t3, t4);
               t3[t4].activeDraw$4(this._ctx, J.get$width$x(this._canvasRect), J.get$height$x(this._canvasRect), this._allowEditingPoints);
             }
+            t3 = this._ctx;
+            t4 = this._settings.strokeColor;
+            t5 = t4.r;
+            t6 = t4.g;
+            t4 = t4.b;
+            t3.toString;
+            t3.fillStyle = "rgba(" + H.S(t5) + ", " + H.S(t6) + ", " + H.S(t4) + ", 0.4)";
+            this._ctx.beginPath();
+            t4 = this._ctx;
+            t6 = this._cursorPosition;
+            t5 = t6._x;
+            t6 = t6._y;
+            t4.toString;
+            t4.arc(t5, t6, 1.5, 0, 6.283185307179586, false);
+            t6 = this._ctx;
+            t6.toString;
+            t6.fill("nonzero");
+            this._ctx.closePath();
             ++i;
           }
           ++j;
@@ -752,7 +782,7 @@
         }
       }, function(time) {
         return this._update$2(time, true);
-      }, "_update$1", "call$2", "call$1", "get$_update", 2, 2, 20, 18, 11, 15],
+      }, "_update$1", "call$2", "call$1", "get$_update", 2, 2, 21, 16, 32, 15],
       _updateOffscreenBuffer$0: function() {
         var hiddenCtx, t1, t2, t3;
         hiddenCtx = J.get$context2D$x(this._offscreenBuffer);
@@ -793,13 +823,13 @@
         var nextAction, t1, t2;
         switch (actionName) {
           case "RegularStroke":
-            nextAction = new R.RegularStrokeAction(null, H.setRuntimeTypeInfo([], [Z.Point]), "RegularStroke", new R.ActionSettings(1, true, 0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
+            nextAction = new R.RegularStrokeAction(null, H.setRuntimeTypeInfo([], [Z.Point]), "RegularStroke", new R.ActionSettings(1, true, 0.5, 0.5, "round", "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
             break;
           case "SmoothStroke":
             nextAction = R.SmoothStrokeAction$();
             break;
           case "PolygonalFill":
-            nextAction = new R.PolygonalFillAction(null, null, null, H.setRuntimeTypeInfo([], [Z.Point]), "PolygonalStroke", new R.ActionSettings(1, true, 0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
+            nextAction = new R.PolygonalFillAction(null, null, null, H.setRuntimeTypeInfo([], [Z.Point]), "PolygonalStroke", new R.ActionSettings(1, true, 0.5, 0.5, "round", "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
             nextAction.PolygonalStrokeAction$0();
             nextAction.name = "PolygonalFill";
             break;
@@ -807,14 +837,14 @@
             nextAction = R.PolygonalStrokeAction$();
             break;
           case "SmoothFill":
-            t1 = new R.ActionSettings(1, true, 0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255));
+            t1 = new R.ActionSettings(1, true, 0.5, 0.5, "round", "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255));
             nextAction = new R.SmoothFillAction(null, null, H.setRuntimeTypeInfo([], [Z.Point]), "RegularStroke", t1);
             nextAction.SmoothStrokeAction$0();
             nextAction.name = "SmoothFill";
             t1.strokeStyle = null;
             break;
           case "RegularFill":
-            t1 = new R.ActionSettings(1, true, 0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255));
+            t1 = new R.ActionSettings(1, true, 0.5, 0.5, "round", "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255));
             nextAction = new R.RegularFillAction(null, H.setRuntimeTypeInfo([], [Z.Point]), "RegularStroke", t1);
             nextAction.name = "RegularFill";
             t1.strokeStyle = null;
@@ -822,17 +852,16 @@
           default:
             nextAction = null;
         }
-        t1 = this.actionQueue;
-        if (!t1.get$isEmpty(t1)) {
-          t2 = nextAction.settings;
-          t2.opacity = t1.get$last(t1).get$settings().opacity;
-          t2.strokeColor.copyFrom$1(t1.get$last(t1).get$settings().strokeColor);
-          t2.fillColor.copyFrom$1(t1.get$last(t1).get$settings().fillColor);
-        }
-        t2 = nextAction.settings;
-        t2.sides = this._sides;
-        t2.isMirrored = this._isMirrored;
-        t1._add$1(nextAction);
+        t1 = nextAction.settings;
+        t2 = this._settings;
+        t1.lineWidth = t2.lineWidth;
+        t1.opacity = t2.opacity;
+        t1.strokeColor.copyFrom$1(t2.strokeColor);
+        t1.fillColor.copyFrom$1(this._settings.fillColor);
+        t2 = this._settings;
+        t1.sides = t2.sides;
+        t1.isMirrored = t2.isMirrored;
+        this.actionQueue._add$1(nextAction);
         this._updateOffscreenBuffer$0();
         if ($dispatchEvent)
           this._dispatchActionChangedEvent$0();
@@ -842,7 +871,7 @@
         return this.changeAction$2(actionName, true);
       },
       performEditAction$2: function(actionName, value) {
-        var t1, lastActionName;
+        var t1, lastActionName, t2;
         switch (actionName) {
           case "undo":
             this._performUndo$0();
@@ -854,11 +883,13 @@
             this.changeAction$2(lastActionName, true);
             break;
           case "alpha":
-            t1 = this.actionQueue;
-            t1.get$last(t1).get$settings().opacity = value;
-            if (J.get$length$asx(J.get$points$x(t1.get$last(t1))) === 0 && t1.get$length(t1) >= 2)
-              t1.elementAt$1(0, t1.get$length(t1) - 2).get$settings().opacity = value;
-            this._dispatchOpacityChangedEvent$0();
+            t1 = this._settings;
+            t2 = this.actionQueue;
+            t2.get$last(t2).get$settings().opacity = value;
+            t1.opacity = value;
+            if (J.get$length$asx(J.get$points$x(t2.get$last(t2))) === 0 && t2.get$length(t2) >= 2)
+              t2.elementAt$1(0, t2.get$length(t2) - 2).get$settings().opacity = value;
+            $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_OPACITY_CHANGED", this._settings.opacity);
             break;
           case "lineColor":
             this._changeLineColor$1(J.toString$0$(H.interceptedTypeCast(value, "$isJsObject")));
@@ -870,10 +901,10 @@
           case "sides":
             t1 = this.actionQueue;
             t1 = t1.get$last(t1).get$settings();
-            this._sides = value;
+            this._settings.sides = value;
             t1.sides = value;
             this._updateOffscreenBuffer$0();
-            $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_SIDES_CHANGED", this._sides);
+            $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_SIDES_CHANGED", this._settings.sides);
             break;
           case "scale":
             this._scale = value;
@@ -887,15 +918,17 @@
           case "setMirrorMode":
             t1 = this.actionQueue;
             t1 = t1.get$last(t1).get$settings();
-            this._isMirrored = value;
+            this._settings.isMirrored = value;
             t1.isMirrored = value;
             this._updateOffscreenBuffer$0();
-            $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_MIRROR_MODE_CHANGED", this._isMirrored);
+            $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_MIRROR_MODE_CHANGED", this._settings.isMirrored);
             break;
           case "linewidth":
-            t1 = this.actionQueue;
-            t1.get$last(t1).get$settings().lineWidth = value;
-            this._dispatchLineWidthChangedEvent$0();
+            t1 = this._settings;
+            t2 = this.actionQueue;
+            t2.get$last(t2).get$settings().lineWidth = value;
+            t1.lineWidth = value;
+            $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_LINEWIDTH_CHANGED", this._settings.lineWidth);
             break;
         }
       },
@@ -904,7 +937,7 @@
       },
       onActionComplete$1: [function(action) {
         this.changeAction$2(J.get$name$x(action), false);
-      }, "call$1", "get$onActionComplete", 2, 0, 22, 30],
+      }, "call$1", "get$onActionComplete", 2, 0, 18, 30],
       onConfirmed$1: [function(noop) {
         var t1 = this.actionQueue;
         t1.get$last(t1).onConfirmed$0();
@@ -1010,12 +1043,12 @@
         t1 = this.actionQueue;
         j = 0;
         while (true) {
-          if (!(j < (this._isMirrored === true ? 2 : 1)))
+          if (!(j < (this._settings.isMirrored === true ? 2 : 1)))
             break;
           xOffset = j === 0 ? 1 : -1;
           i = 0;
           while (true) {
-            t2 = this._sides;
+            t2 = this._settings.sides;
             if (typeof t2 !== "number")
               return H.iae(t2);
             if (!(i < t2))
@@ -1031,7 +1064,7 @@
             if (typeof t4 !== "number")
               return t4.$mul();
             svgCtx._currentMatrixString._contents += "matrix(" + H.S(xOffset * t2) + " 0 0 " + H.S(t2) + " " + H.S(t3 * 0.5) + " " + H.S(t4 * 0.5) + ") ";
-            t4 = this._sides;
+            t4 = this._settings.sides;
             if (typeof t4 !== "number")
               return H.iae(t4);
             svgCtx._currentMatrixString._contents += "rotate(" + H.S(i / t4 * 3.141592653589793 * 2 * 180 / 3.141592653589793) + ") ";
@@ -1104,15 +1137,7 @@
       _dispatchActionChangedEvent$0: function() {
         var t1 = this.actionQueue;
         $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_ACTION_CHANGED", J.get$name$x(t1.get$last(t1)));
-        this._dispatchOpacityChangedEvent$0();
-      },
-      _dispatchOpacityChangedEvent$0: function() {
-        var t1 = this.actionQueue;
-        return $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_OPACITY_CHANGED", t1.get$last(t1).get$settings().opacity);
-      },
-      _dispatchLineWidthChangedEvent$0: function() {
-        var t1 = this.actionQueue;
-        return $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_LINEWIDTH_CHANGED", t1.get$last(t1).get$settings().lineWidth);
+        $.$get$SharedDispatcher_emitter().emit$2("DrawingTool.ON_OPACITY_CHANGED", this._settings.opacity);
       }
     },
     DrawingTool__setupListeners_closure: {
@@ -1138,59 +1163,41 @@
     DrawingTool__setupListeners_closure1: {
       "^": "Closure:0;$this",
       call$1: [function(e) {
-        var t1, t2, t3;
-        t1 = J.getInterceptor$x(e);
+        var t1 = J.getInterceptor$x(e);
         t1.preventDefault$0(e);
-        t2 = this.$this;
-        t1 = t1.get$page(e);
-        t3 = t2.actionQueue;
-        t3.get$last(t3).inputMove$2(t2._alignedPoint$1(t1), t2._isDragging);
+        this.$this._inputMove$1(t1.get$page(e));
       }, null, null, 2, 0, null, 0, "call"]
     },
     DrawingTool__setupListeners_closure2: {
       "^": "Closure:0;$this",
       call$1: [function(e) {
-        var t1, t2, t3;
-        t1 = J.getInterceptor$x(e);
+        var t1 = J.getInterceptor$x(e);
         t1.preventDefault$0(e);
-        t2 = this.$this;
         t1 = t1.get$touches(e);
         if (0 >= t1.length)
           return H.ioore(t1, 0);
         t1 = t1[0];
-        t1 = H.setRuntimeTypeInfo(new P.Point0(C.JSNumber_methods.round$0(t1.pageX), C.JSNumber_methods.round$0(t1.pageY)), [null]);
-        t3 = t2.actionQueue;
-        t3.get$last(t3).inputMove$2(t2._alignedPoint$1(t1), t2._isDragging);
+        this.$this._inputMove$1(H.setRuntimeTypeInfo(new P.Point0(C.JSNumber_methods.round$0(t1.pageX), C.JSNumber_methods.round$0(t1.pageY)), [null]));
       }, null, null, 2, 0, null, 0, "call"]
     },
     DrawingTool__setupListeners_closure3: {
       "^": "Closure:0;$this",
       call$1: [function(e) {
-        var t1, t2, t3;
-        t1 = J.getInterceptor$x(e);
+        var t1 = J.getInterceptor$x(e);
         t1.preventDefault$0(e);
-        t2 = this.$this;
-        t1 = t1.get$page(e);
-        t2._isDragging = false;
-        t3 = t2.actionQueue;
-        t3.get$last(t3).inputUp$1(t2._alignedPoint$1(t1));
+        this.$this._inputUp$1(t1.get$page(e));
       }, null, null, 2, 0, null, 0, "call"]
     },
     DrawingTool__setupListeners_closure4: {
       "^": "Closure:0;$this",
       call$1: [function(e) {
-        var t1, t2, t3;
-        t1 = J.getInterceptor$x(e);
+        var t1 = J.getInterceptor$x(e);
         t1.preventDefault$0(e);
-        t2 = this.$this;
         t1 = t1.get$touches(e);
         if (0 >= t1.length)
           return H.ioore(t1, 0);
         t1 = t1[0];
-        t1 = H.setRuntimeTypeInfo(new P.Point0(C.JSNumber_methods.round$0(t1.pageX), C.JSNumber_methods.round$0(t1.pageY)), [null]);
-        t2._isDragging = false;
-        t3 = t2.actionQueue;
-        t3.get$last(t3).inputUp$1(t2._alignedPoint$1(t1));
+        this.$this._inputUp$1(H.setRuntimeTypeInfo(new P.Point0(C.JSNumber_methods.round$0(t1.pageX), C.JSNumber_methods.round$0(t1.pageY)), [null]));
       }, null, null, 2, 0, null, 0, "call"]
     },
     DrawingTool__setupListeners_closure5: {
@@ -1203,12 +1210,6 @@
     DrawingTool__setupListeners_closure6: {
       "^": "Closure:0;$this",
       call$1: [function(e) {
-        this.$this._winScroll = new Z.Point(C.Window_methods.get$scrollX(window), C.Window_methods.get$scrollY(window));
-      }, null, null, 2, 0, null, 0, "call"]
-    },
-    DrawingTool__setupListeners_closure7: {
-      "^": "Closure:0;$this",
-      call$1: [function(e) {
         var t1, t2, t3;
         t1 = this.$this;
         t2 = window;
@@ -1218,13 +1219,13 @@
         t1._rafId = 0;
       }, null, null, 2, 0, null, 0, "call"]
     },
-    DrawingTool__setupListeners_closure8: {
+    DrawingTool__setupListeners_closure7: {
       "^": "Closure:0;$this",
       call$1: [function(e) {
         this.$this.start$0(0);
       }, null, null, 2, 0, null, 0, "call"]
     },
-    DrawingTool__setupListeners_closure9: {
+    DrawingTool__setupListeners_closure8: {
       "^": "Closure:0;$this",
       call$1: [function(e) {
         var t1 = this.$this.actionQueue;
@@ -1232,7 +1233,7 @@
       }, null, null, 2, 0, null, 0, "call"]
     },
     DrawingTool__updateOffscreenBuffer_closure: {
-      "^": "Closure:7;$this,hiddenCtx",
+      "^": "Closure:8;$this,hiddenCtx",
       call$1: function(action) {
         var t1, t2, t3, j, xOffset, i, t4, t5;
         t1 = this.hiddenCtx;
@@ -1275,7 +1276,7 @@
       }
     },
     DrawingTool__changeLineColor_closure: {
-      "^": "Closure:7;$this",
+      "^": "Closure:8;$this",
       call$1: function(action) {
         var t1 = this.$this.actionQueue;
         action.get$settings().fillColor.copyFrom$1(t1.get$last(t1).get$settings().fillColor);
@@ -1283,16 +1284,17 @@
       }
     },
     DrawingTool_saveSvg_closure: {
-      "^": "Closure:7;$this,svgCtx",
+      "^": "Closure:8;$this,svgCtx",
       call$1: function(action) {
         var t1 = this.$this;
         action.executeForSvg$3(this.svgCtx, J.get$width$x(t1._canvasRect), J.get$height$x(t1._canvasRect));
       }
     },
     ActionSettings: {
-      "^": "Object;sides,isMirrored,lineWidth,opacity,strokeStyle,fillStyle,strokeColor,fillColor",
+      "^": "Object;sides,isMirrored,lineWidth,opacity,lineCap,strokeStyle,fillStyle,strokeColor,fillColor",
       execute$1: function(ctx) {
         var t1, t2, t3, t4;
+        ctx.lineCap = this.lineCap;
         ctx.lineWidth = this.lineWidth;
         t1 = this.strokeColor;
         t2 = t1.r;
@@ -1309,7 +1311,7 @@
         ctx.fillStyle = "rgba(" + H.S(t1) + ", " + H.S(t3) + ", " + H.S(t4) + ", " + H.S(t2) + ")";
       },
       executeForSvg$1: function(ctx) {
-        var t1, t2, t3, t4, t5, t6;
+        var t1, t2, t3, t4;
         ctx._lineWidth = this.lineWidth;
         if (this.strokeStyle == null)
           ctx._strokeStyle = "none";
@@ -1322,13 +1324,8 @@
         t3 = t1.g;
         t1 = t1.b;
         t4 = this.opacity;
-        t5 = J.getInterceptor$n(t2);
-        t5.$shl(t2, 16);
-        t6 = J.getInterceptor$n(t3);
-        t6.$shl(t3, 8);
-        J.$shl$n(t1, 0);
-        t2 = t5.$shl(t2, 16);
-        t3 = t6.$shl(t3, 8);
+        t2 = J.$shl$n(t2, 16);
+        t3 = J.$shl$n(t3, 8);
         if (typeof t1 !== "number")
           return H.iae(t1);
         ctx._fillStyle = "#" + C.JSString_methods.substring$2(C.JSNumber_methods.toRadixString$1(16777216 + t2 + t3 + t1, 16), 1, 7);
@@ -1344,7 +1341,7 @@
       },
       parseRgb$1: function(value) {
         var tokens, t1, t2;
-        tokens = value.split(",");
+        tokens = J.split$1$s(value, ",");
         if (tokens.length < 3)
           throw H.wrapException(P.Exception_Exception("Invalid color value format"));
         t1 = J.substring$1$s(tokens[0], 4);
@@ -1379,6 +1376,37 @@
       },
       toString$0: function(_) {
         return "rgba(" + H.S(this.r) + ", " + H.S(this.g) + ", " + H.S(this.b) + ", 1.0)";
+      },
+      ColorValue$from$1: function(value) {
+        var t1, hex, t2, a, b, c, hexR, hexG, hexB;
+        t1 = J.getInterceptor$s(value);
+        if (t1.startsWith$1(value, "#")) {
+          hex = t1.substring$1(value, 1);
+          t1 = hex.length;
+          t2 = t1 === 3;
+          if (!t2 && t1 !== 6)
+            H.throwExpression(P.Exception_Exception("Invalid color hex format"));
+          if (t2) {
+            a = C.JSString_methods.substring$2(hex, 0, 1);
+            b = C.JSString_methods.substring$2(hex, 1, 2);
+            c = C.JSString_methods.substring$2(hex, 2, 3);
+            hex = a + a + b + b + c + c;
+          }
+          hexR = C.JSString_methods.substring$2(hex, 0, 2);
+          hexG = C.JSString_methods.substring$2(hex, 2, 4);
+          hexB = C.JSString_methods.substring$2(hex, 4, 6);
+          this.r = H.Primitives_parseInt("0x" + hexR, null, null);
+          this.g = H.Primitives_parseInt("0x" + hexG, null, null);
+          this.b = H.Primitives_parseInt("0x" + hexB, null, null);
+        } else if (t1.contains$1(value, ",") === true)
+          this.parseRgb$1(value);
+      },
+      static: {
+        ColorValue$from: function(value) {
+          var t1 = new R.ColorValue(null, null, null);
+          t1.ColorValue$from$1(value);
+          return t1;
+        }
       }
     },
     BaseAction: {
@@ -1395,8 +1423,8 @@
       },
       executeForSvg$3: function(ctx, width, height) {
       },
-      activeDraw$4: function(ctx, width, height, canEditPoints) {
-      },
+      activeDraw$4: ["super$BaseAction$activeDraw", function(ctx, width, height, canEditPoints) {
+      }],
       undo$0: function() {
       },
       onConfirmed$0: function() {
@@ -1465,6 +1493,7 @@
       },
       activeDraw$4: function(ctx, width, height, canEditPoints) {
         var t1, t2, i;
+        this.super$BaseAction$activeDraw(ctx, width, height, canEditPoints);
         if (this._activePoints != null) {
           ctx.beginPath();
           ctx.fillStyle = "hsla(0, 80%, 50%, 1)";
@@ -1578,7 +1607,7 @@
       },
       static: {
         PolygonalStrokeAction$: function() {
-          var t1 = new R.PolygonalStrokeAction(null, null, null, H.setRuntimeTypeInfo([], [Z.Point]), "PolygonalStroke", new R.ActionSettings(1, true, 0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
+          var t1 = new R.PolygonalStrokeAction(null, null, null, H.setRuntimeTypeInfo([], [Z.Point]), "PolygonalStroke", new R.ActionSettings(1, true, 0.5, 0.5, "round", "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
           t1.PolygonalStrokeAction$0();
           return t1;
         }
@@ -1656,11 +1685,10 @@
         this._activePoints.push(pos);
       }],
       inputUp$1: function(pos) {
-        var t1, oldLen, simplifiedPoints;
+        var t1, simplifiedPoints;
         t1 = this._activePoints;
-        oldLen = t1.length;
+        t1.length;
         simplifiedPoints = N.simplifyLang(4, 0.5, t1);
-        P.print("Had: " + oldLen + ", Have: " + simplifiedPoints.length + ", Removed " + (oldLen - simplifiedPoints.length) + " points");
         t1 = this.points;
         t1.push($.$get$BaseAction_LINE_BREAK());
         C.JSArray_methods.addAll$1(t1, simplifiedPoints);
@@ -1763,6 +1791,7 @@
       },
       activeDraw$4: function(ctx, width, height, canEditPoints) {
         var t1, i, t2;
+        this.super$BaseAction$activeDraw(ctx, width, height, canEditPoints);
         if (canEditPoints !== true)
           return;
         for (t1 = this.points, i = 0; i < t1.length; ++i) {
@@ -1829,7 +1858,7 @@
       },
       static: {
         SmoothStrokeAction$: function() {
-          var t1 = new R.SmoothStrokeAction(null, null, H.setRuntimeTypeInfo([], [Z.Point]), "RegularStroke", new R.ActionSettings(1, true, 0.5, 0.5, "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
+          var t1 = new R.SmoothStrokeAction(null, null, H.setRuntimeTypeInfo([], [Z.Point]), "RegularStroke", new R.ActionSettings(1, true, 0.5, 0.5, "round", "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255)));
           t1.SmoothStrokeAction$0();
           return t1;
         }
@@ -1859,13 +1888,13 @@
       }
     },
     EventEmitter_emit_closure: {
-      "^": "Closure:18;data",
+      "^": "Closure:19;data",
       call$1: [function(item) {
         item.call$1(this.data);
       }, null, null, 2, 0, null, 33, "call"]
     },
     DrawingToolInterface: {
-      "^": "Object;_DrawingToolLib$_drawingModule,_lastSelectedTool,_$sideCountSlider,_$scaleSlider,_$opacitySlider,_$lineWidthSlider,_$mirrorCheckbox,_$drawPointsCheckbox,_$advancedToggleButton,_helperText",
+      "^": "Object;_DrawingToolLib$_drawingModule,_lastSelectedTool,strokeColors,_$sideCountSlider,_$scaleSlider,_$opacitySlider,_$lineWidthSlider,_$mirrorCheckbox,_$drawPointsCheckbox,_$advancedToggleButton,_helperText",
       _setupOutgoingEvents$0: function() {
         var t1, t2;
         t1 = new W._FrozenElementList(document.querySelectorAll("[data-drawingmode]"));
@@ -1910,9 +1939,25 @@
         H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t2._html$_target, t2._eventType, W._wrapZone(this.get$_toggleAdvancedMenus()), false), [H.getTypeArgumentByIndex(t2, 0)])._tryResume$0();
         this._$advancedToggleButton = t1;
         t1 = $.$get$context();
-        t1.callMethod$2("jQuery", ["#interface-color-line-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(P.LinkedHashMap__makeLiteral(["showPalette", true, "showPaletteOnly", true, "palette", ["#FFFFFF", "#00ecfc", "#ffdf34", "#ef43ff"], "change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure8(this))]))]);
+        t1.callMethod$2("jQuery", ["#interface-color-line-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(P.LinkedHashMap__makeLiteral(["showPalette", true, "showPaletteOnly", true, "palette", this.strokeColors, "change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure8(this))]))]);
         t1.callMethod$2("jQuery", ["#interface-color-gradient-start-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(P.LinkedHashMap__makeLiteral(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure9(this))]))]);
         t1.callMethod$2("jQuery", ["#interface-color-gradient-end-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(P.LinkedHashMap__makeLiteral(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure10(this))]))]);
+      },
+      createSettings$0: function() {
+        var settings, t1;
+        settings = new R.ActionSettings(1, true, 0.5, 0.5, "round", "rgba(255,255,255,0.25)", "rgba(255,255,255,0.25)", new R.ColorValue(255, 255, 255), new R.ColorValue(255, 255, 255));
+        settings.isMirrored = this._$mirrorCheckbox.checked;
+        settings.sides = this._$sideCountSlider.valueAsNumber;
+        t1 = this.strokeColors;
+        if (0 >= t1.length)
+          return H.ioore(t1, 0);
+        settings.strokeColor = R.ColorValue$from(t1[0]);
+        if (0 >= t1.length)
+          return H.ioore(t1, 0);
+        settings.fillColor = R.ColorValue$from(t1[0]);
+        settings.lineWidth = this._$lineWidthSlider.valueAsNumber;
+        settings.opacity = J.$div$n(H.Primitives_parseDouble(this._$opacitySlider.defaultValue, null), 100);
+        return settings;
       },
       _setupIncommingEvents$0: function() {
         $.$get$SharedDispatcher_emitter().on$2(0, "DrawingTool.ON_ACTION_CHANGED", this.get$onActionChanged());
@@ -1927,14 +1972,14 @@
       },
       onActionBecameUnconfirmed$1: [function(actionName) {
         J.$index$asx($.$get$context(), "TweenMax").callMethod$2("to", [this._helperText, 0.15, P.JsObject_JsObject$jsify(P.LinkedHashMap__makeLiteral(["alpha", 0, "display", "none"]))]);
-      }, "call$1", "get$onActionBecameUnconfirmed", 2, 0, 6, 13],
+      }, "call$1", "get$onActionBecameUnconfirmed", 2, 0, 5, 12],
       onActionBecameConfirmable$1: [function(instructions) {
         var t1;
         this._helperText.textContent = instructions;
         t1 = $.$get$context();
         J.$index$asx(t1, "TweenMax").callMethod$2("killDelayedCallsTo", [this._helperText]);
         J.$index$asx(t1, "TweenMax").callMethod$2("fromTo", [this._helperText, 0.5, P.JsObject_JsObject$jsify(P.LinkedHashMap__makeLiteral(["scale", "1.2", "alpha", 0.5, "display", "block"])), P.JsObject_JsObject$jsify(P.LinkedHashMap__makeLiteral(["scale", "1", "alpha", 1, "display", "block"]))]);
-      }, "call$1", "get$onActionBecameConfirmable", 2, 0, 6, 32],
+      }, "call$1", "get$onActionBecameConfirmable", 2, 0, 5, 27],
       _toggleAdvancedMenus$1: [function(e) {
         var t1, next, menusAreCurrentlyShowing, t2, t3, i, t4, t5;
         t1 = this._$advancedToggleButton;
@@ -1965,27 +2010,27 @@
       onActionChanged$1: [function(actionName) {
         var t1 = new W._FrozenElementList(document.querySelectorAll("[data-drawingmode]"));
         t1.forEach$1(t1, new R.DrawingToolInterface_onActionChanged_closure(actionName));
-      }, "call$1", "get$onActionChanged", 2, 0, 6, 13],
+      }, "call$1", "get$onActionChanged", 2, 0, 5, 12],
       onSideCountChanged$1: [function(sideCount) {
         var t1 = J.getInterceptor(sideCount);
         this._$sideCountSlider.value = t1.toString$0(sideCount);
         document.querySelector("#interface-sidecount-slider-text").textContent = C.JSString_methods.$add("Sides: ", t1.toString$0(sideCount));
-      }, "call$1", "get$onSideCountChanged", 2, 0, 19, 27],
+      }, "call$1", "get$onSideCountChanged", 2, 0, 20, 23],
       onLineWidthChanged$1: [function(lineWidth) {
         var t1 = J.getInterceptor$n(lineWidth);
         this._$lineWidthSlider.value = t1.toStringAsPrecision$1(lineWidth, 2);
         document.querySelector("#interface-line-width-slider-text").textContent = "Width: " + C.JSInt_methods.toString$0(J.toInt$0$n(t1.$mul(lineWidth, 100)));
-      }, "call$1", "get$onLineWidthChanged", 2, 0, 4, 23],
+      }, "call$1", "get$onLineWidthChanged", 2, 0, 6, 20],
       onOpacityChanged$1: [function(opacity) {
         var t1 = J.getInterceptor$ns(opacity);
         this._$opacitySlider.value = J.toString$0$(t1.$mul(opacity, 100));
         document.querySelector("#interface-opacity-slider-text").textContent = "Alpha: ." + t1.toStringAsPrecision$1(opacity, 2);
-      }, "call$1", "get$onOpacityChanged", 2, 0, 4, 20],
+      }, "call$1", "get$onOpacityChanged", 2, 0, 6, 19],
       onMirrorModeChanged$1: [function(mirrorMode) {
         var t1 = this._$mirrorCheckbox;
         t1.checked = mirrorMode;
         t1.nextElementSibling.textContent = "Mirror Mode ";
-      }, "call$1", "get$onMirrorModeChanged", 2, 0, 11, 19],
+      }, "call$1", "get$onMirrorModeChanged", 2, 0, 11, 18],
       onDrawPointsChanged$1: [function(drawPoints) {
         var t1 = this._$drawPointsCheckbox;
         t1.checked = drawPoints;
@@ -1995,10 +2040,10 @@
         var t1 = J.getInterceptor$ns(scale);
         this._$scaleSlider.value = C.JSInt_methods.toString$0(J.toInt$0$n(t1.$mul(scale, 100)));
         this._$scaleSlider.nextElementSibling.textContent = "Zoom " + t1.toStringAsPrecision$1(scale, 2);
-      }, "call$1", "get$onScaleChanged", 2, 0, 4, 16]
+      }, "call$1", "get$onScaleChanged", 2, 0, 6, 14]
     },
     DrawingToolInterface__setupOutgoingEvents_closure: {
-      "^": "Closure:8;$this",
+      "^": "Closure:7;$this",
       call$1: function(el) {
         J.get$onClick$x(el).listen$1(new R.DrawingToolInterface__setupOutgoingEvents__closure0(this.$this, el));
       }
@@ -2016,7 +2061,7 @@
       }, null, null, 2, 0, null, 0, "call"]
     },
     DrawingToolInterface__setupOutgoingEvents_closure0: {
-      "^": "Closure:8;$this",
+      "^": "Closure:7;$this",
       call$1: function(el) {
         J.get$onClick$x(el).listen$1(new R.DrawingToolInterface__setupOutgoingEvents__closure(this.$this, el));
       }
@@ -2076,25 +2121,25 @@
       }, null, null, 2, 0, null, 0, "call"]
     },
     DrawingToolInterface__setupOutgoingEvents_closure8: {
-      "^": "Closure:5;$this",
+      "^": "Closure:4;$this",
       call$2: [function(element, color) {
         return this.$this._DrawingToolLib$_drawingModule.performEditAction$2("lineColor", color);
       }, null, null, 4, 0, null, 2, 10, "call"]
     },
     DrawingToolInterface__setupOutgoingEvents_closure9: {
-      "^": "Closure:5;$this",
+      "^": "Closure:4;$this",
       call$2: [function(element, color) {
         return this.$this._DrawingToolLib$_drawingModule.performEditAction$2("gradientStartColor", color);
       }, null, null, 4, 0, null, 2, 10, "call"]
     },
     DrawingToolInterface__setupOutgoingEvents_closure10: {
-      "^": "Closure:5;$this",
+      "^": "Closure:4;$this",
       call$2: [function(element, color) {
         return this.$this._DrawingToolLib$_drawingModule.performEditAction$2("gradientEndColor", color);
       }, null, null, 4, 0, null, 2, 10, "call"]
     },
     DrawingToolInterface_onActionChanged_closure: {
-      "^": "Closure:8;actionName",
+      "^": "Closure:7;actionName",
       call$1: function(el) {
         var t1, t2, t3;
         t1 = J.getInterceptor$x(el);
@@ -2159,13 +2204,8 @@
       },
       setStrokeColorRgb$4: function(_, r, g, b, a) {
         var t1, t2;
-        t1 = J.getInterceptor$n(r);
-        t1.$shl(r, 16);
-        t2 = J.getInterceptor$n(g);
-        t2.$shl(g, 8);
-        J.$shl$n(b, 0);
-        t1 = t1.$shl(r, 16);
-        t2 = t2.$shl(g, 8);
+        t1 = J.$shl$n(r, 16);
+        t2 = J.$shl$n(g, 8);
         if (typeof b !== "number")
           return H.iae(b);
         this._strokeStyle = "#" + C.JSString_methods.substring$2(C.JSNumber_methods.toRadixString$1(16777216 + t1 + t2 + b, 16), 1, 7);
@@ -2346,7 +2386,7 @@
       }, "call$1", "get$_onPublishRequested", 2, 0, 3, 0]
     },
     SiteApp__onPublishRequested_closure: {
-      "^": "Closure:21;",
+      "^": "Closure:22;",
       call$1: [function(req) {
         var responseJson, t1;
         responseJson = C.JsonCodec_null_null.decode$1(J.get$responseText$x(req));
@@ -2379,14 +2419,14 @@
       "^": "Closure:12;",
       call$3: [function(thing, arg1, arg2) {
         return window.location.assign(C.JSString_methods.$add("/auth/", arg1));
-      }, null, null, 6, 0, null, 14, 9, 6, "call"]
+      }, null, null, 6, 0, null, 13, 9, 6, "call"]
     },
     TopMenuController__setupDropdown_closure0: {
       "^": "Closure:12;",
       call$3: [function(thing, arg1, arg2) {
         if (J.$eq$(arg1, "github"))
           window.location.assign("https://github.com/onedayitwillmake/Mandala");
-      }, null, null, 6, 0, null, 14, 9, 6, "call"]
+      }, null, null, 6, 0, null, 13, 9, 6, "call"]
     }
   }], ["_foreign_helper", "dart:_foreign_helper",, H, {
     "^": "",
@@ -2884,6 +2924,9 @@
         if (typeof other !== "string")
           throw H.wrapException(P.ArgumentError$value(other, null, null));
         return receiver + other;
+      },
+      split$1: function(receiver, pattern) {
+        return receiver.split(pattern);
       },
       startsWith$2: function(receiver, pattern, index) {
         var endIndex;
@@ -3861,7 +3904,7 @@
         if (!(x instanceof P.Object))
           this.unsupported$1(x);
         return ["dart", init.classIdExtractor(x), this.serializeArrayInPlace$1(init.classFieldsExtractor(x))];
-      }, "call$1", "get$serialize", 2, 0, 0, 12],
+      }, "call$1", "get$serialize", 2, 0, 0, 11],
       unsupported$2: function(x, message) {
         throw H.wrapException(new P.UnsupportedError(H.S(message == null ? "Can't transmit:" : message) + " " + H.S(x)));
       },
@@ -4018,7 +4061,7 @@
           default:
             throw H.wrapException("couldn't deserialize: " + H.S(x));
         }
-      }, "call$1", "get$deserialize", 2, 0, 0, 12],
+      }, "call$1", "get$deserialize", 2, 0, 0, 11],
       deserializeArrayInPlace$1: function(x) {
         var t1, i, t2;
         t1 = J.getInterceptor$asx(x);
@@ -11276,12 +11319,6 @@
       get$onClick: function(receiver) {
         return H.setRuntimeTypeInfo(new W._EventStream(receiver, "click", false), [null]);
       },
-      get$scrollX: function(receiver) {
-        return "scrollX" in receiver ? C.JSNumber_methods.round$0(receiver.scrollX) : C.JSNumber_methods.round$0(receiver.document.documentElement.scrollLeft);
-      },
-      get$scrollY: function(receiver) {
-        return "scrollY" in receiver ? C.JSNumber_methods.round$0(receiver.scrollY) : C.JSNumber_methods.round$0(receiver.document.documentElement.scrollTop);
-      },
       $isWindow: 1,
       $isInterceptor: 1,
       "%": "DOMWindow|Window"
@@ -13020,25 +13057,24 @@
     main: [function() {
       M.jqueryWaitFn(0);
     }, "call$0", "mandala__main$closure", 0, 0, 2],
-    jqueryWaitFn: [function(time) {
-      var t1, t2, t3, site, exception;
+    jqueryWaitFn: function(time) {
+      var e, t1, t2, t3, site, exception;
       try {
         if (document.querySelector("#canvas") != null) {
           t1 = H.interceptedTypeCast(document.querySelector("#canvas"), "$isCanvasElement");
-          t2 = new R.DrawingTool(null, 14, true, true, 1, false, 10, 0.5, t1, null, null, null, null, "#383245", "#1B1821", new R.ColorValue(255, 255, 255), null, null, 0, P.ListQueue$(null, R.BaseAction));
+          t2 = new R.DrawingTool(null, true, 1, false, 10, 0.5, t1, null, null, null, null, "#383245", "#1B1821", null, new Z.Point(-1000, -1000), R.ColorValue$from("#ffdf34"), null, 0, P.ListQueue$(null, R.BaseAction));
           t2._canvasRect = t1.getBoundingClientRect();
-          t2._winScroll = new Z.Point(C.Window_methods.get$scrollX(window), C.Window_methods.get$scrollY(window));
           t2._ctx = t1.getContext("2d");
           t3 = t1.width;
           t2._offscreenBuffer = W.CanvasElement_CanvasElement(t1.height, t3);
           t2._setupBackgroundGradients$0();
           t2._setupListeners$0();
-          t2.changeAction$2("RegularStroke", true);
-          t2.start$0(0);
           $.tool = t2;
-          t3 = new R.DrawingToolInterface(t2, null, null, null, null, null, null, null, null, null);
+          t3 = new R.DrawingToolInterface(t2, null, ["#ffdf34", "#FFFFFF", "#00ecfc", "#ef43ff"], null, null, null, null, null, null, null, null);
           t3._setupOutgoingEvents$0();
           t3._setupIncommingEvents$0();
+          t2._settings = t3.createSettings$0();
+          t2.changeAction$2("RegularStroke", true);
           t2.start$0(0);
           $.toolInterface = t3;
         }
@@ -13049,12 +13085,11 @@
         $.$get$context().callMethod$2("jQuery", [".ui.rating"]).callMethod$2("rating", ["enable"]);
         site._setupToolbar$0();
       } catch (exception) {
-        H.unwrapException(exception);
-        t1 = window;
-        C.Window_methods._ensureRequestAnimationFrame$0(t1);
-        C.Window_methods._requestAnimationFrame$1(t1, W._wrapZone(M.mandala__jqueryWaitFn$closure()));
+        t1 = H.unwrapException(exception);
+        e = t1;
+        P.print(e);
       }
-    }, "call$1", "mandala__jqueryWaitFn$closure", 2, 0, 4, 11]
+    }
   }, 1], ["stagexl", "package:stagexl/stagexl.dart",, Z, {
     "^": "",
     Point: {
@@ -13381,6 +13416,9 @@
   };
   J.send$1$x = function(receiver, a0) {
     return J.getInterceptor$x(receiver).send$1(receiver, a0);
+  };
+  J.split$1$s = function(receiver, a0) {
+    return J.getInterceptor$s(receiver).split$1(receiver, a0);
   };
   J.substring$1$s = function(receiver, a0) {
     return J.getInterceptor$s(receiver).substring$1(receiver, a0);
@@ -13727,8 +13765,8 @@
   }, "CssClassSetImpl__validTokenRE"]);
   Isolate = Isolate.$finishIsolateConstructor(Isolate);
   $ = new Isolate();
-  init.metadata = ["e", "stackTrace", "element", null, "error", "data", "arg2", "_", "o", "arg1", "color", "time", "x", "actionName", "thing", "raf", "scale", "req", true, "mirrorMode", "opacity", "object", "sender", "lineWidth", "closure", "isolate", "numberOfArguments", "sideCount", "arg4", "each", "action", "noop", "instructions", "item", "arg3", "value", "arg", "callback", "captureThis", "self", "arguments", "drawPoints"];
-  init.types = [{func: 1, args: [,]}, {func: 1}, {func: 1, v: true}, {func: 1, v: true, args: [,]}, {func: 1, v: true, args: [P.num]}, {func: 1, args: [W.InputElement,,]}, {func: 1, v: true, args: [P.String]}, {func: 1, args: [R.BaseAction]}, {func: 1, args: [W.HtmlElement]}, {func: 1, args: [,,]}, {func: 1, v: true, args: [{func: 1, v: true}]}, {func: 1, v: true, args: [P.bool]}, {func: 1, args: [, P.String, P.String]}, {func: 1, args: [P.String, P.String]}, {func: 1, v: true, args: [P.Object], opt: [P.StackTrace]}, {func: 1, v: true, args: [,], opt: [P.StackTrace]}, {func: 1, ret: P.String, args: [P.$int]}, {func: 1, args: [P.CssClassSetImpl]}, {func: 1, args: [P.Function]}, {func: 1, v: true, args: [P.$int]}, {func: 1, v: true, args: [P.num], opt: [P.bool]}, {func: 1, args: [W.HttpRequest]}, {func: 1, v: true, args: [R.BaseAction]}, {func: 1, args: [P.String,,]}, {func: 1, args: [P.String]}, {func: 1, args: [{func: 1, v: true}]}, {func: 1, ret: P.Object, args: [,]}, {func: 1, args: [P.bool]}, {func: 1, args: [, P.StackTrace]}, {func: 1, v: true, args: [, P.StackTrace]}, {func: 1, args: [P.Symbol,,]}, {func: 1, args: [,], opt: [,]}, {func: 1, args: [W.Element]}, {func: 1, args: [P.bool, P.CssClassSetImpl]}, {func: 1, args: [, P.String]}];
+  init.metadata = ["e", "stackTrace", "element", null, "error", "data", "arg2", "_", "o", "arg1", "color", "x", "actionName", "thing", "scale", "raf", true, "req", "mirrorMode", "opacity", "lineWidth", "object", "sender", "sideCount", "closure", "isolate", "numberOfArguments", "instructions", "arg4", "each", "action", "noop", "time", "item", "arg3", "value", "arg", "callback", "captureThis", "self", "arguments", "drawPoints"];
+  init.types = [{func: 1, args: [,]}, {func: 1}, {func: 1, v: true}, {func: 1, v: true, args: [,]}, {func: 1, args: [W.InputElement,,]}, {func: 1, v: true, args: [P.String]}, {func: 1, v: true, args: [P.num]}, {func: 1, args: [W.HtmlElement]}, {func: 1, args: [R.BaseAction]}, {func: 1, args: [,,]}, {func: 1, v: true, args: [{func: 1, v: true}]}, {func: 1, v: true, args: [P.bool]}, {func: 1, args: [, P.String, P.String]}, {func: 1, args: [P.String, P.String]}, {func: 1, v: true, args: [P.Object], opt: [P.StackTrace]}, {func: 1, v: true, args: [,], opt: [P.StackTrace]}, {func: 1, ret: P.String, args: [P.$int]}, {func: 1, args: [P.CssClassSetImpl]}, {func: 1, v: true, args: [R.BaseAction]}, {func: 1, args: [P.Function]}, {func: 1, v: true, args: [P.$int]}, {func: 1, v: true, args: [P.num], opt: [P.bool]}, {func: 1, args: [W.HttpRequest]}, {func: 1, args: [P.String,,]}, {func: 1, args: [P.String]}, {func: 1, args: [{func: 1, v: true}]}, {func: 1, ret: P.Object, args: [,]}, {func: 1, args: [P.bool]}, {func: 1, args: [, P.StackTrace]}, {func: 1, v: true, args: [, P.StackTrace]}, {func: 1, args: [P.Symbol,,]}, {func: 1, args: [,], opt: [,]}, {func: 1, args: [W.Element]}, {func: 1, args: [P.bool, P.CssClassSetImpl]}, {func: 1, args: [, P.String]}];
   function convertToFastObject(properties) {
     function MyClass() {
     }

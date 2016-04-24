@@ -68,8 +68,6 @@ class RegularStrokeAction extends BaseAction {
     int oldLen = _activePoints.length;
     var simplifiedPoints = LineGeneralization.simplifyLang(4, 0.5, _activePoints);
 
-    print("Had: ${oldLen}, Have: ${simplifiedPoints.length}, Removed ${oldLen - simplifiedPoints.length} points");
-
     points.add(BaseAction.LINE_BREAK);
     points.addAll(simplifiedPoints);
 

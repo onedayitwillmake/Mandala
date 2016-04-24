@@ -2,11 +2,6 @@ part of DrawingToolLib;
 
 class DrawingTool {
   String                    mandalaId;
-  /// Number of sides in we draw (x2 if mirroring is on)
-  int                       _sides = 14;
-
-  /// If true, anything drawn on the left side of the canvas will be redraw on the right side
-  bool                      _isMirrored = true;
 
   /// If true - draggable points are drawn for the current tool
   bool                      _allowEditingPoints = true;
@@ -36,13 +31,13 @@ class DrawingTool {
   String                    _gradientStart = "#383245";
   String                    _gradientEnd = "#1B1821";
 
-  ColorValue                _arcColor = new ColorValue.fromRGB(255,255,255);
+  ActionSettings            _settings;
+  Geom.Point                _cursorPosition = new Geom.Point(-1000,-1000);
+
+  ColorValue                _arcColor = new ColorValue.from("#ffdf34");
 
   /// Canvas bounding rect to offset input positions
   Rectangle                 _canvasRect;
-
-  /// Used to offset the touch position if the user has scrolled
-  Geom.Point                _winScroll;
 
   /// Used internally to track RAF
   int                       _rafId = 0;
@@ -54,14 +49,15 @@ class DrawingTool {
 
   DrawingTool(this._canvas) {
     _canvasRect = _canvas.getBoundingClientRect();
-    _winScroll = new Geom.Point(window.scrollX, window.scrollY);
-
     _ctx = _canvas.context2D;
     _offscreenBuffer = new CanvasElement(width:_canvas.width, height:_canvas.height);
 
     _setupBackgroundGradients();
     _setupListeners();
+  }
 
+  void initSettingsAndStart(ActionSettings settings) {
+    _settings = settings;
     changeAction( RegularStrokeAction.ACTION_NAME, true );
     start();
   }
@@ -103,10 +99,7 @@ class DrawingTool {
     window.onResize.listen((e) {
       _canvasRect = _canvas.getBoundingClientRect();
     });
-    // Window scroll
-    window.onScroll.listen((e) {
-      _winScroll = new Geom.Point(window.scrollX, window.scrollY);
-    });
+
     // Lost focus
     window.onBlur.listen((e){
       stop();
@@ -136,16 +129,19 @@ class DrawingTool {
 
   void _inputDown( Point pos ) {
     _isDragging = true;
-    actionQueue.last.inputDown( _alignedPoint( pos ), _allowEditingPoints );
+    _cursorPosition = _alignedPoint(pos);
+    actionQueue.last.inputDown(_cursorPosition , _allowEditingPoints );
   }
 
   void _inputMove( Point pos ) {
-    actionQueue.last.inputMove( _alignedPoint( pos ), _isDragging );
+    _cursorPosition = _alignedPoint(pos);
+    actionQueue.last.inputMove(_cursorPosition , _isDragging );
   }
 
   void _inputUp( Point pos ) {
     _isDragging = false;
-    actionQueue.last.inputUp(  _alignedPoint( pos ) );
+    _cursorPosition = _alignedPoint(pos);
+    actionQueue.last.inputUp(  _cursorPosition );
   }
 
   /// Returns a new [Geom.Point] such that (0,0) is the TL of the canvas, taking the element's offsets into account
@@ -187,6 +183,13 @@ class DrawingTool {
         if( xOffset == 1 && i == 0 ) {
           actionQueue.last.activeDraw( _ctx, _canvasRect.width, _canvasRect.height, _allowEditingPoints );
         }
+
+
+        _ctx.setFillColorRgb(_settings.strokeColor.r, _settings.strokeColor.g, _settings.strokeColor.b, 0.4);
+        _ctx.beginPath();
+        _ctx.arc(_cursorPosition.x, _cursorPosition.y, 1.5, 0, PI * 2, false);
+        _ctx.fill();
+        _ctx.closePath();
       }
     }
 
@@ -266,15 +269,12 @@ class DrawingTool {
       break;
     }
 
-    // Set the newAction's opacity to the current action's opacity
-    if( actionQueue.isNotEmpty ) {
-      nextAction.settings.opacity = actionQueue.last.settings.opacity;
-      nextAction.settings.strokeColor.copyFrom( actionQueue.last.settings.strokeColor );
-      nextAction.settings.fillColor.copyFrom( actionQueue.last.settings.fillColor );
-    }
-
-    nextAction.settings.sides = _sides;
-    nextAction.settings.isMirrored = _isMirrored;
+    nextAction.settings.lineWidth = _settings.lineWidth;
+    nextAction.settings.opacity = _settings.opacity;
+    nextAction.settings.strokeColor.copyFrom( _settings.strokeColor );
+    nextAction.settings.fillColor.copyFrom( _settings.fillColor );
+    nextAction.settings.sides = _settings.sides;
+    nextAction.settings.isMirrored = _settings.isMirrored;
 
     actionQueue.add( nextAction );
     _updateOffscreenBuffer();
@@ -296,8 +296,8 @@ class DrawingTool {
         _performClear();
         break;
       case "alpha":
-        actionQueue.last.settings.opacity = value;
-        // If the topmost action has no points - the user probably means to change the action of the line they just drew
+        _settings.opacity = actionQueue.last.settings.opacity = value;
+        // If the topmost action has no points - the user probably means to change the action of the line they drew before this one
         if( actionQueue.last.points.length == 0 && actionQueue.length >= 2 ) {
           actionQueue.elementAt( actionQueue.length - 2 ).settings.opacity = value;
         }
@@ -317,7 +317,7 @@ class DrawingTool {
 //        _updateOffscreenBuffer();
         break;
       case "sides":
-        actionQueue.last.settings.sides = _sides = value;
+        actionQueue.last.settings.sides = _settings.sides = value;
         _updateOffscreenBuffer();
         _dispatchOnSidesChangedEvent();
       break;
@@ -331,12 +331,12 @@ class DrawingTool {
         _dispatchOnDrawPointsChanged();
       break;
       case "setMirrorMode":
-        actionQueue.last.settings.isMirrored = _isMirrored = value;
+        actionQueue.last.settings.isMirrored = _settings.isMirrored = value;
         _updateOffscreenBuffer();
         _dispatchMirrorModeChangedEvent();
         break;
       case "linewidth":
-        actionQueue.last.settings.lineWidth = value;
+        _settings.lineWidth = actionQueue.last.settings.lineWidth = value;
         _dispatchLineWidthChangedEvent();
         break;
     }
@@ -433,18 +433,18 @@ class DrawingTool {
     svgCtx.groupEnd();
     
     // Draw everything twice if mirroring is turned on
-    for( int j = 0; j < (_isMirrored ? 2 : 1); j++) {
+    for( int j = 0; j < (_settings.isMirrored ? 2 : 1); j++) {
       int xOffset = j == 0 ? 1 : -1;
 
       // Call every action once, per side
-      for( int i = 0; i < _sides; i++) {
+      for( int i = 0; i < _settings.sides; i++) {
         svgCtx.groupStart();
         
         // Reset the transform
         svgCtx.setTransform(xOffset*_scale, 0, 0, _scale, _canvasRect.width*0.5, _canvasRect.height*0.5);
         // Rotate clockwise, so that if i = (sides/2) - we're at 180 degrees
         // add PI*J - meaning 0 on first call, or 180 degrees on second call
-        svgCtx.rotate(i/_sides * PI * 2);
+        svgCtx.rotate(i/_settings.sides * PI * 2);
 
         actionQueue.forEach((BaseAction action){
           action.executeForSvg( svgCtx, _canvasRect.width, _canvasRect.height );
@@ -502,12 +502,12 @@ class DrawingTool {
     SharedDispatcher.emitter.emit( DrawingToolEvent.ON_ACTION_CHANGED, actionQueue.last.name );
     _dispatchOpacityChangedEvent();
   }
-  void _dispatchMirrorModeChangedEvent( ) => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_MIRROR_MODE_CHANGED, _isMirrored );
+  void _dispatchMirrorModeChangedEvent( ) => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_MIRROR_MODE_CHANGED, _settings.isMirrored );
   void _dispatchOnDrawPointsChanged() => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_DRAW_POINTS_CHANGED, _allowEditingPoints );
-  void _dispatchOnSidesChangedEvent() => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_SIDES_CHANGED, _sides );
+  void _dispatchOnSidesChangedEvent() => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_SIDES_CHANGED, _settings.sides );
   void _dispatchScaleChangedEvent() => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_SCALE_CHANGED, _scale );
-  void _dispatchOpacityChangedEvent() => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_OPACITY_CHANGED, actionQueue.last.settings.opacity );
-  void _dispatchLineWidthChangedEvent() => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_LINEWIDTH_CHANGED, actionQueue.last.settings.lineWidth );
+  void _dispatchOpacityChangedEvent() => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_OPACITY_CHANGED, _settings.opacity );
+  void _dispatchLineWidthChangedEvent() => SharedDispatcher.emitter.emit( DrawingToolEvent.ON_LINEWIDTH_CHANGED, _settings.lineWidth );
 
   /////////////////////////////////////////////////
   ////////////////// PROPERTIES ///////////////////

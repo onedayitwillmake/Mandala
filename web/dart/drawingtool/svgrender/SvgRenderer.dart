@@ -131,18 +131,14 @@ class SvgRenderer {
 
   // Color
   void setStrokeColorRgb(int r, int g, int b, [num a = 1]) {
-    int color = (r << 16) + (g << 8) + (b << 0);
-    
-    _strokeStyle = '#${((1 << 24) + (r << 16) + (g << 8) + b).toRadixString(16).substring(1, 7)}'; 
+    _strokeStyle = '#${((1 << 24) + (r << 16) + (g << 8) + b).toRadixString(16).substring(1, 7)}';
     _opacity = a;
   }
   void setStrokeColorHsl(int h, num s, num l, [num a = 1]) {
     _strokeStyle = 'hsla($h, $s%, $l%, $a)';
   }
   void setFillColorRgb(int r, int g, int b, [num a = 1]) {
-    int color = (r << 16) + (g << 8) + (b << 0);
-    
-    _fillStyle = '#${((1 << 24) + (r << 16) + (g << 8) + b).toRadixString(16).substring(1, 7)}'; 
+    _fillStyle = '#${((1 << 24) + (r << 16) + (g << 8) + b).toRadixString(16).substring(1, 7)}';
     _opacity = a;
   }
   void setFillColorHsl(int h, num s, num l, [num a = 1]) {

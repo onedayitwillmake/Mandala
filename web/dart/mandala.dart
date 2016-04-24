@@ -26,6 +26,8 @@ void main() {
 
   jqueryWaitFn(0);
 }
+
+bool hasFinishedLoading = false;
 void jqueryWaitFn(num time ) {
   try {
     if( querySelector("#canvas") != null ) {
@@ -34,8 +36,9 @@ void jqueryWaitFn(num time ) {
     }
     var site = new SiteApp(tool);
   } catch(e) {
+    print(e);
     // not ready yet... try next frame
-    window.requestAnimationFrame(jqueryWaitFn);
+//    window.requestAnimationFrame(jqueryWaitFn);
   }
 }
 

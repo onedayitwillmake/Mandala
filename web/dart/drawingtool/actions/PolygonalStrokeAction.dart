@@ -56,6 +56,7 @@ class PolygonalStrokeAction extends BaseAction {
   }
 
   void activeDraw(dynamic ctx, width, height, bool canEditPoints) {
+    super.activeDraw(ctx,width,height,canEditPoints);
     if( _activePoints != null ) {
       ctx..beginPath()
       ..setFillColorHsl(0, 80, 50)

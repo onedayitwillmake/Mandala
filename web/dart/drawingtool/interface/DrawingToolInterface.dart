@@ -4,6 +4,7 @@ class DrawingToolInterface {
   DrawingTool _drawingModule;
   HtmlElement _lastSelectedTool;
 
+  List<String> strokeColors = ["#ffdf34","#FFFFFF", "#00ecfc", "#ef43ff"];
   RangeInputElement _$sideCountSlider = null;
   RangeInputElement _$scaleSlider = null;
   RangeInputElement _$opacitySlider = null;
@@ -18,7 +19,8 @@ class DrawingToolInterface {
   DrawingToolInterface( this._drawingModule ) {
     _setupOutgoingEvents();
     _setupIncommingEvents();
-    _drawingModule.start();
+
+    _drawingModule.initSettingsAndStart(createSettings());
   }
 
   /// Setup events that originate from user interface to the drawing module
@@ -72,7 +74,7 @@ class DrawingToolInterface {
     context.callMethod("jQuery", ['#interface-color-line-slider']).callMethod('spectrum', [new JsObject.jsify({
       'showPalette': true,
       'showPaletteOnly': true,
-      'palette'  : ["#FFFFFF", "#00ecfc", "#ffdf34", "#ef43ff"],
+      'palette'  : strokeColors,
         'change'   : new JsFunction.withThis((InputElement element, dynamic color ) => _drawingModule.performEditAction("lineColor", color) )
     })]);
     context.callMethod("jQuery", ['#interface-color-gradient-start-slider']).callMethod('spectrum', [new JsObject.jsify({
@@ -84,6 +86,17 @@ class DrawingToolInterface {
 
     // close out on first call
 //    new Future.delayed(new Duration(seconds:1), () => _toggleAdvancedMenus(null) );
+  }
+
+  ActionSettings createSettings(){
+    ActionSettings settings = new ActionSettings();
+    settings.isMirrored = _$mirrorCheckbox.checked;
+    settings.sides = _$sideCountSlider.valueAsNumber;
+    settings.strokeColor = new ColorValue.from(strokeColors[0]);
+    settings.fillColor = new ColorValue.from(strokeColors[0]);
+    settings.lineWidth = _$lineWidthSlider.valueAsNumber;
+    settings.opacity = double.parse( _$opacitySlider.defaultValue ) / 100.0;
+    return settings;
   }
 
   void onSignInDropDownSelected( dynamic thing ) {

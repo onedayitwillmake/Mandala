@@ -63,6 +63,7 @@ class SmoothStrokeAction extends RegularStrokeAction {
   }
 
   void activeDraw(dynamic ctx, width, height, bool canEditPoints) {
+    super.activeDraw(ctx,width,height,canEditPoints);
     if( !canEditPoints ) return;
 
     for(var i = 0; i < points.length; i++) {
