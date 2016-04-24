@@ -1913,7 +1913,6 @@
         t1.callMethod$2("jQuery", ["#interface-color-line-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(P.LinkedHashMap__makeLiteral(["showPalette", true, "showPaletteOnly", true, "palette", ["#FFFFFF", "#00ecfc", "#ffdf34", "#ef43ff"], "change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure8(this))]))]);
         t1.callMethod$2("jQuery", ["#interface-color-gradient-start-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(P.LinkedHashMap__makeLiteral(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure9(this))]))]);
         t1.callMethod$2("jQuery", ["#interface-color-gradient-end-slider"]).callMethod$2("spectrum", [P.JsObject_JsObject$jsify(P.LinkedHashMap__makeLiteral(["change", P.JsFunction_JsFunction$withThis(new R.DrawingToolInterface__setupOutgoingEvents_closure10(this))]))]);
-        P.Future_Future$delayed(P.Duration$(0, 0, 0, 0, 0, 1), new R.DrawingToolInterface__setupOutgoingEvents_closure11(this), null);
       },
       _setupIncommingEvents$0: function() {
         $.$get$SharedDispatcher_emitter().on$2(0, "DrawingTool.ON_ACTION_CHANGED", this.get$onActionChanged());
@@ -2093,12 +2092,6 @@
       call$2: [function(element, color) {
         return this.$this._DrawingToolLib$_drawingModule.performEditAction$2("gradientEndColor", color);
       }, null, null, 4, 0, null, 2, 10, "call"]
-    },
-    DrawingToolInterface__setupOutgoingEvents_closure11: {
-      "^": "Closure:1;$this",
-      call$0: function() {
-        return this.$this._toggleAdvancedMenus$1(null);
-      }
     },
     DrawingToolInterface_onActionChanged_closure: {
       "^": "Closure:8;actionName",

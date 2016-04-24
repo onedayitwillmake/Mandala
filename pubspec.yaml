@@ -15,3 +15,5 @@ transformers:
     suppressHints: true
     suppressWarnings: true
     terse: false
+
+# dart2js -o ./web/dart/mandala.dart.js ./web/dart/mandala.dart  -v
